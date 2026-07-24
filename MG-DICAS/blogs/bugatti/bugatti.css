@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Ruda:wght@400..900&display=swap');
+
+:root {
+  --preto: #111111;
+  --azul: #2563EB;
+  --azul-escuro: #1D4ED8;
+  --branco: #FFFFFF;
+  --fundo: #F8F9FA;
+  --texto: #1F2937;
+  --texto-suave: #6B7280;
+  --cinza: #E5E7EB;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ruda", sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  background-color: var(--preto);
+  padding: 20px 60px;
+  flex-wrap: wrap;
+  color: white;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+
+body {
+  background-color: var(--fundo);
+  margin: 0;
+  padding-top: 100px;
+}
+
+.logo {
+    flex: 1;
+}
+
+.nav {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.icons {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.nav a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+#logo {
+    height: 60px;
+    width: auto;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 3%;
+    color: var(--azul);
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    max-width: 900px;
+    margin: auto;
+    gap: 60px;
+    margin-top: 3%;
+    background-color: var(--branco);
+    padding: 50px 50px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.text {
+    flex: 1;
+    color: #333;
+    font-size: 18px;
+}
+
+.pic img {
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logotipo {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.mg {
+    color: #000000;
+}
+
+.motors {
+    color: var(--branco);
+}
+
+footer {
+    background-color: var(--azul);
+    text-align: center;
+    padding: 20px;
+    margin-top: 2%;
+    color: white;
+}

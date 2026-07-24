@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - MG Motors</title>
+    <link rel="stylesheet" href="configuracoes.css">
+    <link rel="stylesheet" href="../global.css">
+<script src="../tema.js"></script>
+</head>
+
+<body>
+    <header id="header-global"></header>
+
+    <div class="configs-container">
+        <div class="configs-hero">
+            <div class="configs-hero-icon">⚙️</div>
+            <div>
+                <h1>Configurações</h1>
+                <p>Personalize sua experiência na MG Motors</p>
+            </div>
+        </div>
+
+        <div class="configs-section">
+            <h2>🎨 Aparência</h2>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Tema Escuro</h3>
+                    <p>Alterna entre modo claro e escuro</p>
+                </div>
+                <button class="toggle" id="toggle-tema" onclick="toggleTema()"></button>
+            </div>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Tamanho da fonte</h3>
+                    <p>Ajuste o tamanho do texto na plataforma</p>
+                </div>
+                <select class="select-config" id="tamanho-fonte"
+                    onchange="salvarPreferencia('tamanho_fonte', this.value)">
+                    <option value="14">Pequeno</option>
+                    <option value="16" selected>Médio</option>
+                    <option value="18">Grande</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="configs-section">
+            <h2>🔔 Notificações</h2>
+            <div class="notif-grid">
+                <div class="config-item"
+                    style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
+                    <div class="config-item-info">
+                        <h3>Mensagens</h3>
+                        <p>Novas mensagens recebidas</p>
+                    </div>
+                    <button class="toggle on" id="notif-mensagens" onclick="toggleNotif('mensagens',this)"></button>
+                </div>
+                <div class="config-item"
+                    style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
+                    <div class="config-item-info">
+                        <h3>Curtidas</h3>
+                        <p>Quando curtirem seu anúncio</p>
+                    </div>
+                    <button class="toggle on" id="notif-curtidas" onclick="toggleNotif('curtidas',this)"></button>
+                </div>
+                <div class="config-item"
+                    style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
+                    <div class="config-item-info">
+                        <h3>Novos seguidores</h3>
+                        <p>Quando alguém te seguir</p>
+                    </div>
+                    <button class="toggle on" id="notif-seguidores" onclick="toggleNotif('seguidores',this)"></button>
+                </div>
+                <div class="config-item"
+                    style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
+                    <div class="config-item-info">
+                        <h3>Propostas</h3>
+                        <p>Novas propostas nos seus anúncios</p>
+                    </div>
+                    <button class="toggle on" id="notif-propostas" onclick="toggleNotif('propostas',this)"></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="configs-section">
+            <h2>🔒 Privacidade</h2>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Perfil público</h3>
+                    <p>Permite que outros usuários vejam seu perfil</p>
+                </div>
+                <button class="toggle on" id="toggle-perfil-publico"
+                    onclick="toggleConfig('perfil_publico',this)"></button>
+            </div>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Mostrar telefone no anúncio</h3>
+                    <p>Exibe seu WhatsApp publicamente</p>
+                </div>
+                <button class="toggle on" id="toggle-mostrar-tel"
+                    onclick="toggleConfig('mostrar_telefone',this)"></button>
+            </div>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Receber mensagens de desconhecidos</h3>
+                    <p>Permite que qualquer usuário te envie mensagem</p>
+                </div>
+                <button class="toggle on" id="toggle-msg-desconhecidos"
+                    onclick="toggleConfig('msg_desconhecidos',this)"></button>
+            </div>
+        </div>
+
+        <div class="configs-section">
+            <h2>🌍 Localização</h2>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Compartilhar localização aproximada</h3>
+                    <p>Exibe sua cidade nos anúncios automaticamente</p>
+                </div>
+                <button class="toggle" id="toggle-localizacao" onclick="toggleLocalizacao()"></button>
+            </div>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Raio de busca padrão</h3>
+                    <p>Distância máxima ao filtrar por localização</p>
+                </div>
+                <select class="select-config" id="raio-busca" onchange="salvarPreferencia('raio_busca', this.value)">
+                    <option value="50">50 km</option>
+                    <option value="100" selected>100 km</option>
+                    <option value="200">200 km</option>
+                    <option value="500">500 km</option>
+                    <option value="0">Todo o Brasil</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="configs-section">
+            <h2>💬 Chat e Mensagens</h2>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Confirmação de leitura</h3>
+                    <p>Envia aviso quando você lê uma mensagem</p>
+                </div>
+                <button class="toggle on" id="toggle-leitura"
+                    onclick="toggleConfig('confirmacao_leitura',this)"></button>
+            </div>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Som de notificação</h3>
+                    <p>Toca som ao receber mensagem</p>
+                </div>
+                <button class="toggle" id="toggle-som" onclick="toggleConfig('som_notificacao',this)"></button>
+            </div>
+        </div>
+
+        <div class="configs-section">
+            <h2>🔐 Segurança</h2>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Alterar senha</h3>
+                    <p>Redefina sua senha de acesso</p>
+                </div>
+                <button class="btn-config" id="btn-alterar-senha"
+                    style="background:var(--azul);color:#fff;">Alterar</button>
+            </div>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Sessões ativas</h3>
+                    <p>Encerre todas as outras sessões abertas</p>
+                </div>
+                <button class="btn-config btn-danger" onclick="encerrarSessoes()">Encerrar todas</button>
+            </div>
+        </div>
+
+        <div class="configs-section" id="secao-dev" style="display:none;">
+            <h2>🛡️ Área Restrita</h2>
+            <a href="../MG-DEV/devpanel.html" class="dev-link">
+                <div class="dev-link-icon">⚡</div>
+                <div class="dev-link-info">
+                    <h3>Painel de Moderação</h3>
+                    <p>Acesso exclusivo para desenvolvedores e administradores</p>
+                </div>
+                <span style="color:#ffd700;margin-left:auto;font-size:20px;">→</span>
+            </a>
+        </div>
+
+        <button class="btn-salvar-configs" onclick="salvarTodasConfigs()">💾 Salvar todas as configurações</button>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2><span>MG</span>Motors</h2>
+                <p>A plataforma premium de compra e venda de veículos esportivos, seminovos e importados do Brasil.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Plataforma</h4>
+                <a href="../MG-MARKETPLACE/marketplace.html">Marketplace</a>
+                <a href="../MG-DICAS/dicas.html">Dicas</a>
+                <a href="../MG-MENSAGENS/mensagens.html">Mensagens</a>
+                <a href="../MG-CONTA/conta.html">Minha Conta</a>
+            </div>
+            <div class="footer-col">
+                <h4>Suporte</h4>
+                <a href="../MG-CONTATO/contato.html">Contato</a>
+                <a href="../MG-AJUDA/ajuda.html">Central de Ajuda</a>
+                <a href="../MG-CASOS-USO/como-utilizar.html">Como Utilizar</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="#">Termos de Uso</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
+            <span>Desenvolvido com ❤️ no Brasil</span>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+        import { carregarHeaderGlobal } from "../headerGlobal.js";
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const DEVS = ["murilofrank157@gmail.com", "guilhermefrankadami@gmail.com", "candidomurilo809@gmail.com"];
+        let usuarioAtual = null;
+        let preferencias = {};
+
+        async function init() {
+            usuarioAtual = await carregarHeaderGlobal(supabase);
+            if (!usuarioAtual) return;
+            // Melhoria 1: maybeSingle() — perfil pode ainda não ter sido criado na tabela `usuarios`.
+            const { data: perfil } = await supabase.from("usuarios").select("preferencias").eq("id", usuarioAtual.id).maybeSingle();
+            if (DEVS.includes(usuarioAtual.email)) document.getElementById("secao-dev").style.display = "block";
+            preferencias = perfil?.preferencias || {};
+            aplicarPreferencias();
+        }
+
+        function aplicarPreferencias() {
+            if (preferencias.tema === "escuro") { document.body.setAttribute("data-tema", "escuro"); document.documentElement.setAttribute("data-tema", "escuro"); document.getElementById("toggle-tema").classList.add("on"); localStorage.setItem("mg_tema","escuro"); }
+            else { localStorage.setItem("mg_tema", preferencias.tema || "claro"); }
+            if (preferencias.tamanho_fonte) { document.getElementById("tamanho-fonte").value = preferencias.tamanho_fonte; document.body.style.fontSize = preferencias.tamanho_fonte + "px"; }
+            const toggles = ["notif-mensagens", "notif-curtidas", "notif-seguidores", "notif-propostas"];
+            toggles.forEach(t => { const key = t.replace("notif-", "notif_"); if (preferencias[key] === false) document.getElementById(t)?.classList.remove("on"); });
+            if (preferencias.perfil_publico === false) document.getElementById("toggle-perfil-publico")?.classList.remove("on");
+            if (preferencias.mostrar_telefone === false) document.getElementById("toggle-mostrar-tel")?.classList.remove("on");
+            if (preferencias.msg_desconhecidos === false) document.getElementById("toggle-msg-desconhecidos")?.classList.remove("on");
+            if (preferencias.confirmacao_leitura === false) document.getElementById("toggle-leitura")?.classList.remove("on");
+            if (preferencias.som_notificacao === true) document.getElementById("toggle-som")?.classList.add("on");
+            if (preferencias.localizacao === true) document.getElementById("toggle-localizacao")?.classList.add("on");
+            if (preferencias.raio_busca) document.getElementById("raio-busca").value = preferencias.raio_busca;
+        }
+
+        window.toggleTema = function () {
+            const btn = document.getElementById("toggle-tema");
+            btn.classList.toggle("on");
+            const escuro = btn.classList.contains("on");
+            const tema = escuro ? "escuro" : "claro";
+            document.body.setAttribute("data-tema", tema);
+            document.documentElement.setAttribute("data-tema", tema);
+            preferencias.tema = tema;
+            localStorage.setItem("mg_tema", tema);
+        };
+
+        window.toggleNotif = function (tipo, btn) {
+            btn.classList.toggle("on");
+            preferencias["notif_" + tipo] = btn.classList.contains("on");
+        };
+
+        window.toggleConfig = function (chave, btn) {
+            btn.classList.toggle("on");
+            preferencias[chave] = btn.classList.contains("on");
+        };
+
+        window.toggleLocalizacao = function () {
+            const btn = document.getElementById("toggle-localizacao");
+            btn.classList.toggle("on");
+            if (btn.classList.contains("on")) {
+                navigator.geolocation?.getCurrentPosition(pos => {
+                    preferencias.localizacao = true;
+                    preferencias.lat = pos.coords.latitude;
+                    preferencias.lng = pos.coords.longitude;
+                    alert("Localização salva com sucesso!");
+                }, () => { btn.classList.remove("on"); alert("Não foi possível obter a localização."); });
+            } else { preferencias.localizacao = false; }
+        };
+
+        window.salvarPreferencia = function (chave, valor) { preferencias[chave] = valor; };
+
+        window.salvarTodasConfigs = async function () {
+            if (!usuarioAtual) { alert("Faça login primeiro."); return; }
+            const { error } = await supabase.from("usuarios").update({ preferencias, atualizado_em: new Date().toISOString() }).eq("id", usuarioAtual.id);
+            if (error) { alert("Erro ao salvar: " + error.message); return; }
+            alert("✅ Configurações salvas com sucesso!");
+        };
+
+        window.encerrarSessoes = async function () {
+            if (!confirm("Encerrar todas as outras sessões?")) return;
+            await supabase.auth.signOut({ scope: "global" });
+            alert("Sessões encerradas. Faça login novamente.");
+            window.location.href = "../MG-LOGIN/login.html";
+        };
+
+        document.getElementById("btn-alterar-senha")?.addEventListener("click", async () => {
+            if (!usuarioAtual) return;
+            const { error } = await supabase.auth.resetPasswordForEmail(usuarioAtual.email);
+            if (!error) alert("Email de redefinição enviado para " + usuarioAtual.email);
+            else alert("Erro: " + error.message);
+        });
+
+        const temaLocal = localStorage.getItem("mg_tema");
+        if (temaLocal === "escuro") { document.body.setAttribute("data-tema", "escuro"); }
+
+        init();
+    </script>
+</body>
+
+</html>

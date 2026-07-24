@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - MG Motors</title>
+<link rel="stylesheet" href="login.css">
+</head>
+<body>
+<main class="auth-shell">
+  <form id="form-login" class="auth-card">
+    <div class="auth-brand">
+      <span>MG Motors</span>
+      <small>Marketplace premium de veiculos</small>
+    </div>
+
+    <div class="header-form">
+      <button type="button" id="back-arrow" aria-label="Voltar para o inicio">&larr;</button>
+      <h1>Entrar</h1>
+    </div>
+
+    <p class="auth-subtitle">Acesse sua conta para anunciar, negociar e acompanhar seus veiculos favoritos.</p>
+
+    <label for="email-login">E-mail</label>
+    <input type="email" id="email-login" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+
+    <label for="senha-login">Senha</label>
+    <input type="password" id="senha-login" placeholder="Digite sua senha" autocomplete="current-password" required>
+
+    <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+
+    <button type="submit" class="primary-action">Entrar</button>
+    <button type="button" id="botao-google-login" class="google"><span>G</span> Entrar com Google</button>
+
+    <p class="auth-switch">Nao tenho uma conta - <a href="register.html">Criar conta</a></p>
+  </form>
+</main>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+const supa = createClient(supabaseUrl, supabaseKey);
+const feedback = document.getElementById("form-feedback");
+
+function mostrarFeedback(mensagem, tipo = "erro") {
+  feedback.textContent = mensagem;
+  feedback.dataset.tipo = tipo;
+}
+
+supa.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session) {
+    window.location.href = "../MG-CONTA/conta.html";
+  }
+});
+
+document.getElementById("back-arrow").addEventListener("click", () => {
+  window.location.href = "../MG-INICIO/inicio.html";
+});
+
+document.getElementById("form-login").addEventListener("submit", async e => {
+  e.preventDefault();
+  const botao = e.target.querySelector('button[type="submit"]');
+  const email = document.getElementById("email-login").value.trim();
+  const senha = document.getElementById("senha-login").value;
+
+  botao.disabled = true;
+  botao.textContent = "Entrando...";
+  mostrarFeedback("");
+
+  const { data, error } = await supa.auth.signInWithPassword({ email, password: senha });
+  if (error) {
+    mostrarFeedback("Nao foi possivel entrar. Verifique e-mail e senha.");
+    botao.disabled = false;
+    botao.textContent = "Entrar";
+    return;
+  }
+
+  if (data?.user) {
+    // Melhoria 1: maybeSingle() — recém-cadastrado pode ainda não ter linha em `usuarios`.
+    const { data: perfil } = await supa.from("usuarios").select("banido, nome").eq("id", data.user.id).maybeSingle();
+    if (perfil?.banido) {
+      await supa.auth.signOut();
+      mostrarFeedback("Sua conta esta suspensa. Entre em contato com o suporte se acredita que isso e um erro.");
+      botao.disabled = false;
+      botao.textContent = "Entrar";
+      return;
+    }
+  }
+
+  mostrarFeedback("Login realizado. Redirecionando...", "sucesso");
+  window.location.href = "../MG-CONTA/conta.html";
+});
+
+document.getElementById("botao-google-login").addEventListener("click", async () => {
+  const redirectTo = new URL("../MG-CONTA/conta.html", window.location.href).href;
+  await supa.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo }
+  });
+});
+</script>
+</body>
+</html>

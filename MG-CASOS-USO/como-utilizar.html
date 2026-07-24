@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Como Utilizar – MG Motors</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="como-utilizar.css" />
+  <link rel="stylesheet" href="../global.css" />
+<script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER (idêntico ao original)
+  ============================================================ -->
+ <header id="header-global"></header>
+  <!-- ============================================================
+       CONTEÚDO PRINCIPAL – COMO UTILIZAR
+  ============================================================ -->
+  <div class="casos-container">
+    <h1><i class="fas fa-project-diagram"></i> Como Utilizar – MGMotors</h1>
+    <p class="subtitle">Guia completo de como usar o sistema, com todas as funcionalidades disponíveis</p>
+
+    <!-- Tabela resumo -->
+    <div class="table-wrapper">
+      <h2><i class="fas fa-list-ul"></i> Resumo dos Casos de Uso</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Caso de Uso</th>
+            <th>Ator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>UC01</td><td>Cadastrar Usuário</td><td><span class="badge visitante">Visitante</span></td></tr>
+          <tr><td>UC02</td><td>Realizar Login</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC03</td><td>Recuperar Senha</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC04</td><td>Pesquisar Veículos</td><td><span class="badge visitante">Visitante/Usuário</span></td></tr>
+          <tr><td>UC05</td><td>Visualizar Detalhes do Veículo</td><td><span class="badge visitante">Visitante/Usuário</span></td></tr>
+          <tr><td>UC06</td><td>Favoritar Veículo</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC07</td><td>Entrar em Contato com o Vendedor</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC08</td><td>Publicar Anúncio</td><td><span class="badge vendedor">Vendedor</span></td></tr>
+          <tr><td>UC09</td><td>Editar Anúncio</td><td><span class="badge vendedor">Vendedor</span></td></tr>
+          <tr><td>UC10</td><td>Excluir Anúncio</td><td><span class="badge vendedor">Vendedor</span></td></tr>
+          <tr><td>UC11</td><td>Gerenciar Meus Anúncios</td><td><span class="badge vendedor">Vendedor</span></td></tr>
+          <tr><td>UC12</td><td>Denunciar Anúncio</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC13</td><td>Administrar Usuários</td><td><span class="badge admin">Administrador</span></td></tr>
+          <tr><td>UC14</td><td>Moderar Anúncios</td><td><span class="badge admin">Administrador</span></td></tr>
+          <tr><td>UC15</td><td>Gerenciar Categorias</td><td><span class="badge admin">Administrador</span></td></tr>
+          <tr><td>UC16</td><td>Painel Administrativo</td><td><span class="badge admin">Administrador</span></td></tr>
+          <tr><td>UC17</td><td>Gerenciar Perfil</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC18</td><td>Alterar Senha</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC19</td><td>Visualizar Perfil do Vendedor</td><td><span class="badge visitante">Visitante/Usuário</span></td></tr>
+          <tr><td>UC20</td><td>Marcar Veículo como Vendido</td><td><span class="badge vendedor">Vendedor</span></td></tr>
+          <tr><td>UC21</td><td>Receber Notificações</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC22</td><td>Filtrar e Ordenar Veículos</td><td><span class="badge visitante">Visitante/Usuário</span></td></tr>
+          <tr><td>UC23</td><td>Sair da Conta</td><td><span class="badge usuario">Usuário</span></td></tr>
+          <tr><td>UC24</td><td>Compartilhar Anúncio</td><td><span class="badge visitante">Visitante/Usuário</span></td></tr>
+          <tr><td>UC25</td><td>Enviar Mensagem pelo Formulário de Contato</td><td><span class="badge visitante">Visitante/Usuário</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Lista detalhada dos casos -->
+    <!-- UC01 -->
+    <div class="caso">
+      <h2><i class="fas fa-user-plus"></i> UC01 – Cadastrar Usuário</h2>
+      <div class="meta"><span class="badge visitante">Visitante</span></div>
+      <p><strong>Objetivo:</strong> Permitir que um visitante crie uma conta na plataforma.</p>
+      <p><strong>Pré‑condições:</strong> O visitante não deve possuir cadastro com o mesmo e‑mail.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O visitante acessa a opção "Criar Conta".</li>
+        <li>O sistema solicita nome completo, e‑mail, telefone e senha.</li>
+        <li>O visitante preenche todas as informações.</li>
+        <li>O sistema valida os dados informados.</li>
+        <li>O sistema verifica se o e‑mail já está cadastrado.</li>
+        <li>Caso esteja tudo correto, a conta é criada.</li>
+        <li>O sistema realiza o login automaticamente.</li>
+        <li>O usuário é direcionado para sua área pessoal.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – E‑mail já cadastrado</p>
+          <ol>
+            <li>O sistema detecta que o e‑mail informado já possui uma conta.</li>
+            <li>Uma mensagem é exibida informando que o e‑mail já está em uso.</li>
+            <li>O sistema sugere ao visitante realizar login ou recuperar a senha.</li>
+            <li>O visitante pode corrigir o e‑mail e tentar novamente, retornando ao passo 3 do fluxo principal.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Senha não atende aos requisitos</p>
+          <ol>
+            <li>O sistema identifica que a senha não cumpre os critérios mínimos (tamanho, letras/números).</li>
+            <li>É exibida uma mensagem com os requisitos necessários.</li>
+            <li>O visitante ajusta a senha informada e reenvia o formulário, retornando ao passo 4.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A3 – Campo obrigatório não preenchido</p>
+          <ol>
+            <li>O sistema identifica o(s) campo(s) vazio(s) ao tentar validar o formulário.</li>
+            <li>O(s) campo(s) pendente(s) são destacados com mensagem de erro.</li>
+            <li>O visitante completa as informações faltantes e reenvia o formulário, retornando ao passo 3.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> A conta é criada e o usuário pode utilizar todas as funcionalidades.</p>
+    </div>
+
+    <!-- UC02 -->
+    <div class="caso">
+      <h2><i class="fas fa-sign-in-alt"></i> UC02 – Realizar Login</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que um usuário acesse sua conta.</p>
+      <p><strong>Pré‑condições:</strong> O usuário deve possuir cadastro.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário informa e‑mail e senha.</li>
+        <li>O sistema valida as credenciais.</li>
+        <li>O sistema inicia a sessão.</li>
+        <li>O usuário é redirecionado para o painel.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Senha incorreta</p>
+          <ol>
+            <li>O sistema identifica que a senha não confere com o e‑mail informado.</li>
+            <li>Uma mensagem de "credenciais inválidas" é exibida.</li>
+            <li>O usuário pode tentar novamente ou selecionar "Esqueci minha senha" (UC03), retornando ao passo 1.</li>
+            <li>Após múltiplas tentativas incorretas, o sistema pode exigir verificação adicional.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Conta bloqueada</p>
+          <ol>
+            <li>O sistema detecta que a conta está suspensa ou bloqueada pelo administrador.</li>
+            <li>É exibida uma mensagem informando o bloqueio e orientando o contato com o suporte.</li>
+            <li>O login é interrompido até que a conta seja reativada (ver UC13).</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A3 – Conta inexistente</p>
+          <ol>
+            <li>O sistema não encontra nenhum cadastro para o e‑mail informado.</li>
+            <li>É exibida uma mensagem informando que não há conta associada.</li>
+            <li>O sistema oferece a opção de "Criar Conta" (UC01), retornando ao passo 1.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Usuário autenticado.</p>
+    </div>
+
+    <!-- UC03 -->
+    <div class="caso">
+      <h2><i class="fas fa-key"></i> UC03 – Recuperar Senha</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir a redefinição da senha.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário seleciona "Esqueci minha senha".</li>
+        <li>Informa seu e‑mail.</li>
+        <li>O sistema envia um link de recuperação.</li>
+        <li>O usuário acessa o link.</li>
+        <li>Define uma nova senha.</li>
+        <li>O sistema salva a nova senha.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – E‑mail não cadastrado</p>
+          <ol>
+            <li>O sistema não localiza nenhuma conta com o e‑mail informado.</li>
+            <li>Uma mensagem genérica é exibida (por segurança, sem confirmar se o e‑mail existe ou não).</li>
+            <li>O usuário pode conferir o e‑mail digitado e tentar novamente, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Link de recuperação expirado ou inválido</p>
+          <ol>
+            <li>O sistema verifica a validade do link ao ser acessado.</li>
+            <li>Caso expirado, é exibida uma mensagem informando o ocorrido.</li>
+            <li>O usuário é direcionado a solicitar um novo link, retornando ao passo 1.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A3 – Nova senha não atende aos requisitos</p>
+          <ol>
+            <li>O sistema valida a nova senha informada e identifica que não atende aos critérios mínimos.</li>
+            <li>É exibida uma mensagem com os requisitos necessários.</li>
+            <li>O usuário corrige a senha e reenvia, retornando ao passo 5.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Senha alterada com sucesso.</p>
+    </div>
+
+    <!-- UC04 -->
+    <div class="caso">
+      <h2><i class="fas fa-search"></i> UC04 – Pesquisar Veículos</h2>
+      <div class="meta"><span class="badge visitante">Visitante/Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir localizar veículos anunciados.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa a página de pesquisa.</li>
+        <li>Seleciona filtros desejados (marca, modelo, ano, faixa de preço, quilometragem, combustível, câmbio, cor, cidade, estado).</li>
+        <li>O sistema realiza a busca.</li>
+        <li>Os veículos compatíveis são exibidos.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Nenhum veículo encontrado</p>
+          <ol>
+            <li>O sistema executa a busca e não retorna resultados compatíveis com os filtros.</li>
+            <li>É exibida uma mensagem informando que nenhum veículo foi encontrado.</li>
+            <li>O sistema sugere remover ou ajustar filtros, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Erro de conexão com o servidor</p>
+          <ol>
+            <li>O sistema não consegue completar a consulta por falha de rede ou serviço indisponível.</li>
+            <li>Uma mensagem de erro é exibida com opção de "Tentar novamente".</li>
+            <li>Ao clicar, o sistema refaz a busca, retornando ao passo 3.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Lista de veículos apresentada ao usuário.</p>
+    </div>
+
+    <!-- UC05 -->
+    <div class="caso">
+      <h2><i class="fas fa-car"></i> UC05 – Visualizar Detalhes do Veículo</h2>
+      <div class="meta"><span class="badge visitante">Visitante/Usuário</span></div>
+      <p><strong>Objetivo:</strong> Exibir todas as informações do anúncio.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário seleciona um anúncio.</li>
+        <li>O sistema apresenta: fotos, marca, modelo, ano, versão, quilometragem, combustível, câmbio, cor, potência, valor, descrição, cidade, estado e informações do vendedor.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Anúncio removido ou indisponível</p>
+          <ol>
+            <li>O sistema verifica que o anúncio foi excluído, vendido ou pausado pelo vendedor.</li>
+            <li>É exibida uma mensagem informando que o anúncio não está mais disponível.</li>
+            <li>O usuário é direcionado de volta à listagem de veículos (UC04), retornando ao passo 1.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Falha ao carregar imagens</p>
+          <ol>
+            <li>O sistema não consegue exibir uma ou mais fotos do anúncio.</li>
+            <li>Uma imagem padrão de placeholder é exibida no lugar da foto ausente.</li>
+            <li>As demais informações do anúncio continuam disponíveis normalmente.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Usuário obtém todas as informações do veículo.</p>
+    </div>
+
+    <!-- UC06 -->
+    <div class="caso">
+      <h2><i class="fas fa-heart"></i> UC06 – Favoritar Veículo</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Salvar anúncios para consulta posterior.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa um anúncio.</li>
+        <li>Seleciona "Favoritar".</li>
+        <li>O sistema salva o anúncio na lista de favoritos.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Usuário não autenticado</p>
+          <ol>
+            <li>O sistema identifica que o visitante não possui sessão ativa.</li>
+            <li>É exibida uma mensagem convidando a fazer login ou criar conta.</li>
+            <li>Após autenticar‑se (UC02 ou UC01), o usuário retorna ao anúncio e pode favoritá‑lo, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Veículo já favoritado</p>
+          <ol>
+            <li>O sistema identifica que o anúncio já está na lista de favoritos do usuário.</li>
+            <li>A ação é transformada em "Desfavoritar", removendo o anúncio da lista.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Anúncio disponível na área de favoritos.</p>
+    </div>
+
+    <!-- UC07 -->
+    <div class="caso">
+      <h2><i class="fab fa-whatsapp"></i> UC07 – Entrar em Contato com o Vendedor</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Iniciar negociação.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário abre um anúncio.</li>
+        <li>Seleciona "Entrar em Contato".</li>
+        <li>O sistema apresenta opções de contato (ex.: WhatsApp).</li>
+        <li>O usuário pode iniciar conversa.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Usuário não autenticado</p>
+          <ol>
+            <li>O sistema identifica que não há sessão ativa.</li>
+            <li>É solicitado login ou cadastro antes de prosseguir (UC02/UC01).</li>
+            <li>Após autenticado, o usuário retorna ao anúncio e refaz a ação, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Vendedor sem contato cadastrado</p>
+          <ol>
+            <li>O sistema verifica que o vendedor não possui WhatsApp ou meio de contato disponível.</li>
+            <li>É exibida a opção de enviar mensagem interna pela plataforma (UC-Mensagens) como alternativa.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Contato iniciado entre comprador e vendedor.</p>
+    </div>
+
+    <!-- UC08 -->
+    <div class="caso">
+      <h2><i class="fas fa-plus-circle"></i> UC08 – Publicar Anúncio</h2>
+      <div class="meta"><span class="badge vendedor">Vendedor</span></div>
+      <p><strong>Objetivo:</strong> Cadastrar um veículo para venda.</p>
+      <p><strong>Pré‑condições:</strong> Usuário autenticado.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O vendedor acessa "Novo Anúncio".</li>
+        <li>Informa: marca, modelo, ano, versão, quilometragem, combustível, câmbio, cor, valor, descrição, cidade, estado.</li>
+        <li>Adiciona fotografias.</li>
+        <li>O sistema valida os dados.</li>
+        <li>O anúncio é publicado.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Fotos inválidas</p>
+          <ol>
+            <li>O sistema verifica formato, tamanho e quantidade das imagens enviadas.</li>
+            <li>Caso alguma foto esteja fora dos padrões (formato ou tamanho não suportado), uma mensagem de erro é exibida.</li>
+            <li>O vendedor substitui ou remove a(s) foto(s) inválida(s) e reenvia, retornando ao passo 3.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Campos obrigatórios não preenchidos</p>
+          <ol>
+            <li>O sistema identifica campos vazios ao validar o formulário.</li>
+            <li>Os campos pendentes são destacados com mensagem de erro.</li>
+            <li>O vendedor completa as informações e reenvia, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A3 – Anúncio pendente de aprovação</p>
+          <ol>
+            <li>O sistema envia o anúncio para moderação antes de publicá‑lo (UC14).</li>
+            <li>O vendedor recebe uma notificação informando que o anúncio está em análise.</li>
+            <li>Após aprovação, o anúncio se torna público; se rejeitado, o vendedor é notificado com o motivo e pode corrigir e reenviar.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Veículo disponível para pesquisa.</p>
+    </div>
+
+    <!-- UC09 -->
+    <div class="caso">
+      <h2><i class="fas fa-edit"></i> UC09 – Editar Anúncio</h2>
+      <div class="meta"><span class="badge vendedor">Vendedor</span></div>
+      <p><strong>Objetivo:</strong> Atualizar informações do anúncio.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O vendedor acessa seus anúncios.</li>
+        <li>Seleciona o anúncio.</li>
+        <li>Altera as informações desejadas.</li>
+        <li>Salva as alterações.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Dados inválidos</p>
+          <ol>
+            <li>O sistema valida as alterações e identifica inconsistências (ex.: valor negativo, campo vazio).</li>
+            <li>É exibida uma mensagem apontando o(s) erro(s).</li>
+            <li>O vendedor corrige as informações e salva novamente, retornando ao passo 3.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Anúncio já marcado como vendido</p>
+          <ol>
+            <li>O sistema verifica que o anúncio está com status "vendido" e bloqueia a edição.</li>
+            <li>É exibida uma mensagem informando que anúncios vendidos não podem ser editados.</li>
+            <li>O vendedor pode reativar o anúncio antes de editá‑lo, se aplicável.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Anúncio atualizado.</p>
+    </div>
+
+    <!-- UC10 -->
+    <div class="caso">
+      <h2><i class="fas fa-trash-alt"></i> UC10 – Excluir Anúncio</h2>
+      <div class="meta"><span class="badge vendedor">Vendedor</span></div>
+      <p><strong>Objetivo:</strong> Remover anúncio da plataforma.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>Seleciona o anúncio.</li>
+        <li>Escolhe "Excluir".</li>
+        <li>Confirma a exclusão.</li>
+        <li>O sistema remove o anúncio.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Vendedor cancela a exclusão</p>
+          <ol>
+            <li>Na etapa de confirmação, o vendedor seleciona "Cancelar".</li>
+            <li>O sistema mantém o anúncio ativo, sem nenhuma alteração.</li>
+            <li>O fluxo retorna à tela de "Meus Anúncios" (UC11).</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Anúncio com conversas em andamento</p>
+          <ol>
+            <li>O sistema detecta que há mensagens/negociações vinculadas ao anúncio.</li>
+            <li>É exibido um aviso informando que os compradores serão notificados sobre a remoção.</li>
+            <li>Ao confirmar, o sistema notifica os interessados e finaliza a exclusão.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Anúncio removido.</p>
+    </div>
+
+    <!-- UC11 -->
+    <div class="caso">
+      <h2><i class="fas fa-tasks"></i> UC11 – Gerenciar Meus Anúncios</h2>
+      <div class="meta"><span class="badge vendedor">Vendedor</span></div>
+      <p><strong>Objetivo:</strong> Permitir acompanhar anúncios publicados.</p>
+      <p><strong>Funcionalidades:</strong> Visualizar anúncios ativos/vendidos; pausar/reativar; editar; excluir; consultar visualizações e contatos recebidos.</p>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Nenhum anúncio cadastrado</p>
+          <ol>
+            <li>O sistema verifica que o vendedor ainda não publicou nenhum veículo.</li>
+            <li>É exibida uma mensagem convidando a criar o primeiro anúncio (UC08).</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC12 -->
+    <div class="caso">
+      <h2><i class="fas fa-flag"></i> UC12 – Denunciar Anúncio</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Comunicar anúncios irregulares.</p>
+      <p><strong>Motivos:</strong> Informações falsas; fraude; veículo inexistente; conteúdo ofensivo; spam.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa o anúncio.</li>
+        <li>Seleciona "Denunciar".</li>
+        <li>Escolhe o motivo.</li>
+        <li>Confirma o envio.</li>
+        <li>O administrador recebe a denúncia.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Motivo não selecionado</p>
+          <ol>
+            <li>O sistema identifica que nenhum motivo foi marcado ao confirmar o envio.</li>
+            <li>É exibida uma mensagem solicitando a seleção de ao menos um motivo.</li>
+            <li>O usuário seleciona o motivo e confirma novamente, retornando ao passo 3.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Denúncia duplicada</p>
+          <ol>
+            <li>O sistema verifica que o mesmo usuário já denunciou este anúncio anteriormente.</li>
+            <li>É exibida uma mensagem informando que a denúncia já foi registrada e está em análise.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC13 -->
+    <div class="caso">
+      <h2><i class="fas fa-users-cog"></i> UC13 – Administrar Usuários</h2>
+      <div class="meta"><span class="badge admin">Administrador</span></div>
+      <p><strong>Objetivo:</strong> Gerenciar contas cadastradas.</p>
+      <p><strong>Funcionalidades:</strong> Pesquisar, editar, suspender, excluir e reativar contas.</p>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Usuário não encontrado</p>
+          <ol>
+            <li>O sistema não localiza nenhuma conta com os critérios de busca informados.</li>
+            <li>É exibida uma mensagem de "nenhum resultado encontrado".</li>
+            <li>O administrador ajusta os termos e refaz a busca.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Tentativa de excluir/suspender a própria conta</p>
+          <ol>
+            <li>O sistema identifica que o administrador está tentando agir sobre sua própria conta.</li>
+            <li>A ação é bloqueada e uma mensagem de restrição é exibida.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC14 -->
+    <div class="caso">
+      <h2><i class="fas fa-check-double"></i> UC14 – Moderar Anúncios</h2>
+      <div class="meta"><span class="badge admin">Administrador</span></div>
+      <p><strong>Objetivo:</strong> Garantir a qualidade dos anúncios.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O administrador acessa anúncios pendentes.</li>
+        <li>Analisa as informações.</li>
+        <li>Aprova ou rejeita.</li>
+        <li>O vendedor recebe uma notificação.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Anúncio rejeitado</p>
+          <ol>
+            <li>O administrador seleciona "Rejeitar" e informa o motivo (ex.: fotos inadequadas, dados incompletos).</li>
+            <li>O sistema notifica o vendedor com o motivo da rejeição.</li>
+            <li>O vendedor pode corrigir o anúncio e reenviá‑lo para nova análise (UC09/UC08).</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Conteúdo suspeito ou irregular</p>
+          <ol>
+            <li>O sistema/administrador identifica indícios de fraude ou conteúdo impróprio.</li>
+            <li>O anúncio é rejeitado e a conta do vendedor é sinalizada para análise (UC13).</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC15 -->
+    <div class="caso">
+      <h2><i class="fas fa-tags"></i> UC15 – Gerenciar Categorias</h2>
+      <div class="meta"><span class="badge admin">Administrador</span></div>
+      <p><strong>Objetivo:</strong> Administrar marcas e modelos disponíveis.</p>
+      <p><strong>Funcionalidades:</strong> Cadastrar, editar e excluir marcas e modelos.</p>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Categoria já em uso</p>
+          <ol>
+            <li>O sistema verifica que existem anúncios vinculados à marca/modelo que se deseja excluir.</li>
+            <li>A exclusão é bloqueada e uma mensagem explica o motivo.</li>
+            <li>O administrador pode reatribuir os anúncios antes de excluir a categoria.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Nome duplicado</p>
+          <ol>
+            <li>O sistema identifica que já existe uma categoria com o mesmo nome ao cadastrar/editar.</li>
+            <li>Uma mensagem de duplicidade é exibida.</li>
+            <li>O administrador ajusta o nome e salva novamente.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC16 -->
+    <div class="caso">
+      <h2><i class="fas fa-chart-pie"></i> UC16 – Painel Administrativo</h2>
+      <div class="meta"><span class="badge admin">Administrador</span></div>
+      <p><strong>Objetivo:</strong> Permitir a administração completa da plataforma.</p>
+      <p><strong>Funcionalidades:</strong> Dashboard com estatísticas; gerenciar usuários, anúncios, categorias; visualizar denúncias; aprovar/excluir anúncios; gerenciar planos; visualizar relatórios; gerenciar veículos vendidos; monitorar acessos; enviar notificações.</p>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Falha ao carregar dados do painel</p>
+          <ol>
+            <li>O sistema não consegue obter as estatísticas ou listas (erro de conexão/serviço).</li>
+            <li>É exibida uma mensagem de erro com opção de "Tentar novamente".</li>
+            <li>Ao clicar, o sistema recarrega os dados do painel.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Permissão insuficiente</p>
+          <ol>
+            <li>O sistema verifica que o usuário logado não possui privilégios de administrador.</li>
+            <li>O acesso ao painel é negado e o usuário é redirecionado para sua área comum.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC17 -->
+    <div class="caso">
+      <h2><i class="fas fa-user-circle"></i> UC17 – Gerenciar Perfil</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que o usuário visualize e atualize suas informações pessoais.</p>
+      <p><strong>Pré‑condições:</strong> Usuário autenticado.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa "Meu Perfil".</li>
+        <li>O sistema exibe os dados cadastrados.</li>
+        <li>O usuário altera as informações desejadas.</li>
+        <li>O sistema valida os dados.</li>
+        <li>As alterações são salvas.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Campos obrigatórios não preenchidos</p>
+          <ol>
+            <li>O sistema identifica campos essenciais em branco (ex.: nome).</li>
+            <li>Os campos são destacados com mensagem de erro.</li>
+            <li>O usuário completa as informações e salva novamente, retornando ao passo 3.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Dados inválidos</p>
+          <ol>
+            <li>O sistema valida formato de e‑mail, telefone ou outros dados e encontra inconsistências.</li>
+            <li>Uma mensagem de erro específica é exibida junto ao campo.</li>
+            <li>O usuário corrige a informação e reenvia, retornando ao passo 4.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Perfil atualizado.</p>
+    </div>
+
+    <!-- UC18 -->
+    <div class="caso">
+      <h2><i class="fas fa-lock"></i> UC18 – Alterar Senha</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que o usuário altere sua senha de acesso.</p>
+      <p><strong>Pré‑condições:</strong> Usuário autenticado.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa "Alterar Senha".</li>
+        <li>Informa a senha atual.</li>
+        <li>Informa a nova senha.</li>
+        <li>Confirma a nova senha.</li>
+        <li>O sistema valida as informações.</li>
+        <li>A senha é atualizada.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Senha atual incorreta</p>
+          <ol>
+            <li>O sistema verifica a senha atual informada e não confere com a registrada.</li>
+            <li>Uma mensagem de erro é exibida.</li>
+            <li>O usuário reinformar a senha atual corretamente, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Senhas não coincidem</p>
+          <ol>
+            <li>O sistema compara a nova senha com a confirmação e identifica divergência.</li>
+            <li>Uma mensagem de erro é exibida.</li>
+            <li>O usuário reinformar ambos os campos corretamente, retornando ao passo 3.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A3 – Nova senha inválida</p>
+          <ol>
+            <li>O sistema identifica que a nova senha não atende aos requisitos mínimos.</li>
+            <li>É exibida uma mensagem com os critérios exigidos.</li>
+            <li>O usuário ajusta a senha e reenvia, retornando ao passo 3.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Senha alterada com sucesso.</p>
+    </div>
+
+    <!-- UC19 -->
+    <div class="caso">
+      <h2><i class="fas fa-id-card"></i> UC19 – Visualizar Perfil do Vendedor</h2>
+      <div class="meta"><span class="badge visitante">Visitante/Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que visitantes e usuários visualizem as informações públicas de um vendedor.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa um anúncio.</li>
+        <li>Seleciona o perfil do vendedor.</li>
+        <li>O sistema exibe: nome, foto, cidade, data de cadastro e veículos anunciados.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Vendedor sem anúncios ativos</p>
+          <ol>
+            <li>O sistema verifica que o vendedor não possui veículos disponíveis no momento.</li>
+            <li>É exibida uma mensagem informando que não há anúncios ativos no momento.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Perfil não encontrado</p>
+          <ol>
+            <li>O sistema não localiza o vendedor (conta removida/inexistente).</li>
+            <li>É exibida uma mensagem de erro e o usuário retorna à listagem de veículos.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Perfil do vendedor exibido.</p>
+    </div>
+
+    <!-- UC20 -->
+    <div class="caso">
+      <h2><i class="fas fa-check-circle"></i> UC20 – Marcar Veículo como Vendido</h2>
+      <div class="meta"><span class="badge vendedor">Vendedor</span></div>
+      <p><strong>Objetivo:</strong> Permitir que o vendedor informe que um veículo foi vendido.</p>
+      <p><strong>Pré‑condições:</strong> O anúncio deve estar ativo.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O vendedor acessa "Meus Anúncios".</li>
+        <li>Seleciona o anúncio.</li>
+        <li>Clica em "Marcar como Vendido".</li>
+        <li>O sistema altera o status do anúncio.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Vendedor cancela a ação</p>
+          <ol>
+            <li>Na confirmação, o vendedor seleciona "Cancelar".</li>
+            <li>O sistema mantém o anúncio com o status atual, sem alterações.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Anúncio já marcado como vendido</p>
+          <ol>
+            <li>O sistema verifica que o status já é "vendido" e informa ao vendedor.</li>
+            <li>Nenhuma alteração adicional é realizada.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Anúncio marcado como vendido.</p>
+    </div>
+
+    <!-- UC21 -->
+    <div class="caso">
+      <h2><i class="fas fa-bell"></i> UC21 – Receber Notificações</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Informar o usuário sobre eventos importantes da plataforma.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O sistema gera uma notificação.</li>
+        <li>O usuário visualiza a notificação em sua conta.</li>
+      </ol>
+      <p><strong>Tipos:</strong> Novo contato; aprovação/rejeição de anúncio; alteração de status; avisos do administrador.</p>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Notificações desativadas pelo usuário</p>
+          <ol>
+            <li>O sistema verifica que o usuário desabilitou este tipo de notificação nas configurações (MG‑CONFIGURAÇÕES).</li>
+            <li>A notificação é registrada no sistema, mas não é enviada/exibida ativamente.</li>
+            <li>O usuário pode reativar as notificações a qualquer momento.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Usuário informado sobre eventos importantes.</p>
+    </div>
+
+    <!-- UC22 -->
+    <div class="caso">
+      <h2><i class="fas fa-filter"></i> UC22 – Filtrar e Ordenar Veículos</h2>
+      <div class="meta"><span class="badge visitante">Visitante/Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que os usuários encontrem veículos de acordo com critérios específicos.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa a pesquisa.</li>
+        <li>Seleciona filtros (marca, modelo, ano, faixa de preço, quilometragem, combustível, câmbio, cor, cidade, estado).</li>
+        <li>Escolhe uma ordenação (menor preço, maior preço, mais recentes, mais antigos).</li>
+        <li>O sistema atualiza os resultados.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Nenhum resultado após aplicar filtros</p>
+          <ol>
+            <li>O sistema aplica os filtros e a ordenação, mas não retorna nenhum veículo.</li>
+            <li>É exibida uma mensagem sugerindo remover ou ampliar os filtros.</li>
+            <li>O usuário ajusta os critérios e o sistema atualiza os resultados novamente, retornando ao passo 2.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Lista de veículos filtrada e organizada.</p>
+    </div>
+
+    <!-- UC23 -->
+    <div class="caso">
+      <h2><i class="fas fa-sign-out-alt"></i> UC23 – Sair da Conta</h2>
+      <div class="meta"><span class="badge usuario">Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que o usuário encerre sua sessão.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário seleciona "Sair".</li>
+        <li>O sistema encerra a sessão.</li>
+        <li>O usuário retorna para a página inicial.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Sessão expirada automaticamente</p>
+          <ol>
+            <li>O sistema detecta inatividade prolongada ou expiração do token de sessão.</li>
+            <li>A sessão é encerrada automaticamente e o usuário é redirecionado para o login.</li>
+            <li>Uma mensagem informa que a sessão expirou por segurança.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Sessão encerrada.</p>
+    </div>
+
+    <!-- UC24 -->
+    <div class="caso">
+      <h2><i class="fas fa-share-alt"></i> UC24 – Compartilhar Anúncio</h2>
+      <div class="meta"><span class="badge visitante">Visitante/Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que um anúncio seja compartilhado.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa um anúncio.</li>
+        <li>Seleciona "Compartilhar".</li>
+        <li>O sistema disponibiliza as opções (WhatsApp, Facebook, copiar link).</li>
+        <li>O usuário escolhe a plataforma desejada.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Falha ao copiar o link</p>
+          <ol>
+            <li>O sistema tenta copiar o link para a área de transferência e a operação falha (permissão do navegador).</li>
+            <li>Uma mensagem de erro é exibida com o link visível para cópia manual.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – Aplicativo de destino não instalado</p>
+          <ol>
+            <li>O sistema tenta abrir o aplicativo (ex.: WhatsApp) e este não está disponível no dispositivo.</li>
+            <li>O sistema redireciona para a versão web da plataforma escolhida como alternativa.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Anúncio compartilhado.</p>
+    </div>
+
+    <!-- UC25 -->
+    <div class="caso">
+      <h2><i class="fas fa-envelope"></i> UC25 – Enviar Mensagem pelo Formulário de Contato</h2>
+      <div class="meta"><span class="badge visitante">Visitante/Usuário</span></div>
+      <p><strong>Objetivo:</strong> Permitir que visitantes e usuários entrem em contato com a equipe da MGMotors.</p>
+      <p><strong>Fluxo Principal:</strong></p>
+      <ol>
+        <li>O usuário acessa a página "Contato".</li>
+        <li>Preenche os campos: nome, e‑mail, assunto, mensagem.</li>
+        <li>Clica em "Enviar".</li>
+        <li>O sistema valida os dados.</li>
+        <li>A mensagem é enviada para a equipe responsável.</li>
+        <li>O sistema informa que a mensagem foi enviada com sucesso.</li>
+      </ol>
+      <div class="fluxo-alt">
+        <h3><i class="fas fa-code-branch"></i> Fluxos Alternativos</h3>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A1 – Campos obrigatórios não preenchidos</p>
+          <ol>
+            <li>O sistema identifica campos vazios ao validar o formulário.</li>
+            <li>Os campos pendentes são destacados com mensagem de erro.</li>
+            <li>O usuário completa as informações e reenvia, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A2 – E‑mail inválido</p>
+          <ol>
+            <li>O sistema valida o formato do e‑mail informado e o identifica como inválido.</li>
+            <li>Uma mensagem de erro é exibida junto ao campo.</li>
+            <li>O usuário corrige o e‑mail e reenvia, retornando ao passo 2.</li>
+          </ol>
+        </div>
+        <div class="alt-item">
+          <p class="alt-condicao"><i class="fas fa-exclamation-circle"></i> A3 – Erro no envio</p>
+          <ol>
+            <li>O sistema tenta enviar a mensagem e ocorre uma falha (servidor indisponível, sem conexão).</li>
+            <li>Uma mensagem de erro é exibida com opção de "Tentar novamente".</li>
+            <li>Ao clicar, o sistema reenvia a mensagem, retornando ao passo 3.</li>
+          </ol>
+        </div>
+      </div>
+      <p><strong>Pós‑condições:</strong> Mensagem enviada para a equipe.</p>
+    </div>
+
+  </div> <!-- fim .casos-container -->
+
+  <!-- ============================================================
+       FOOTER (idêntico ao original)
+  ============================================================ -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h2><span>MG</span>Motors</h2>
+        <p>A plataforma premium de compra e venda de veículos esportivos, seminovos e importados.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <a href="../MG-MARKETPLACE/marketplace.html">Marketplace</a>
+        <a href="../MG-DICAS/dicas.html">Dicas</a>
+        <a href="../MG-MENSAGENS/mensagens.html">Mensagens</a>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <a href="../MG-CONTATO/contato.html">Contato</a>
+        <a href="../MG-AJUDA/ajuda.html">Central de Ajuda</a>
+        <a href="como-utilizar.html">Como Utilizar</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Termos de Uso</a>
+        <a href="#">Privacidade</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
+      <span>Desenvolvido no Brasil</span>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS (autenticação)
+  ============================================================ -->
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+    import { carregarHeaderGlobal } from "../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Atualizar header com dados do usuário logado
+    await carregarHeaderGlobal(supabase);
+  </script>
+
+</body>
+</html>

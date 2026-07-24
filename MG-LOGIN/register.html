@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro - MG Motors</title>
+<link rel="stylesheet" href="register.css">
+</head>
+<body>
+<main class="auth-shell">
+  <form id="form-registro" class="auth-card">
+    <div class="auth-brand">
+      <span>MG Motors</span>
+      <small>Marketplace premium de veiculos</small>
+    </div>
+
+    <div class="header-form">
+      <button type="button" id="back-arrow" aria-label="Voltar para o inicio">&larr;</button>
+      <h1>Criar Conta</h1>
+    </div>
+
+    <p class="auth-subtitle">Crie seu perfil para publicar anuncios, conversar com vendedores e salvar favoritos.</p>
+
+    <label for="nome-reg">Nome completo</label>
+    <input type="text" id="nome-reg" placeholder="Seu nome" autocomplete="name" required>
+
+    <label for="email-reg">E-mail</label>
+    <input type="email" id="email-reg" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+
+    <label for="senha-reg">Senha</label>
+    <input type="password" id="senha-reg" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" minlength="8" required>
+
+    <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+
+    <button type="submit" class="primary-action">Criar conta</button>
+    <button type="button" id="botao-google-registro" class="google"><span>G</span> Registrar com Google</button>
+
+    <p class="auth-switch">Ja tenho conta - <a href="login.html">Entrar</a></p>
+  </form>
+</main>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+const supa = createClient(supabaseUrl, supabaseKey);
+const feedback = document.getElementById("form-feedback");
+
+function mostrarFeedback(mensagem, tipo = "erro") {
+  feedback.textContent = mensagem;
+  feedback.dataset.tipo = tipo;
+}
+
+supa.auth.onAuthStateChange(async (event, session) => {
+  if (event === "SIGNED_IN" && session) {
+    try {
+      const { data: ex } = await supa.from("usuarios").select("id").eq("id", session.user.id).maybeSingle();
+      if (!ex) {
+        await supa.from("usuarios").upsert({
+          id: session.user.id,
+          email: session.user.email,
+          nome: session.user.user_metadata?.nome || session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email
+        }, { onConflict: "id", ignoreDuplicates: true });
+      }
+    } catch (e) {
+      console.warn("Perfil criado pelo trigger ou indisponivel no momento.", e);
+    }
+    window.location.href = "../MG-CONTA/conta.html";
+  }
+});
+
+document.getElementById("back-arrow").addEventListener("click", () => {
+  window.location.href = "../MG-INICIO/inicio.html";
+});
+
+document.getElementById("form-registro").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const nome = document.getElementById("nome-reg").value.trim();
+  const email = document.getElementById("email-reg").value.trim();
+  const senha = document.getElementById("senha-reg").value;
+
+  if (senha.length < 8) {
+    mostrarFeedback("A senha deve ter pelo menos 8 caracteres.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Criando conta...";
+  mostrarFeedback("");
+
+  const { data, error } = await supa.auth.signUp({
+    email,
+    password: senha,
+    options: { data: { nome, full_name: nome, name: nome } }
+  });
+
+  if (error) {
+    mostrarFeedback("Erro ao criar conta: " + error.message);
+    btn.disabled = false;
+    btn.textContent = "Criar conta";
+    return;
+  }
+
+  if (data?.user) {
+    try {
+      await supa.from("usuarios").upsert({
+        id: data.user.id,
+        email,
+        nome
+      }, { onConflict: "id", ignoreDuplicates: true });
+    } catch (e) {
+      console.warn("Perfil criado pelo trigger ou indisponivel no momento.", e);
+    }
+  }
+
+  mostrarFeedback("Conta criada. Verifique seu e-mail e depois faca login.", "sucesso");
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 1400);
+});
+
+document.getElementById("botao-google-registro").addEventListener("click", async () => {
+  const redirectTo = new URL("../MG-CONTA/conta.html", window.location.href).href;
+  await supa.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo }
+  });
+});
+</script>
+</body>
+</html>

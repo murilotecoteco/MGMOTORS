@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-LAMBORGHINI</title>
+    <link rel="stylesheet" href="lamborghini.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Lamborghini é uma fabricante italiana de carros esportivos de luxo fundada em 1963 por Ferruccio Lamborghini. Criada para competir com a Ferrari, a marca ficou famosa por seus modelos ousados, potentes e com design agressivo.
+                </p>
+                <!-- Fonte: https://www.lamborghini.com 
+                 https://pt.wikipedia.org/wiki/Ferruccio_Lamborghini
+                 
+                -->
+            </div>
+            <div class="pic">
+                <img src="lamborghini-img/Ferruccio_Lamborghini.jpg" alt="">
+            </div>
+        </div>
+
+        <h1>Exclusividade</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Lamborghini mantém sua produção limitada para garantir exclusividade. Muitos modelos são personalizados conforme o desejo do cliente, tornando cada carro praticamente único.
+                </p>
+                <!-- Fonte: https://www.lamborghini.com
+                 https://motorshow.com.br/blog-sobre-rodas-o-que-significam-os-logotipos-das-marcas-de-carros-parte-3
+                  -->
+            </div>
+            <div class="pic">
+                <img src="lamborghini-img/lamborghini.png" alt="">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Lamborghini utiliza tecnologia de ponta com chassis em fibra de carbono, motores V10 e V12, além de sistemas aerodinâmicos ativos que garantem máxima estabilidade e velocidade.
+                </p>
+                <!-- Fonte: https://www.lamborghini.com 
+                 https://en-m-wikipedia-org.translate.goog/wiki/Lamborghini_V12?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt&_x_tr_pto=tc
+                 -->
+            </div>
+            <div class="pic">
+                <img src="lamborghini-img/Bizzarrini_Lamborghini_Dallara.jpg" alt="Tecnologia Lamborghini">
+            </div>
+        </div>
+
+        <h1>Modelos Mais Vendidos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>Lamborghini Huracán</h2>
+                <p>
+                    Um dos modelos mais vendidos da Lamborghini, o Huracán combina design agressivo com alta tecnologia e motor V10.
+                </p>
+                <!-- Fonte: https://www.motor1.com 
+                 https://motor1.uol.com.br/news/598929/lamborghini-huracan-motor-hibrido-2023/
+                -->
+            </div>
+            <div class="pic">
+                <img src="lamborghini-img/huracan.png" alt="Lamborghini Huracán">
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Lamborghini Aventador</h2>
+                <p>
+                    O Aventador é um dos superesportivos mais icônicos da marca, famoso pelo motor V12 e linhas marcantes.
+                </p>
+                <!-- Fonte: https://www.motor1.com 
+                 https://autoesporte.globo.com/carros/noticia/2015/07/lamborghini-aventador-lp750-4-superveloce-roadster-aparece-pela-primeira-vez.ghtml
+                -->
+            </div>
+            <div class="pic">
+                <img src="lamborghini-img/aventador.png" alt="Lamborghini Aventador">
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Lamborghini Urus</h2>
+                <p>
+                    O Urus é o SUV da Lamborghini que revolucionou o mercado, tornando-se um dos modelos mais vendidos da história da marca.
+                </p>
+                <!-- Fonte: https://www.motor1.com 
+                 https://motor1.uol.com.br/news/358152/lamborghini-urus-vendas-2019-semestre/
+                -->
+            </div>
+            <div class="pic">
+                <img src="lamborghini-img/urus.png" alt="Lamborghini Urus">
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

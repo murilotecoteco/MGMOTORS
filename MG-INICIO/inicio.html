@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MG Motors - O Marketplace de Veículos Exclusivos</title>
+  <link rel="stylesheet" href="inicio.css" />
+  <link rel="stylesheet" href="../global.css">
+<script src="../tema.js"></script>
+</head>
+<body>
+
+<header id="header-global"></header>
+
+<section id="hero">
+  <div class="hero-bg-glow"></div>
+  <div class="hero-container">
+    <div class="hero-texto">
+      <span class="hero-badge">A revolução do mercado automotivo</span>
+      <h1>Encontre o carro dos seus <span class="destaque-azul">sonhos</span><br>ou venda o seu com segurança</h1>
+      <p class="hero-sub">A MG Motors conecta compradores e vendedores de veículos exclusivos em um só lugar. Experiência premium, rápida e sem burocracia.</p>
+
+      <form id="form-busca-hero" class="hero-busca">
+        <div class="busca-campo">
+          <label for="busca-marca">Marca</label>
+          <select id="busca-marca">
+            <option value="">Todas as marcas</option>
+          </select>
+        </div>
+        <div class="busca-divisoria"></div>
+        <div class="busca-campo">
+          <label for="busca-modelo">Modelo</label>
+          <input type="text" id="busca-modelo" placeholder="Ex: 911 Turbo S">
+        </div>
+        <button type="submit" class="busca-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        </button>
+      </form>
+
+      <div class="hero-ctas">
+        <a href="../MG-MARKETPLACE/marketplace.html" class="btn-primario">
+          Explorar Veículos
+        </a>
+        <a href="../MG-MARKETPLACE/marketplace.html?anunciar=1" class="btn-secundario">Anunciar Agora</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat"><strong id="stat-anuncios">0</strong><span>Anúncios</span></div>
+        <div class="hero-stat"><strong id="stat-marcas">0</strong><span>Marcas</span></div>
+        <div class="hero-stat"><strong id="stat-usuarios">0</strong><span>Usuários</span></div>
+      </div>
+    </div>
+
+    <div class="hero-imagem">
+      <img src="../imagens/mclaren.webp" alt="Carro esportivo em destaque" class="hero-carro-img" loading="eager">
+      <div class="hero-float-card card-verificado">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--azul);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        Vendedores verificados
+      </div>
+      <div class="hero-float-card card-seguranca">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--azul);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Negociação segura
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="categorias">
+  <div class="secao-header-central">
+    <h2>Explore por Categoria</h2>
+    <p>Encontre exatamente o tipo de veículo que você procura</p>
+  </div>
+  <div class="categorias-grid">
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=esportivos" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a2 2 0 0 0-1.6-.8H8a2 2 0 0 0-2 2l-2 5v2.55A1 1 0 0 0 5 16h1m8 0v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4m8 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0"/></svg></div>
+      <span>Esportivos</span>
+    </a>
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=suv" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2m14 0a2 2 0 1 1-4 0m4 0a2 2 0 1 0-4 0m-8 0h4m-4 0a2 2 0 1 1-4 0m4 0a2 2 0 1 0-4 0"/></svg></div>
+      <span>SUVs</span>
+    </a>
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=sedan" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a2 2 0 0 0-1.6-.8H8a2 2 0 0 0-2 2l-2 5v2.55A1 1 0 0 0 5 16h1m8 0a2 2 0 1 0-4 0m-4 0a2 2 0 1 0-4 0"/></svg></div>
+      <span>Sedans</span>
+    </a>
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=conversivel" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div>
+      <span>Conversíveis</span>
+    </a>
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=eletrico" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <span>Elétricos</span>
+    </a>
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=importado" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg></div>
+      <span>Importados</span>
+    </a>
+    <a href="../MG-MARKETPLACE/marketplace.html?categoria=seminovo" class="categoria-card reveal">
+      <div class="categoria-icone"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"/></svg></div>
+      <span>Seminovos</span>
+    </a>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <div class="secao-header-central">
+    <h2>Como Funciona</h2>
+    <p>Comprar ou vender o seu veículo nunca foi tão simples</p>
+  </div>
+  <div class="passos-grid">
+    <div class="passo-card reveal">
+      <span class="passo-numero">01</span>
+      <h3>Encontre o veículo ideal</h3>
+      <p>Use filtros inteligentes de marca, modelo e preço para localizar o carro perfeito.</p>
+    </div>
+    <div class="passo-linha"></div>
+    <div class="passo-card reveal">
+      <span class="passo-numero">02</span>
+      <h3>Converse com o vendedor</h3>
+      <p>Tire dúvidas e negocie diretamente pelo chat integrado da plataforma.</p>
+    </div>
+    <div class="passo-linha"></div>
+    <div class="passo-card reveal">
+      <span class="passo-numero">03</span>
+      <h3>Feche o negócio</h3>
+      <p>Finalize a compra com tranquilidade em nosso ambiente verificado e seguro.</p>
+    </div>
+  </div>
+</section>
+
+<section id="destaque">
+  <div class="secao-header">
+    <div>
+      <h2>Veículos em Destaque</h2>
+      <p>Os carros mais procurados da nossa plataforma</p>
+    </div>
+    <a href="../MG-MARKETPLACE/marketplace.html?ordenar=curtidas" class="ver-todos-link">Ver todos</a>
+  </div>
+  <div id="grid-destaque" class="destaque-grid"></div>
+  <div class="botao-catalogo">
+    <a href="../MG-MARKETPLACE/marketplace.html" class="btn-secundario btn-grande" style="border-color: var(--preto); color: var(--preto);">
+      Ver catálogo completo
+    </a>
+  </div>
+</section>
+
+<section id="diferenciais">
+  <div class="secao-header-central">
+    <h2>Por que escolher a MG Motors</h2>
+    <p>Tudo o que você precisa para negociar com total confiança</p>
+  </div>
+  <div class="diferenciais-grid">
+    <div class="diferencial-card reveal">
+      <div class="diferencial-icone"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3>Compra Segura</h3>
+      <p>Verificação criteriosa de vendedores e processo 100% transparente.</p>
+    </div>
+    <div class="diferencial-card reveal">
+      <div class="diferencial-icone"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>Networking Automotivo</h3>
+      <p>Milhares de vendedores particulares e revendas premium em todo o Brasil.</p>
+    </div>
+    <div class="diferencial-card reveal">
+      <div class="diferencial-icone"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <h3>Chat Integrado</h3>
+      <p>Negocie diretamente, mantenha o histórico e proteja seus dados.</p>
+    </div>
+    <div class="diferencial-card reveal">
+      <div class="diferencial-icone"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+      <h3>Busca Avançada</h3>
+      <p>Encontre a configuração perfeita utilizando filtros de alta precisão.</p>
+    </div>
+    <div class="diferencial-card reveal">
+      <div class="diferencial-icone"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <h3>Foco Premium</h3>
+      <p>Plataforma dedicada a veículos esportivos, seminovos e importados.</p>
+    </div>
+    <div class="diferencial-card reveal">
+      <div class="diferencial-icone"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <h3>Padrão Global</h3>
+      <p>Design de classe mundial focado na usabilidade e experiência do usuário.</p>
+    </div>
+  </div>
+</section>
+
+<section id="avaliacoes">
+  <div class="secao-header-central">
+    <h2>Experiências Reais</h2>
+    <p>O que dizem os clientes da MG Motors</p>
+  </div>
+  <div class="avaliacoes-grid">
+    <div class="avaliacao-card reveal">
+      <div class="avaliacao-topo">
+        <div class="avaliacao-avatar">RM</div>
+        <div>
+          <div class="avaliacao-nome">Rafael Mendes</div>
+          <div class="avaliacao-estrelas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+          </div>
+        </div>
+      </div>
+      <p class="avaliacao-texto">"Vendi meu carro em menos de uma semana. A interface limpa ajudou muito a destacar as fotos."</p>
+    </div>
+    <div class="avaliacao-card reveal">
+      <div class="avaliacao-topo">
+        <div class="avaliacao-avatar">JA</div>
+        <div>
+          <div class="avaliacao-nome">Juliana Alves</div>
+          <div class="avaliacao-estrelas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+          </div>
+        </div>
+      </div>
+      <p class="avaliacao-texto">"Experiência incrível. Encontrei exatamente o modelo que queria e negociei direto no chat."</p>
+    </div>
+    <div class="avaliacao-card reveal">
+      <div class="avaliacao-topo">
+        <div class="avaliacao-avatar">CE</div>
+        <div>
+          <div class="avaliacao-nome">Carlos Eduardo</div>
+          <div class="avaliacao-estrelas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--azul)"><polygon points="12 2 15 8.5 22 9.3 17 14 18 21 12 17.8 6 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+          </div>
+        </div>
+      </div>
+      <p class="avaliacao-texto">"Filtros excelentes, site muito rápido. Senti falta apenas de um simulador de financiamento integrado."</p>
+    </div>
+  </div>
+</section>
+
+<section id="cta-final">
+  <div class="cta-conteudo">
+    <h2>Pronto para seu próximo veículo?</h2>
+    <p>Junte-se ao marketplace automotivo que está redefinindo o padrão de negociações no Brasil.</p>
+    <div class="cta-botoes">
+      <a href="../MG-MARKETPLACE/marketplace.html" class="btn-primario btn-grande">Explorar Catálogo</a>
+      <a href="../MG-MARKETPLACE/marketplace.html?anunciar=1" class="btn-secundario btn-grande">Vender Veículo</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h2>MG Motors</h2>
+      <p>A plataforma definitiva para compra e venda de veículos exclusivos. Tecnologia, segurança e transparência.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Plataforma</h4>
+      <a href="../MG-MARKETPLACE/marketplace.html">Marketplace</a>
+      <a href="../MG-DICAS/dicas.html">Dicas</a>
+      <a href="../MG-MENSAGENS/mensagens.html">Mensagens</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <a href="../MG-CONTATO/contato.html">Contato</a>
+      <a href="../MG-CASOS-USO/como-utilizar.html">Como Utilizar</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Termos de Uso</a>
+      <a href="#">Privacidade</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
+    <span>Operando globalmente do Brasil</span>
+  </div>
+</footer>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+import { carregarHeaderGlobal } from "../headerGlobal.js";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+let usuarioAtual = await carregarHeaderGlobal(supabase);
+
+/* ===== ESTATÍSTICAS (Hero) ===== */
+async function carregarEstatisticas() {
+  const [{ count: totalAnuncios }, { count: totalUsuarios }, { data: marcasData }] = await Promise.all([
+    supabase.from("anuncios").select("id", { count: "exact", head: true }).eq("status", "ativo"),
+    supabase.from("usuarios").select("id", { count: "exact", head: true }),
+    supabase.from("marcas").select("id")
+  ]);
+  animarNumero("stat-anuncios", totalAnuncios || 0);
+  animarNumero("stat-marcas", marcasData?.length || 0);
+  animarNumero("stat-usuarios", totalUsuarios || 0);
+}
+
+function animarNumero(id, alvo) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let atual = 0;
+  const passo = Math.max(1, Math.floor(alvo / 40));
+  const timer = setInterval(() => {
+    atual = Math.min(atual + passo, alvo);
+    el.textContent = atual;
+    if (atual >= alvo) clearInterval(timer);
+  }, 30);
+}
+
+/* ===== BUSCA DO HERO ===== */
+async function carregarMarcasBusca() {
+  const { data: marcas } = await supabase.from("marcas").select("id, nome").order("nome");
+  const select = document.getElementById("busca-marca");
+  if (marcas) {
+    marcas.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.nome;
+      opt.textContent = m.nome;
+      select.appendChild(opt);
+    });
+  }
+}
+carregarMarcasBusca();
+
+document.getElementById("form-busca-hero").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const marca = document.getElementById("busca-marca").value;
+  const modelo = document.getElementById("busca-modelo").value.trim();
+  const params = new URLSearchParams();
+  if (marca) params.set("marca", marca);
+  if (modelo) params.set("modelo", modelo);
+  window.location.href = `../MG-MARKETPLACE/marketplace.html?${params.toString()}`;
+});
+
+/* ===== FAVORITOS (local, client-side) ===== */
+function getFavoritos() {
+  return JSON.parse(localStorage.getItem("mg_favoritos") || "[]");
+}
+function toggleFavorito(id, btn) {
+  let favs = getFavoritos();
+  id = String(id);
+  if (favs.includes(id)) {
+    favs = favs.filter(f => f !== id);
+    btn.classList.remove("ativo");
+    // Removendo emojis do JS mantendo a funcionalidade via CSS e icones
+    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  } else {
+    favs.push(id);
+    btn.classList.add("ativo");
+    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  }
+  localStorage.setItem("mg_favoritos", JSON.stringify(favs));
+}
+
+/* ===== VEÍCULOS EM DESTAQUE (prévia do marketplace) ===== */
+async function carregarVeiculosDestaque() {
+  let anuncios = [];
+  const { data: curtidos } = await supabase
+    .from("anuncios")
+    .select("*, marcas(nome), modelos(nome)")
+    .eq("status", "ativo")
+    .order("curtidas", { ascending: false })
+    .limit(6);
+
+  if (!curtidos || curtidos.length === 0) {
+    const { data: aleatorios } = await supabase
+      .from("anuncios")
+      .select("*, marcas(nome), modelos(nome)")
+      .eq("status", "ativo");
+    if (aleatorios && aleatorios.length > 0) {
+      anuncios = aleatorios.sort(() => 0.5 - Math.random()).slice(0, 6);
+    }
+  } else {
+    anuncios = curtidos;
+  }
+
+  const container = document.getElementById("grid-destaque");
+  container.innerHTML = "";
+
+  if (anuncios.length === 0) {
+    container.innerHTML = "<div class='destaque-vazio'>Nenhum veículo disponível no momento.</div>";
+    return;
+  }
+
+  const favoritos = getFavoritos();
+
+  for (const anuncio of anuncios) {
+    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", anuncio.id).order("ordem").limit(1);
+    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const isFav = favoritos.includes(String(anuncio.id));
+    
+    const favIcon = isFav 
+      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--azul)" stroke="var(--azul)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`
+      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+
+    const card = document.createElement("div");
+    card.className = "veiculo-card reveal";
+    card.innerHTML = `
+      <div class="veiculo-img-wrap">
+        <img src="${foto}" alt="${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}" onerror="this.src='../imagens/sem-foto.png'">
+        <button class="veiculo-favorito ${isFav ? "ativo" : ""}" data-id="${anuncio.id}">${favIcon}</button>
+      </div>
+      <div class="veiculo-info">
+        <h3>${anuncio.marcas?.nome || "Marca"} ${anuncio.modelos?.nome || ""}</h3>
+        <div class="veiculo-specs">
+          <span>${anuncio.ano_fabricacao || "-"}</span>
+          <span class="ponto">•</span>
+          <span>${Number(anuncio.quilometragem || 0).toLocaleString("pt-BR")} km</span>
+        </div>
+        <p class="veiculo-preco">R$ ${Number(anuncio.preco).toLocaleString("pt-BR")}</p>
+        <a href="../MG-MARKETPLACE/marketplace.html?carro=${anuncio.id}" class="veiculo-btn-detalhes">Ver detalhes</a>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+
+  container.querySelectorAll(".veiculo-favorito").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      toggleFavorito(btn.dataset.id, btn);
+    });
+  });
+
+  document.querySelectorAll(".veiculo-card.reveal").forEach(el => revealObserver.observe(el));
+}
+
+/* ===== MICROANIMAÇÕES (reveal ao rolar) ===== */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visivel");
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+carregarVeiculosDestaque();
+carregarEstatisticas();
+</script>
+
+<script>
+window.chtlConfig = { chatbotId: "6944231868" }
+</script>
+<script async data-id="6944231868" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+
+</body>
+</html>

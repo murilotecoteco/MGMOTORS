@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace - MG Motors</title>
+  <link rel="stylesheet" href="marketplace.css">
+  <link rel="stylesheet" href="../global.css">
+<script src="../tema.js"></script>
+</head>
+
+<body>
+ <header id="header-global"></header>
+
+  <div class="marketplace-hero">
+    <div class="marketplace-hero-inner">
+      <h1>Encontre seu próximo veículo</h1>
+      <p>Compra e venda de carros esportivos, seminovos e importados</p>
+    </div>
+  </div>
+
+  <main>
+    <div class="pesquisa">
+      <div class="barra-pesquisa">
+        <span class="search-icon"></span>
+        <input type="text" id="barra_pesquisa" placeholder="Pesquisar por marca, modelo...">
+      </div>
+      <div class="filtro-marca">
+        <select id="filtro-marca">
+          <option value="">Todas as marcas</option>
+        </select>
+      </div>
+      <div class="filtro-preco">
+        <select id="filtro-preco">
+          <option value="">Qualquer preço</option>
+          <option value="0-50000">Até R$ 50 mil</option>
+          <option value="50000-150000">R$ 50k – 150k</option>
+          <option value="150000-300000">R$ 150k – 300k</option>
+          <option value="300000-600000">R$ 300k – 600k</option>
+          <option value="600000-">Acima de R$ 600k</option>
+        </select>
+      </div>
+      <div class="filtro-localizacao">
+        <button id="btn-localizacao" class="btn-loc">Localização</button>
+      </div>
+      <div class="ordenar">
+        <select id="ordenar">
+          <option value="aleatorio">Aleatório</option>
+          <option value="curtidas">Mais Curtidos</option>
+          <option value="preco_asc">Menor Preço</option>
+          <option value="preco_desc">Maior Preço</option>
+          <option value="recente">Mais Recentes</option>
+        </select>
+      </div>
+      <div class="adicionar">
+        <button id="btn-add-car"><span>+</span> Anunciar</button>
+      </div>
+    </div>
+
+    <div id="loc-info" class="loc-info" style="display:none;">
+      <span id="loc-texto"></span>
+      <select id="raio-select">
+        <option value="50">50 km</option>
+        <option value="100" selected>100 km</option>
+        <option value="200">200 km</option>
+        <option value="500">500 km</option>
+      </select>
+      <button id="btn-loc-limpar">Remover</button>
+    </div>
+
+    <div id="resultados-info" class="resultados-info"></div>
+    <div id="lista-anuncios" class="grid-quadrado">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Carregando anúncios...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Adicionar -->
+  <div id="modal-add-car" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2>Anunciar Veículo</h2>
+      <form id="car-form">
+        <select id="select-marca" required>
+          <option value="">Selecione a Marca</option>
+        </select>
+        <select id="select-modelo" required disabled>
+          <option value="">Selecione o Modelo</option>
+        </select>
+        <input type="text" id="car-whatsapp" placeholder="WhatsApp (ex: 44999999999)" required>
+        <div class="form-row">
+          <input type="number" id="car-ano" placeholder="Ano fabricação" required>
+          <input type="number" id="car-ano-modelo" placeholder="Ano modelo" required>
+        </div>
+        <div class="form-row">
+          <input type="number" id="car-preco" placeholder="Preço (R$)" required>
+          <input type="number" id="car-km" placeholder="Quilometragem" required>
+        </div>
+        <input type="text" id="car-cor" placeholder="Cor" required>
+        <div class="form-row">
+          <input type="text" id="car-cidade" placeholder="Cidade">
+          <select id="car-estado" required>
+            <option value="">Estado (UF)</option>
+            <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+            <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+            <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+            <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+            <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+            <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+            <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+          </select>
+        </div>
+        <button type="button" id="btn-usar-gps" class="btn-gps">Usar minha localização</button>
+        <textarea id="car-descricao" placeholder="Descrição do veículo" rows="3" required></textarea>
+        <div class="upload-area">
+          <label class="upload-label">Foto principal (obrigatória)</label>
+          <input type="file" id="car-image" accept="image/*" required>
+        </div>
+        <div class="upload-area">
+          <label class="upload-label">Fotos adicionais (até 4)</label>
+          <input type="file" id="car-images-adicionais" accept="image/*" multiple>
+        </div>
+        <small class="upload-hint">Formatos: JPG, PNG. Máx. 5MB por foto.</small>
+        <button type="submit" class="btn-submit">Publicar Anúncio</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Visualizar -->
+  <div id="modal-visualizar" class="modal">
+    <div class="modal-content modal-visualizar">
+      <span id="close-visualizar" class="close">&times;</span>
+      <div class="visualizar-container">
+        <div class="galeria-container">
+          <div class="foto-principal"><img id="viz-foto-principal" src="../imagens/sem-foto.png" alt=""></div>
+          <div class="miniaturas" id="viz-miniaturas"></div>
+        </div>
+        <div class="info-container">
+          <h2 id="viz-titulo">Carregando...</h2>
+          <div class="visualizar-preco">R$ <span id="viz-preco">0</span></div>
+          <div class="viz-detalhes">
+            <div class="viz-detalhe"><span class="viz-label">Fabricação</span><span id="viz-ano">-</span></div>
+            <div class="viz-detalhe"><span class="viz-label">Modelo</span><span id="viz-ano-modelo">-</span></div>
+            <div class="viz-detalhe"><span class="viz-label">KM</span><span id="viz-km">-</span></div>
+            <div class="viz-detalhe"><span class="viz-label">Cor</span><span id="viz-cor">-</span></div>
+            <div class="viz-detalhe"><span class="viz-label">Localização</span><span id="viz-local">-</span></div>
+          </div>
+          <div class="visualizar-descricao" id="viz-descricao"></div>
+          <div class="visualizar-acoes">
+            <button class="btn-mensagem-visualizar" id="viz-btn-mensagem">Mensagem</button>
+            <button class="btn-curtir" id="viz-btn-curtir">Curtir</button>
+            <a id="viz-whatsapp" href="#" target="_blank" class="btn-whatsapp">WhatsApp</a>
+          </div>
+          <a id="viz-gps-link" href="#" target="_blank" class="btn-gps-link" style="display:none;">Ver no Google
+            Maps</a>
+          <div class="perfil-link" id="viz-perfil-link">Ver perfil do vendedor</div>
+          <button class="btn-denunciar-anuncio" id="viz-denunciar">Denunciar anúncio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Denúncia -->
+  <div id="modal-denuncia" class="modal">
+    <div class="modal-content" style="max-width:460px;">
+      <span id="close-denuncia" class="close">&times;</span>
+      <h2>Denunciar</h2>
+      <p style="color:var(--texto-suave);font-size:14px;margin-bottom:18px;">Selecione o motivo da denúncia.
+        Analisaremos em até 24h.</p>
+      <select id="denuncia-motivo" class="modal-select">
+        <option value="">Selecione o motivo</option>
+        <option value="Informações falsas">Informações falsas</option>
+        <option value="Golpe ou fraude">Golpe ou fraude</option>
+        <option value="Conteúdo inapropriado">Conteúdo inapropriado</option>
+        <option value="Veículo com restrição">Veículo com restrição judicial</option>
+        <option value="Preço abusivo">Preço abusivo</option>
+        <option value="Spam">Spam / anúncio repetido</option>
+        <option value="Outro">Outro</option>
+      </select>
+      <textarea id="denuncia-descricao" placeholder="Descreva com mais detalhes (opcional)..." rows="4"
+        style="width:100%;padding:11px 14px;margin-top:10px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+      <button id="btn-enviar-denuncia" class="btn-submit" style="margin-top:14px;">Enviar Denúncia</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h2><span style="color:var(--dourado);">MG</span>Motors</h2>
+        <p>A plataforma premium de compra e venda de veículos esportivos, seminovos e importados.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="../MG-DICAS/dicas.html">Dicas</a>
+        <a href="../MG-MENSAGENS/mensagens.html">Mensagens</a>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <a href="../MG-CONTATO/contato.html">Contato</a>
+        <a href="../MG-AJUDA/ajuda.html">Central de Ajuda</a>
+        <a href="../MG-CASOS-USO/como-utilizar.html">Como Utilizar</a>
+      </div>
+      <div class="footer-col">
+        <h4>Empresa</h4>
+        <a href="#">Termos de Uso</a>
+        <a href="#">Privacidade</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
+      <span>Desenvolvido com no Brasil</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+    import { carregarHeaderGlobal } from "../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    let todosAnuncios = [];
+    let filtroTextoAtual = "";
+    let userLat = null, userLng = null, raioFiltro = 100;
+    let denunciaAlvoId = null, denunciaTipo = null;
+
+    // --- Helper de escrita com aviso ao usuário (Melhoria 2) ---
+    // Executa uma promise do Supabase (insert/update/delete) e, se falhar,
+    // mostra um alerta claro em vez de falhar silenciosamente.
+    // Retorna `null` em erro, ou `data` em sucesso.
+    async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. Tente novamente.") {
+      const { data, error } = await promise;
+      if (error) {
+        console.error(error);
+        alert(mensagemErroPadrao + (error.message ? `\n(${error.message})` : ""));
+        return null;
+      }
+      return data;
+    }
+
+    let usuarioAtual = await carregarHeaderGlobal(supabase);
+
+
+    async function carregarMarcas() {
+      const { data: marcas } = await supabase.from("marcas").select("*").order("nome");
+      const select = document.getElementById("select-marca");
+      const filtro = document.getElementById("filtro-marca");
+      marcas?.forEach(m => {
+        const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; select.appendChild(op);
+        const op2 = document.createElement("option"); op2.value = m.id; op2.textContent = m.nome; filtro.appendChild(op2);
+      });
+    }
+    carregarMarcas();
+
+    document.getElementById("select-marca").addEventListener("change", async function () {
+      const marcaId = this.value;
+      const sel = document.getElementById("select-modelo");
+      sel.innerHTML = "<option value=''>Selecione o modelo</option>"; sel.disabled = true;
+      if (!marcaId) return;
+      const { data } = await supabase.from("modelos").select("*").eq("marca_id", marcaId).order("nome");
+      data?.forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; sel.appendChild(op); });
+      sel.disabled = false;
+    });
+
+    function calcDist(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    document.getElementById("btn-localizacao").addEventListener("click", () => {
+      navigator.geolocation?.getCurrentPosition(pos => {
+        userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+        document.getElementById("loc-info").style.display = "flex";
+        document.getElementById("loc-texto").textContent = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+        aplicarFiltroOrdenacao();
+      }, () => alert("Não foi possível obter sua localização. Verifique as permissões do navegador."));
+    });
+
+    document.getElementById("btn-loc-limpar").addEventListener("click", () => {
+      userLat = null; userLng = null;
+      document.getElementById("loc-info").style.display = "none";
+      aplicarFiltroOrdenacao();
+    });
+
+    document.getElementById("raio-select").addEventListener("change", e => { raioFiltro = Number(e.target.value); aplicarFiltroOrdenacao(); });
+
+    document.getElementById("btn-usar-gps").addEventListener("click", () => {
+      navigator.geolocation?.getCurrentPosition(async pos => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        try {
+          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+          const geo = await r.json();
+          document.getElementById("car-cidade").value = geo.address?.city || geo.address?.town || geo.address?.village || "";
+          // Melhoria 3: o campo Estado agora é um <select>. Só selecionamos se a UF
+          // retornada pela geolocalização existir nas opções; caso contrário, mantemos vazio
+          // e o `required` do HTML + a validação no submit impedem envio inválido.
+          const ufRaw = (geo.address?.state_code || geo.address?.ISO3166_2 || "").toUpperCase();
+          const uf = ufRaw.split("-").pop();
+          const selEstado = document.getElementById("car-estado");
+          if (uf && [...selEstado.options].some(o => o.value === uf)) selEstado.value = uf;
+          else selEstado.value = "";
+        } catch (e) { }
+        document.getElementById("btn-usar-gps").textContent = "Localização obtida";
+      }, () => alert("Não foi possível obter a localização."));
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("ordenar") === "curtidas") { document.addEventListener("DOMContentLoaded", () => { const s = document.getElementById("ordenar"); if (s) s.value = "curtidas"; }); }
+
+    async function carregarAnuncios() {
+      const { data: anuncios, error } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("status", "ativo");
+      if (error) { console.error(error); return; }
+      for (const a of anuncios) {
+        const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", a.id).order("ordem").limit(1);
+        a.foto_principal = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+        const { data: vendedor } = await supabase.from("usuarios").select("foto").eq("id", a.usuario_id).maybeSingle();
+        a.vendedor_foto = vendedor?.foto || "../imagens/usuario.png";
+        if (usuarioAtual) {
+          // Melhoria 1: "ainda não curtiu" é resultado esperado -> maybeSingle().
+          const { data: c } = await supabase.from("curtidas_anuncio").select("id").eq("anuncio_id", a.id).eq("usuario_id", usuarioAtual.id).maybeSingle();
+          a.usuario_curtiu = !!c;
+        } else { a.usuario_curtiu = false; }
+      }
+      todosAnuncios = anuncios;
+      if (urlParams.get("ordenar")) { const s = document.getElementById("ordenar"); if (s && urlParams.get("ordenar") === "curtidas") s.value = "curtidas"; }
+      aplicarFiltroOrdenacao();
+      const carroId = urlParams.get("carro");
+      if (carroId) abrirVisualizacao(carroId);
+    }
+
+    function aplicarFiltroOrdenacao() {
+      let filtrados = [...todosAnuncios];
+      const marcaFiltro = document.getElementById("filtro-marca").value;
+      if (marcaFiltro) filtrados = filtrados.filter(a => a.marca_id === marcaFiltro);
+      if (filtroTextoAtual) {
+        const t = filtroTextoAtual.toLowerCase();
+        filtrados = filtrados.filter(a => `${a.marcas?.nome || ""} ${a.modelos?.nome || ""}`.toLowerCase().includes(t));
+      }
+      const precoBand = document.getElementById("filtro-preco").value;
+      if (precoBand) {
+        const [min, max] = precoBand.split("-").map(Number);
+        filtrados = filtrados.filter(a => a.preco >= (min || 0) && (max ? a.preco <= max : true));
+      }
+      if (userLat && userLng) {
+        filtrados = filtrados.filter(a => {
+          if (!a.latitude || !a.longitude) return true;
+          return calcDist(userLat, userLng, a.latitude, a.longitude) <= raioFiltro;
+        });
+      }
+      const ord = document.getElementById("ordenar").value;
+      if (ord === "aleatorio") filtrados = filtrados.sort(() => .5 - Math.random());
+      else if (ord === "curtidas") filtrados = filtrados.sort((a, b) => (b.curtidas || 0) - (a.curtidas || 0));
+      else if (ord === "preco_asc") filtrados = filtrados.sort((a, b) => a.preco - b.preco);
+      else if (ord === "preco_desc") filtrados = filtrados.sort((a, b) => b.preco - a.preco);
+      else if (ord === "recente") filtrados = filtrados.sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+      const info = document.getElementById("resultados-info");
+      if (info) info.textContent = `${filtrados.length} veículo${filtrados.length !== 1 ? "s" : ""} encontrado${filtrados.length !== 1 ? "s" : ""}`;
+      exibirAnuncios(filtrados);
+    }
+
+    function exibirAnuncios(anuncios) {
+      const cont = document.getElementById("lista-anuncios");
+      if (anuncios.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        const spanIcon = document.createElement('span');
+        spanIcon.textContent = '🔍';
+        const pMsg = document.createElement('p');
+        pMsg.textContent = 'Nenhum anúncio encontrado';
+        const smMsg = document.createElement('small');
+        smMsg.textContent = 'Tente outros filtros';
+        empty.appendChild(spanIcon);
+        empty.appendChild(pMsg);
+        empty.appendChild(smMsg);
+        cont.innerHTML = '';
+        cont.appendChild(empty);
+        return;
+      }
+      cont.innerHTML = "";
+      for (const anuncio of anuncios) {
+        const podeCurtir = usuarioAtual && usuarioAtual.id !== anuncio.usuario_id;
+        const marcaNome = anuncio.marcas?.nome || 'Marca';
+        const modeloNome = anuncio.modelos?.nome || '';
+        const cidade = anuncio.cidade || '';
+        const estado = anuncio.estado || '';
+
+        const card = document.createElement("div");
+        card.className = "card"; card.dataset.id = anuncio.id;
+
+        // Estrutura fixa do card (sem texto de usuário via innerHTML)
+        card.innerHTML = `
+      <div class="card-img-wrap">
+        <img src="${anuncio.foto_principal}" alt="" onerror="this.src='../imagens/sem-foto.png'" loading="lazy">
+        ${anuncio.curtidas > 0 ? `<div class="card-curtidas-badge">${Number(anuncio.curtidas)}</div>` : ''}
+        ${cidade ? `<div class="card-loc-badge"></div>` : ''}
+      </div>
+      <div class="info">
+        <h3></h3>
+        <p class="info-sub">${anuncio.ano_fabricacao}/${anuncio.ano_modelo} · ${Number(anuncio.quilometragem).toLocaleString()} km</p>
+        <p class="info-preco">R$ ${Number(anuncio.preco).toLocaleString("pt-BR")}</p>
+        <div class="card-actions">
+          <button class="btn-curtir ${anuncio.usuario_curtiu ? 'curtido' : ''}" data-id="${anuncio.id}" ${!podeCurtir ? 'disabled' : ''} title="Curtir" aria-label="Curtir anúncio"><svg class="heart-icon" viewBox="0 0 24 24" fill="${anuncio.usuario_curtiu ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="curtidas-count">${anuncio.curtidas > 0 ? anuncio.curtidas : ''}</span></button>
+          <span class="perfil-link vendedor-link" data-usuario="${anuncio.usuario_id}" title="Ver perfil do vendedor"><img src="${anuncio.vendedor_foto || '../imagens/usuario.png'}" class="vendedor-mini-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy"></span>
+          ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-excluir" data-id="${anuncio.id}">Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}">Denunciar</button>`}
+        </div>
+      </div>`;
+
+        // Preencher campos de texto de usuário via textContent (sem risco de XSS)
+        const imgEl = card.querySelector('.card-img-wrap img');
+        imgEl.alt = marcaNome;
+        const h3 = card.querySelector('.info h3');
+        h3.textContent = `${marcaNome} ${modeloNome}`.trim();
+        if (cidade) {
+          const locBadge = card.querySelector('.card-loc-badge');
+          if (locBadge) locBadge.textContent = estado ? `${cidade}, ${estado}` : cidade;
+        }
+
+        card.querySelector('.perfil-link').addEventListener('click', e => { e.stopPropagation(); window.location.href = `../MG-CONTA/conta.html?id=${anuncio.usuario_id}`; });
+        card.addEventListener('click', e => { if (!e.target.closest('.btn-curtir,.btn-excluir,.perfil-link,.btn-denunciar-card')) abrirVisualizacao(anuncio.id); });
+        cont.appendChild(card);
+      }
+      document.querySelectorAll('.btn-curtir').forEach(b => b.addEventListener('click', async e => { e.stopPropagation(); await toggleCurtida(b.dataset.id, b); }));
+      document.querySelectorAll('.btn-excluir').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); excluirAnuncio(b.dataset.id); }));
+      document.querySelectorAll('.btn-denunciar-card').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); abrirDenuncia(b.dataset.id, 'anuncio'); }));
+    }
+
+    function abrirDenuncia(alvoId, tipo) {
+      if (!usuarioAtual) { alert("Faça login para denunciar."); return; }
+      denunciaAlvoId = alvoId; denunciaTipo = tipo;
+      document.getElementById("denuncia-motivo").value = "";
+      document.getElementById("denuncia-descricao").value = "";
+      document.getElementById("modal-denuncia").style.display = "flex";
+    }
+
+    document.getElementById("btn-enviar-denuncia").addEventListener("click", async () => {
+      const motivo = document.getElementById("denuncia-motivo").value;
+      if (!motivo) { alert("Selecione um motivo."); return; }
+      const { error } = await supabase.from("denuncias").insert({ tipo: denunciaTipo, alvo_id: denunciaAlvoId, denunciante_id: usuarioAtual.id, motivo, descricao: document.getElementById("denuncia-descricao").value });
+      if (error) { alert("Erro ao enviar: " + error.message); return; }
+      document.getElementById("modal-denuncia").style.display = "none";
+      alert("Denúncia enviada. Analisaremos em breve.");
+    });
+
+    document.getElementById("close-denuncia").onclick = () => document.getElementById("modal-denuncia").style.display = "none";
+
+    // Evita que dois cliques rápidos no mesmo card disparem duas chamadas
+    // concorrentes de curtir/descurtir (o que causava 409 - duplicate key -
+    // e deixava o botão "travado" sem reagir a novos cliques).
+    const curtidasEmProcessamento = new Set();
+
+    async function toggleCurtida(anuncioId, btn) {
+      if (!usuarioAtual) { alert("Faça login para curtir!"); window.location.href = "../MG-LOGIN/login.html"; return; }
+      const anuncio = todosAnuncios.find(a => a.id === anuncioId);
+      if (anuncio?.usuario_id === usuarioAtual.id) { alert("Você não pode curtir seu próprio anúncio!"); return; }
+      if (curtidasEmProcessamento.has(anuncioId)) return;
+      curtidasEmProcessamento.add(anuncioId);
+      btn.disabled = true;
+      try {
+        const estaCurtido = btn.classList.contains('curtido');
+        if (estaCurtido) {
+          const { error } = await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id);
+          if (error) { console.error(error); alert("Não foi possível descurtir." + (error.message ? `\n(${error.message})` : "")); return; }
+          btn.classList.remove('curtido');
+          const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'none');
+        } else {
+          const { error } = await supabase.from("curtidas_anuncio").insert({ anuncio_id: anuncioId, usuario_id: usuarioAtual.id });
+          if (error) {
+            // 23505 = unique_violation: já existe uma curtida deste usuário pra
+            // esse anúncio no banco (ex: clique duplo, ou estado local desatualizado).
+            // Em vez de mostrar erro, apenas sincronizamos o botão pro estado real.
+            if (error.code === "23505") {
+              btn.classList.add('curtido');
+              const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'currentColor');
+            } else {
+              console.error(error);
+              alert("Não foi possível curtir." + (error.message ? `\n(${error.message})` : ""));
+              return;
+            }
+          } else {
+            btn.classList.add('curtido');
+            const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'currentColor');
+          }
+        }
+        // Anúncio confirmadamente existe aqui, mas usamos maybeSingle() para evitar 406 em leitura concorrente.
+        const { data: novo } = await supabase.from("anuncios").select("curtidas").eq("id", anuncioId).maybeSingle();
+        const novoC = novo?.curtidas || 0;
+        let badge = btn.closest('.card')?.querySelector('.card-curtidas-badge');
+        const imgWrap = btn.closest('.card')?.querySelector('.card-img-wrap');
+        if (novoC > 0 && !badge && imgWrap) {
+          badge = document.createElement('div'); badge.className = 'card-curtidas-badge'; imgWrap.appendChild(badge);
+        }
+        if (badge) { badge.textContent = `${novoC}`; badge.style.display = novoC === 0 ? 'none' : ''; }
+        const contSpan = btn.querySelector('.curtidas-count'); if (contSpan) contSpan.textContent = novoC > 0 ? novoC : '';
+        const idx = todosAnuncios.findIndex(a => a.id === anuncioId);
+        if (idx !== -1) { todosAnuncios[idx].curtidas = novoC; todosAnuncios[idx].usuario_curtiu = btn.classList.contains('curtido'); }
+      } finally {
+        curtidasEmProcessamento.delete(anuncioId);
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirAnuncio(anuncioId) {
+      if (!confirm("Excluir este anúncio?")) return;
+      const { data: fotos } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
+      if (fotos) for (const f of fotos) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
+      const okFotos = await executarOuAvisar(supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId), "Não foi possível excluir as fotos do anúncio.");
+      if (okFotos === null) return;
+      const okAn = await executarOuAvisar(supabase.from("anuncios").delete().eq("id", anuncioId), "Não foi possível excluir o anúncio.");
+      if (okAn === null) return;
+      alert("Anúncio excluído!"); carregarAnuncios();
+    }
+
+    async function abrirVisualizacao(anuncioId) {
+      // maybeSingle(): se o anúncio foi removido entre o listagem e o clique, evita erro 406.
+      const { data: a } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", anuncioId).maybeSingle();
+      if (!a) return;
+      const { data: fotos } = await supabase.from("fotos_anuncio").select("*").eq("anuncio_id", anuncioId).order("ordem");
+      document.getElementById("viz-titulo").textContent = `${a.marcas?.nome || "Marca"} ${a.modelos?.nome || ""}`;
+      document.getElementById("viz-preco").textContent = Number(a.preco).toLocaleString("pt-BR");
+      document.getElementById("viz-ano").textContent = a.ano_fabricacao;
+      document.getElementById("viz-ano-modelo").textContent = a.ano_modelo;
+      document.getElementById("viz-km").textContent = `${Number(a.quilometragem).toLocaleString()} km`;
+      document.getElementById("viz-cor").textContent = a.cor || "Não informada";
+      document.getElementById("viz-local").textContent = a.cidade_display || (a.cidade ? `${a.cidade}${a.estado ? ', ' + a.estado : ''}` : "Não informada");
+      document.getElementById("viz-descricao").textContent = a.descricao || "Sem descrição.";
+      document.getElementById("viz-whatsapp").href = `https://wa.me/${(a.whatsapp || "").replace(/\D/g, '')}`;
+      if (a.latitude && a.longitude) {
+        const gpsLink = document.getElementById("viz-gps-link");
+        gpsLink.style.display = "block";
+        gpsLink.href = `https://www.google.com/maps?q=${a.latitude},${a.longitude}`;
+      } else { document.getElementById("viz-gps-link").style.display = "none"; }
+      document.getElementById("viz-perfil-link").onclick = () => { window.location.href = `../MG-CONTA/conta.html?id=${a.usuario_id}`; };
+      document.getElementById("viz-denunciar").onclick = () => { document.getElementById("modal-visualizar").style.display = "none"; abrirDenuncia(anuncioId, 'anuncio'); };
+      if (fotos?.length > 0) {
+        document.getElementById("viz-foto-principal").src = fotos[0].url_foto;
+        const min = document.getElementById("viz-miniaturas"); min.innerHTML = "";
+        fotos.forEach((f, i) => {
+          const m = document.createElement("img"); m.src = f.url_foto; m.loading = "lazy"; m.className = "miniatura" + (i === 0 ? " ativa" : ""); m.onerror = () => m.src = "../imagens/sem-foto.png";
+          m.onclick = () => { document.getElementById("viz-foto-principal").src = f.url_foto; document.querySelectorAll("#viz-miniaturas .miniatura").forEach(x => x.classList.remove("ativa")); m.classList.add("ativa"); };
+          min.appendChild(m);
+        });
+      } else { document.getElementById("viz-foto-principal").src = "../imagens/sem-foto.png"; }
+      document.getElementById("viz-btn-mensagem").onclick = () => { window.location.href = `../MG-MENSAGENS/mensagens.html?usuario=${a.usuario_id}&carro=${anuncioId}`; };
+      const vizCurtir = document.getElementById("viz-btn-curtir");
+      const podeCurtir = usuarioAtual && usuarioAtual.id !== a.usuario_id;
+      if (usuarioAtual) {
+        // Melhoria 1: checagem de "já curtiu" -> maybeSingle().
+        const { data: c } = await supabase.from("curtidas_anuncio").select("id").eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id).maybeSingle();
+        if (c) { vizCurtir.classList.add("curtido"); vizCurtir.textContent = "Curtido"; } else { vizCurtir.classList.remove("curtido"); vizCurtir.textContent = "Curtir"; }
+        vizCurtir.disabled = !podeCurtir;
+        vizCurtir.onclick = async () => {
+          if (a.usuario_id === usuarioAtual.id) { alert("Não pode curtir seu próprio anúncio!"); return; }
+          if (curtidasEmProcessamento.has(anuncioId)) return;
+          curtidasEmProcessamento.add(anuncioId);
+          vizCurtir.disabled = true;
+          try {
+            const curtido = vizCurtir.classList.contains("curtido");
+            if (curtido) {
+              const { error } = await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id);
+              if (error) { console.error(error); alert("Não foi possível descurtir." + (error.message ? `\n(${error.message})` : "")); return; }
+              vizCurtir.classList.remove("curtido"); vizCurtir.textContent = "Curtir";
+            } else {
+              const { error } = await supabase.from("curtidas_anuncio").insert({ anuncio_id: anuncioId, usuario_id: usuarioAtual.id });
+              if (error && error.code !== "23505") { console.error(error); alert("Não foi possível curtir." + (error.message ? `\n(${error.message})` : "")); return; }
+              vizCurtir.classList.add("curtido"); vizCurtir.textContent = "Curtido";
+            }
+            const { data: novo } = await supabase.from("anuncios").select("curtidas").eq("id", anuncioId).maybeSingle();
+            const idx = todosAnuncios.findIndex(a2 => a2.id === anuncioId);
+            if (idx !== -1) { todosAnuncios[idx].curtidas = novo?.curtidas || 0; todosAnuncios[idx].usuario_curtiu = vizCurtir.classList.contains("curtido"); }
+            aplicarFiltroOrdenacao();
+          } finally {
+            curtidasEmProcessamento.delete(anuncioId);
+            vizCurtir.disabled = false;
+          }
+        };
+      } else {
+        vizCurtir.disabled = false; vizCurtir.textContent = "Curtir"; vizCurtir.classList.remove("curtido");
+        vizCurtir.onclick = () => { alert("Faça login para curtir!"); window.location.href = "../MG-LOGIN/login.html"; };
+      }
+      document.getElementById("modal-visualizar").style.display = "flex";
+    }
+
+    document.getElementById("close-visualizar").onclick = () => document.getElementById("modal-visualizar").style.display = "none";
+    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { alert("Faça login para anunciar!"); window.location.href = "../MG-LOGIN/login.html"; return; } document.getElementById("modal-add-car").style.display = "flex"; };
+    document.getElementById("close-modal").onclick = () => document.getElementById("modal-add-car").style.display = "none";
+    document.getElementById("filtro-marca").addEventListener("change", () => aplicarFiltroOrdenacao());
+    document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
+    document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
+    document.getElementById("barra_pesquisa").addEventListener("input", e => { filtroTextoAtual = e.target.value; aplicarFiltroOrdenacao(); });
+
+    document.getElementById("car-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!usuarioAtual) { alert("Faça login!"); return; }
+      const foto = document.getElementById("car-image").files[0];
+      if (!foto) { alert("Selecione uma foto principal!"); return; }
+      if (foto.size > 5 * 1024 * 1024) { alert("Foto máx 5MB!"); return; }
+      let lat = null, lng = null;
+      try {
+        const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 3000 }));
+        lat = pos.coords.latitude; lng = pos.coords.longitude;
+      } catch (e) { }
+      const cidade = document.getElementById("car-cidade").value.trim();
+      const estado = document.getElementById("car-estado").value.trim().toUpperCase();
+      // Melhoria 3 + 4: o campo já é um <select> restrito às 27 UFs reais, então qualquer
+      // valor selecionado é válido. Mantemos a validação em JS como reforço defensivo
+      // (nenhum fallback tipo `estado || "NA"` deve existir aqui).
+      const UFS_VALIDAS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+      if (!UFS_VALIDAS.includes(estado)) {
+        alert("Selecione um Estado (UF) válido no campo Estado. A geolocalização pode não ter preenchido — escolha manualmente.");
+        document.getElementById("car-estado").focus();
+        return;
+      }
+      const { data: an, error } = await supabase.from("anuncios").insert({
+        usuario_id: usuarioAtual.id, marca_id: document.getElementById("select-marca").value, modelo_id: document.getElementById("select-modelo").value,
+        titulo: "Anúncio de veículo", descricao: document.getElementById("car-descricao").value,
+        preco: parseFloat(document.getElementById("car-preco").value), ano_fabricacao: parseInt(document.getElementById("car-ano").value),
+        ano_modelo: parseInt(document.getElementById("car-ano-modelo").value), quilometragem: parseInt(document.getElementById("car-km").value),
+        cor: document.getElementById("car-cor").value, whatsapp: document.getElementById("car-whatsapp").value,
+        status: "pendente", cidade: cidade || "Não informada", estado: estado,
+        latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)
+      }).select().single();
+      if (error) { alert("Erro: " + error.message); return; }
+      const ext = foto.name.split('.').pop();
+      const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
+      const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
+      if (errUpload) { alert("Erro ao enviar a foto principal: " + errUpload.message); return; }
+      const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
+      const okFoto = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
+      if (okFoto === null) return;
+      const extras = document.getElementById("car-images-adicionais").files;
+      for (let i = 0; i < Math.min(extras.length, 4); i++) {
+        const f = extras[i]; if (f.size > 5 * 1024 * 1024) continue;
+        const c2 = `anuncios/${an.id}/adicional_${i}_${Date.now()}.${f.name.split('.').pop()}`;
+        const { error: errUp2 } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(c2, f);
+        if (errUp2) { console.error("Falha em foto adicional:", errUp2.message); continue; }
+        const { data: u2 } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(c2);
+        const okExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");
+        if (okExtra === null) continue;
+      }
+      alert("Anúncio enviado! Aguarda aprovação dos moderadores em até 24h.");
+      document.getElementById("modal-add-car").style.display = "none";
+      document.getElementById("car-form").reset();
+      document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>"; document.getElementById("select-modelo").disabled = true;
+      carregarAnuncios();
+    });
+
+    window.onclick = (e) => {
+      if (e.target === document.getElementById("modal-add-car")) document.getElementById("modal-add-car").style.display = "none";
+      if (e.target === document.getElementById("modal-visualizar")) document.getElementById("modal-visualizar").style.display = "none";
+      if (e.target === document.getElementById("modal-denuncia")) document.getElementById("modal-denuncia").style.display = "none";
+    };
+
+    carregarAnuncios();
+  </script>
+  <script>window.chtlConfig = { chatbotId: "6944231868" }</script>
+  <script async data-id="6944231868" id="chtl-script" type="text/javascript"
+    src="https://chatling.ai/js/embed.js"></script>
+</body>
+
+</html>

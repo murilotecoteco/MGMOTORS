@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-MCLAREN</title>
+    <link rel="stylesheet" href="mclaren.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A McLaren é uma fabricante britânica de carros esportivos de alto desempenho fundada em 1963 por Bruce McLaren. Reconhecida por sua inovação e desempenho nas pistas, a marca combina tecnologia de Fórmula 1 com veículos de rua.
+                </p>
+                <!-- Fonte: https://cars.mclaren.com 
+                 https://pt.wikipedia.org/wiki/McLaren_Automotive
+                -->
+            </div>
+            <div class="pic">
+                <img src="mclaren-img/bruce_maclaren.webp" alt="Bruce McLaren">
+            </div>
+                <!--https://www.hemmings.com/stories/the-life-of-bruce-mclaren-comes-to-the-big-screen/-->
+        </div>
+
+        <h1>Exclusividade</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    Cada McLaren é fabricado em pequena escala, permitindo personalizações avançadas e garantindo exclusividade a cada modelo produzido.
+                </p>
+                <!-- Fonte: https://cars.mclaren.com
+                 https://www.motor1.com/news/366424/mclaren-senna-unveiled/
+                -->
+            </div>
+            <div class="pic">
+                <img src="../imagem-marcas/mclaren.png" alt="McLaren Exclusivo">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A McLaren aplica tecnologia avançada em seus carros, incluindo chassis de fibra de carbono, motores V8 e sistemas aerodinâmicos ativos, herdando inovações diretamente da Fórmula 1.
+                </p>
+                <!-- Fonte: https://cars.mclaren.com 
+                 https://en.wikipedia.org/wiki/McLaren_Automotive
+                -->
+            </div>
+            <div class="pic">
+                <img src="mclaren-img/tecnologia_mclaren.jpg" alt="Tecnologia McLaren">
+            </div>
+                <!--https://cars.mclaren.com/en/about/our-home-->
+        </div>
+
+        <h1>Modelos Mais Vendidos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>McLaren 720S</h2>
+                <p>
+                    Um dos modelos mais populares da McLaren, o 720S combina design futurista com motor V8 biturbo e tecnologia de ponta.
+                </p>
+                <!-- Fonte: https://cars.mclaren.com 
+                 https://www.motor1.com/news/364419/mclaren-720s-review/
+                -->
+            </div>
+            <div class="pic">
+                <img src="mclaren-img/mclaren_720s.png" alt="McLaren 720S">
+            </div>
+                <!--https://ecosetting-files.com/es/ecosetting-file/mclaren/mclaren-720s/mclaren-720s-720hp-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>McLaren P1</h2>
+                <p>
+                    O P1 é um superesportivo híbrido da McLaren, combinando motor V8 com motor elétrico para desempenho extremo e eficiência.
+                </p>
+                <!-- Fonte: https://cars.mclaren.com 
+                 https://en.wikipedia.org/wiki/McLaren_P1
+                -->
+            </div>
+            <div class="pic">
+                <img src="mclaren-img/maclaren_p1.jpeg" alt="McLaren P1">
+            </div>
+                <!--https://www.kindpng.com/imgv/hhxwTiw_mclaren-p1-png-transparent-images-mclaren-p1-transparent-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>McLaren Artura</h2>
+                <p>
+                    O Artura é o primeiro híbrido leve da McLaren, com motor V6 biturbo combinado com motor elétrico, mantendo o DNA de esportividade da marca.
+                </p>
+                <!-- Fonte: https://cars.mclaren.com 
+                 https://www.motor1.com/news/566067/mclaren-artura-photos-specs/
+                -->
+            </div>
+            <div class="pic">
+                <img src="mclaren-img/maclaren_artura.webp" alt="McLaren Artura">
+            </div>
+                <!--https://pngimg.com/image/68893-->
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

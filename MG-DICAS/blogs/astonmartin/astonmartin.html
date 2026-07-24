@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-Aston Martin</title>
+    <link rel="stylesheet" href="astonmartin.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Aston Martin foi fundada em 1913 por Lionel Martin e Robert Bamford, em Londres. Desde cedo, destacou-se por produzir carros esportivos sofisticados, unindo performance e elegância britânica. 
+                </p>
+                <!-- Fonte: https://pt.wikipedia.org/wiki/Aston_Martin -->
+            </div>
+            <div class="pic">
+                <img src="astonmartin-img/astonmartin_fundador.jpg" alt="Fundadores Aston Martin">
+            </div>
+                <!--https://www.lavanguardia.com/motor/actualidad/20230114/8680386/turbulenta-historia-aston-martin-marca-siempre-filo-desparecer.html-->
+        </div>
+
+        <h1>Design e Performance</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    Os carros da Aston Martin são reconhecidos mundialmente pelo design artesanal, aerodinâmico e luxuoso, aliados a motores potentes que oferecem alto desempenho sem perder a sofisticação.
+                </p>
+                <!-- Fonte: https://www.astonmartin.com -->
+            </div>
+            <div class="pic">
+                <img src="../imagem-marcas/aston-martin.png" alt="Design Aston Martin">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A marca investe em tecnologias modernas como motores V12 de alto rendimento, uso de fibra de carbono para reduzir peso, além de sistemas avançados de infotainment e assistência ao condutor.
+                </p>
+                <!-- Fonte: https://www.topgear.com -->
+            </div>
+            <div class="pic">
+                <img src="astonmartin-img/astonmartin_tecnologia.jpg" alt="Tecnologia Aston Martin">
+            </div>
+                <!--https://www.estadao.com.br/jornal-do-carro/nova-geracao-do-apple-carplay-estreia-nos-esportivos-da-aston-martin/?srsltid=AfmBOorWiOCyRkOdNh02wstwTu-3LJWyZKt_KmJgyPd0LaTlMLie_HFQ-->
+        </div>
+
+        <h1>Modelos Mais Icônicos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>Aston Martin DB5</h2>
+                <p>
+                    Lançado em 1963, ficou eternizado como o carro do James Bond. Ícone do design clássico e um dos modelos mais famosos da marca.
+                </p>
+                <!-- Fonte: https://pt.wikipedia.org/wiki/Aston_Martin_DB5 -->
+            </div>
+            <div class="pic">
+                <img src="astonmartin-img/astonmartin_astonmartindb5.jpg" alt="Aston Martin DB5">
+            </div>
+                <!--https://www.istockphoto.com/br/foto/aston-martin-db5-modelo-em-branco-gm488574932-74252537-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Aston Martin Vantage</h2>
+                <p>
+                    Um dos modelos esportivos mais recentes, o Vantage combina agilidade, motor potente e visual agressivo, representando o DNA da marca.
+                </p>
+                <!-- Fonte: https://www.motor1.com -->
+            </div>
+            <div class="pic">
+                <img src="astonmartin-img/astonmartin_astonmartinvantage.jpg" alt="Aston Martin Vantage">
+            </div>
+                <!--https://miamiimports.com.br/anuncio/aston-martin-vantage-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Aston Martin Valkyrie</h2>
+                <p>
+                    Um hiper carro futurista desenvolvido em parceria com a Red Bull Racing, que aplica tecnologias da Fórmula 1 em um carro de rua.
+                </p>
+                <!-- Fonte: https://www.astonmartin.com/en/models/aston-martin-valkyrie -->
+            </div>
+            <div class="pic">
+                <img src="astonmartin-img/astonmartin_astonmartinvalkyrie.webp" alt="Aston Martin Valkyrie">
+            </div>
+                <!--https://autos.maxabout.com/cars/aston-martin/valkyrie-->
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-FERRARI</title>
+    <link rel="stylesheet" href="ferrari.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Ferrari é uma fabricante italiana de carros esportivos de luxo com sede em Maranello. Fundada por
+                    Enzo Ferrari em 1939 na divisão de corridas da Alfa Romeo com o nome Auto Avio Costruzioni, a
+                    empresa construiu seu primeiro carro em 1940. No entanto, o início da empresa como fabricante de
+                    automóveis é geralmente reconhecido em 1947, quando o primeiro carro com o nome Ferrari foi
+                    concluído.
+                </p>
+                <!-- Fonte: https://www.ferrari.com 
+                 https://pt.wikipedia.org/wiki/Ferrari
+                 -->
+            </div>
+            <div class="pic">
+                <img src="ferrari-img/Enzo_Ferrari_-_Wheel_of_a_racing_car.jpg"
+                    alt="">
+            </div>
+        </div>
+
+        <h1>Exclusividade</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Ferrari é muito mais do que um carro: é um símbolo de exclusividade e luxo. Alguns modelos só são
+                    vendidos para clientes selecionados pela marca, reforçando a ideia de que possuir uma Ferrari é
+                    fazer parte de um grupo único e restrito.
+                </p>
+                <!-- Fonte: https://www.ferrari.com 
+                 https://vintageclassicos.com.br/logotipo-da-ferrari/
+                 -->
+            </div>
+            <div class="pic">
+                <img src="ferrari-img/ferrari.png" alt="Ferrari Exclusiva">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Ferrari está na vanguarda da tecnologia automotiva. Com inovações trazidas diretamente das pistas
+                    de Fórmula 1, a marca utiliza materiais como fibra de carbono, motores híbridos de alta performance e
+                    sistemas aerodinâmicos inteligentes para garantir velocidade, segurança e eficiência.
+                </p>
+                <!-- Fonte: https://www.ferrari.com 
+                 https://www.tecmundo.com.br/quimica/76017-fibra-carbono-feito-funciona-material-incrivel.htm
+                 -->
+            </div>
+            <div class="pic">
+                <img src="ferrari-img/carbono.png" alt="Tecnologia Ferrari">
+            </div>
+        </div>
+
+        <h1>Modelos Mais Vendidos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>Ferrari 458 Italia</h2>
+                <p>
+                    Um dos modelos mais populares da Ferrari, o 458 Italia combina desempenho, design e confiabilidade.
+                </p>
+                <!-- Fonte: https://www.motor1.com 
+                 https://www.webmotors.com.br/carros/estoque/ferrari/458-italia?tipoveiculo=carros&marca1=ferrari&modelo1=458-italia&page=1
+                 -->
+            </div>
+            <div class="pic">
+                <img src="ferrari-img/458italia.png" alt="Ferrari 458 Italia">
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Ferrari F430</h2>
+                <p>
+                    O F430 é conhecido pelo equilíbrio perfeito entre esportividade e dirigibilidade, sendo muito vendido no mundo todo.
+                </p>
+                <!-- Fonte: https://www.motor1.com 
+                 https://www.pastorecc.com.br/veiculo/f430
+                 -->
+            </div>
+            <div class="pic">
+                <img src="ferrari-img/f430.png" alt="Ferrari F430">
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Ferrari California</h2>
+                <p>
+                    Um dos modelos conversíveis mais vendidos da Ferrari, a California conquistou o mercado pelo seu estilo elegante e desempenho impressionante.
+                </p>
+                <!-- Fonte: https://www.motor1.com 
+                 https://motorshow.com.br/avaliacao-ferrari-portofino-rompendo-com-o-passado
+                 -->
+            </div>
+            <div class="pic">
+                <img src="ferrari-img/california.png" alt="Ferrari California">
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

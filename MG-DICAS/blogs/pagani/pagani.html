@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-PAGANI</title>
+    <link rel="stylesheet" href="pagani.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Pagani é uma fabricante italiana de carros esportivos de luxo fundada por Horacio Pagani em 1992. 
+                    Reconhecida pelo design exclusivo e materiais de altíssima qualidade, a marca busca combinar arte e engenharia em cada veículo.
+                </p>
+                <!-- Fonte: https://www.pagani.com -->
+            </div>
+            <div class="pic">
+                <img src="pagani-img/pagani_fundador.jpg" alt="Horacio Pagani">
+            </div>
+                <!--https://facts.net/celebrity/8-fascinating-facts-about-horacio-pagani/-->
+        </div>
+
+        <h1>Exclusividade</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Pagani produz uma quantidade limitada de carros por ano, garantindo que cada modelo seja único e altamente personalizado para o cliente.
+                </p>
+                <!-- Fonte: https://www.pagani.com -->
+            </div>
+            <div class="pic">
+                <img src="../imagem-marcas/pagani.png" alt="Design Pagani">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Pagani utiliza materiais como fibra de carbono e titânio, motores V12 de alta performance e sistemas aerodinâmicos avançados, tornando cada carro uma obra-prima tecnológica.
+                </p>
+                <!-- Fonte: https://www.pagani.com -->
+            </div>
+            <div class="pic">
+                <img src="pagani-img/pagani_tecnologia.webp" alt="Tecnologia Pagani">
+            </div>
+                <!--https://www.repubblica.it/tecnologia/2022/09/12/foto/pagani_utopia-365380441/1/-->
+        </div>
+
+        <h1>Modelos Mais Vendidos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>Pagani Huayra</h2>
+                <p>
+                    Um dos modelos mais icônicos da Pagani, o Huayra combina design arrojado com um motor V12 de alta performance.
+                </p>
+                <!-- Fonte: https://www.pagani.com -->
+            </div>
+            <div class="pic">
+                <img src="pagani-img/pagani_huayra.webp" alt="Pagani Huayra">
+            </div>
+                <!--https://freepng.pictures/download/pagani-huayra-sports-car-2/-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Pagani Utopia</h2>
+                <p>
+                    O Utopia é o mais recente lançamento da marca, trazendo inovação tecnológica e design exclusivo, continuando a tradição de carros-artísticos da Pagani.
+                </p>
+                <!-- Fonte: https://www.pagani.com -->
+            </div>
+            <div class="pic">
+                <img src="pagani-img/pagani_utopia.webp" alt="Pagani Utopia">
+            </div>
+                <!--https://pixelz.cc/images/pagani-utopia-uhd-4k-wallpaper/-->
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

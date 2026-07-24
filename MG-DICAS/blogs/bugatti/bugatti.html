@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-BUGATTI</title>
+    <link rel="stylesheet" href="bugatti.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Bugatti é uma fabricante francesa de carros esportivos de luxo fundada em 1909 por Ettore Bugatti. A marca é conhecida pelo seu design elegante e pelo desempenho extremo de seus veículos.
+                </p>
+                <!-- Fonte: https://www.bugatti.com
+                 https://pt.wikipedia.org/wiki/Bugatti -->
+            </div>
+            <div class="pic">
+                <img src="bugatti-img/bugatti_fundador.webp" alt="Ettore Bugatti">
+            </div>
+                <!--https://newsroom.bugatti.com/press-releases/the-genius-of-ettore-bugatti-->
+        </div>
+
+        <h1>Exclusividade</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Bugatti mantém uma produção extremamente limitada, tornando cada modelo uma obra-prima única. Muitos veículos são personalizados segundo os desejos de seus clientes.
+                </p>
+                <!-- Fonte: https://www.bugatti.com -->
+            </div>
+            <div class="pic">
+                <img src="../imagem-marcas/bugatti.png" alt="Logo Bugatti">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A Bugatti combina motores W16 de alta performance com engenharia aerodinâmica avançada e sistemas eletrônicos de ponta, garantindo velocidade, estabilidade e conforto excepcionais.
+                </p>
+                <!-- Fonte: https://www.bugatti.com -->
+            </div>
+            <div class="pic">
+                <img src="bugatti-img/bugatti_tecnologia.jpg" alt="Tecnologia Bugatti">
+            </div>
+                <!--https://www.bing.com/images/search?view=detailV2&ccid=2uJmn7lF&id=BA49F2CA153E72170FA6A192EB2E39C2BE2471D5&thid=OIP.2uJmn7lF_JeZrOWNCQfoIQHaCx&mediaurl=https%3a%2f%2fimg.olhardigital.com.br%2fwp-content%2fuploads%2f2021%2f10%2fbugatti-chiron-principal-1200x450.jpg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.dae2669fb945fc9799ace58d0907e821%3frik%3d1XEkvsI5LuuSoQ%26pid%3dImgRaw%26r%3d0&exph=450&expw=1200&q=tecnologia+bugatti&FORM=IRPRST&ck=E396397E910861F13E631F18F042112A&selectedIndex=1&itb=0&ajaxhist=0&ajaxserp=0-->
+        </div>
+
+        <h1>Modelos Mais Vendidos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>Bugatti Chiron</h2>
+                <p>
+                    O Chiron é um dos superesportivos mais icônicos da marca, com motor W16 quadriturbo e velocidade máxima que ultrapassa os 420 km/h.
+                </p>
+                <!-- Fonte: https://www.bugatti.com -->
+            </div>
+            <div class="pic">
+                <img src="bugatti-img/bugatti_chiron.jpeg" alt="Bugatti Chiron">
+            </div>
+                <!--https://pt.pngtree.com/freepng/high-quality-bugatti-chiron-1-18-scale-model-on-a-transparent-background_15449406.html-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>Bugatti Veyron</h2>
+                <p>
+                    O Veyron foi o carro que consolidou a Bugatti no século XXI, sendo conhecido pela sua velocidade máxima e engenharia revolucionária.
+                </p>
+                <!-- Fonte: https://www.bugatti.com -->
+            </div>
+            <div class="pic">
+                <img src="bugatti-img/bugatti_veyron.webp" alt="Bugatti Veyron">
+            </div>
+                <!--https://www.pngitem.com/middle/ihhoooi_src-data-bugatti-veyron-price-2018-hd-png/-->
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

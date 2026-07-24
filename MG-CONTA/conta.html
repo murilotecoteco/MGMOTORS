@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha Conta - MG Motors</title>
+<link rel="stylesheet" href="conta.css">
+<link rel="stylesheet" href="../global.css">
+<script src="../tema.js"></script>
+</head>
+<body>
+<header id="header-global"></header>
+
+<div class="container-principal">
+  <div class="perfil-header">
+    <div class="capa-container">
+      <img id="capaFoto" class="capa-imagem" src="https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop" alt="Capa">
+      <button id="btnEditarCapa" class="btn-editar-capa">📷 Editar Capa</button>
+      <input type="file" id="uploadCapa" accept="image/*" style="display:none">
+    </div>
+    <div class="perfil-info">
+      <div class="foto-container">
+        <img id="fotoPerfil" class="foto-perfil" src="https://via.placeholder.com/150" alt="Foto">
+        <button id="btnEditarFoto" class="btn-editar-foto">✏️</button>
+        <input type="file" id="uploadFoto" accept="image/*" style="display:none">
+      </div>
+      <div class="dados-container">
+        <div class="nome-usuario">
+          <span id="nomeExibido">Carregando...</span>
+          <button id="btnSeguir" class="btn-seguir" style="display:none">Seguir</button>
+          <button id="btnDenunciarPerfil" class="btn-denunciar-perfil" style="display:none">🚩 Denunciar</button>
+        </div>
+        <div class="nota-media-container" id="nota-media-container" style="display:none;">
+          <span id="nota-estrelas"></span>
+          <span id="nota-texto" style="font-size:13px;color:var(--texto-suave);"></span>
+        </div>
+        <div class="stats-container">
+          <div class="stat-item" id="stat-seguidores" style="cursor:pointer;" title="Ver seguidores"><div class="stat-number" id="seguidoresCount">0</div><div class="stat-label">Seguidores</div></div>
+          <div class="stat-item" id="stat-seguindo" style="cursor:pointer;" title="Ver quem você segue"><div class="stat-number" id="seguindoCount">0</div><div class="stat-label">Seguindo</div></div>
+          <div class="stat-item"><div class="stat-number" id="anunciosCount">0</div><div class="stat-label">Anúncios</div></div>
+          <div class="stat-item"><div class="stat-number" id="curtidasRecebidasCount">0</div><div class="stat-label">Curtidas</div></div>
+        </div>
+        <div class="bio-usuario" id="bioExibido"></div>
+        <div class="redes-sociais" id="redesExibido"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-container" id="tabs-proprio">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dados">Meus Dados</button>
+      <button class="tab-btn" data-tab="anuncios">Meus Anúncios</button>
+      <button class="tab-btn" data-tab="fotos">📷 Fotos</button>
+    </div>
+    <div id="tab-dados" class="tab-content active">
+      <form id="form-dados">
+        <div class="form-grid">
+          <div class="form-group"><label>Nome completo</label><input type="text" id="nome" placeholder="Seu nome"></div>
+          <div class="form-group"><label>Idade</label><input type="number" id="idade" placeholder="Sua idade"></div>
+          <div class="form-group"><label>Cidade</label><input type="text" id="cidade" placeholder="Sua cidade"></div>
+          <div class="form-group"><label>Estado</label>
+            <select id="estado">
+              <option value="">Estado (UF)</option>
+              <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+              <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+              <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+              <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+              <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+              <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+              <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000"></div>
+          <div class="form-group"><label>E-mail</label><input type="email" id="email" disabled></div>
+          <div class="form-group"><label>Instagram</label><input type="text" id="instagram" placeholder="@usuario"></div>
+          <div class="form-group"><label>Site</label><input type="text" id="site" placeholder="https://..."></div>
+          <div class="form-group full"><label>Biografia</label><textarea id="bio" placeholder="Conte um pouco sobre você..."></textarea></div>
+          <div class="form-group full"><label>Data de criação</label><input type="text" id="dataCriacao" disabled></div>
+        </div>
+        <button type="submit" class="btn-salvar">Salvar Alterações</button>
+        <button type="button" id="excluirConta" class="btn-danger">Excluir Conta</button>
+      </form>
+    </div>
+    <div id="tab-anuncios" class="tab-content">
+      <div id="meus-anuncios-lista" class="anuncios-grid"></div>
+    </div>
+    <div id="tab-pausados" class="tab-content">
+      <div id="pausados-lista" class="anuncios-grid"></div>
+    </div>
+    <div id="tab-fotos" class="tab-content">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:14px;color:var(--texto-suave,#4a6070);">Compartilhe momentos, carros e viagens com seus seguidores.</span>
+        <label id="btn-nova-foto" style="background:linear-gradient(135deg,#144b71,#0f3652);color:#fff;padding:10px 20px;border-radius:10px;font-weight:900;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          📷 Publicar Foto
+          <input type="file" id="upload-post-foto" accept="image/*" style="display:none">
+        </label>
+      </div>
+      <div id="posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+    </div>
+  </div>
+
+  <div class="tabs-container" id="tabs-outro" style="display:none;">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab-outro="anuncios-outro">Anúncios</button>
+      <button class="tab-btn" data-tab-outro="fotos-outro">📷 Fotos</button>
+      <button class="tab-btn" data-tab-outro="avaliacao">⭐ Avaliar</button>
+    </div>
+    <div id="tab-anuncios-outro" class="tab-content active">
+      <div id="anuncios-outro-lista" class="anuncios-grid"></div>
+    </div>
+    <div id="tab-fotos-outro" class="tab-content">
+      <div id="posts-grid-outro" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+    </div>
+    <div id="tab-avaliacao" class="tab-content">
+      <div id="avaliacao-section">
+        <p style="margin-bottom:16px;color:var(--texto-suave);">Avalie este usuário com base nas suas transações.</p>
+        <div class="estrelas-input" id="estrelas-input">
+          <span class="estrela" data-v="1">★</span><span class="estrela" data-v="2">★</span><span class="estrela" data-v="3">★</span><span class="estrela" data-v="4">★</span><span class="estrela" data-v="5">★</span>
+        </div>
+        <textarea id="avaliacao-comentario" placeholder="Comentário (opcional)..." style="width:100%;padding:12px;border:1.5px solid rgba(20,75,113,.15);border-radius:10px;font-family:inherit;font-size:14px;resize:vertical;height:80px;margin-top:10px;"></textarea>
+        <button id="btn-enviar-avaliacao" class="btn-salvar" style="margin-top:10px;">⭐ Enviar Avaliação</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Seguidores/Seguindo --><div id="modal-seguidores" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;">
+  <div style="background:var(--branco,#fff);padding:28px;border-radius:20px;width:420px;max-width:96%;position:relative;max-height:80vh;overflow-y:auto;">
+    <span onclick="document.getElementById('modal-seguidores').style.display='none'" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#888;">×</span>
+    <h2 id="modal-seg-titulo" style="color:#144b71;margin-bottom:16px;font-size:18px;font-weight:900;"></h2>
+    <div id="modal-seg-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+</div>
+
+<!-- Modal denúncia -->
+<div id="modal-denuncia" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;">
+  <div style="background:white;padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;">
+    <span onclick="document.getElementById('modal-denuncia').style.display='none'" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:#888;">×</span>
+    <h2 style="color:#144b71;margin-bottom:16px;">🚩 Denunciar Perfil</h2>
+    <select id="denuncia-motivo" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;">
+      <option value="">Selecione o motivo</option>
+      <option value="Comportamento abusivo">Comportamento abusivo</option>
+      <option value="Golpista">Golpista / fraude</option>
+      <option value="Perfil falso">Perfil falso</option>
+      <option value="Spam">Spam</option>
+      <option value="Outro">Outro</option>
+    </select>
+    <textarea id="denuncia-desc" placeholder="Detalhes adicionais..." rows="3" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+    <button id="btn-enviar-denuncia" style="width:100%;margin-top:12px;background:#144b71;color:#fff;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;">📨 Enviar</button>
+  </div>
+</div>
+
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h2><span style="color:var(--dourado);">MG</span>Motors</h2>
+      <p>A plataforma premium de compra e venda de veículos esportivos, seminovos e importados.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Plataforma</h4>
+      <a href="../MG-MARKETPLACE/marketplace.html">Marketplace</a>
+      <a href="../MG-DICAS/dicas.html">Dicas</a>
+      <a href="../MG-MENSAGENS/mensagens.html">Mensagens</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <a href="../MG-CONTATO/contato.html">Contato</a>
+      <a href="../MG-CASOS-USO/como-utilizar.html">Como Utilizar</a>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <a href="#">Termos de Uso</a>
+      <a href="#">Privacidade</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
+    <span>Desenvolvido com ❤️ no Brasil</span>
+  </div>
+</footer>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
+import { carregarHeaderGlobal } from "../headerGlobal.js";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+let perfilUsuarioId = null;
+let notaEscolhida = 0;
+
+// --- Helper de escrita com aviso ao usuário (Melhoria 2) ---
+// Executa uma promise do Supabase (insert/update/delete/upsert) e, se falhar,
+// mostra um alerta claro para o usuário em vez de falhar silenciosamente.
+// Retorna `null` em caso de erro, ou `data` em caso de sucesso.
+async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. Tente novamente.") {
+  const { data, error } = await promise;
+  if (error) {
+    console.error(error);
+    alert(mensagemErroPadrao + (error.message ? `\n(${error.message})` : ""));
+    return null;
+  }
+  return data;
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const perfilIdUrl = urlParams.get('id');
+const fotoPerfil = document.getElementById("fotoPerfil");
+const capaFoto = document.getElementById("capaFoto");
+const nomeExibido = document.getElementById("nomeExibido");
+const bioExibido = document.getElementById("bioExibido");
+const redesExibido = document.getElementById("redesExibido");
+const btnSeguir = document.getElementById("btnSeguir");
+
+let usuarioAtual = await carregarHeaderGlobal(supabase);
+
+
+async function carregarPerfil() {
+  const isOutro = perfilIdUrl && perfilIdUrl !== usuarioAtual?.id;
+  perfilUsuarioId = isOutro ? perfilIdUrl : usuarioAtual?.id;
+  document.getElementById("tabs-proprio").style.display = isOutro ? "none" : "block";
+  document.getElementById("tabs-outro").style.display = isOutro ? "block" : "none";
+  document.getElementById("btnEditarFoto").style.display = isOutro ? "none" : "block";
+  document.getElementById("btnEditarCapa").style.display = isOutro ? "none" : "block";
+  btnSeguir.style.display = isOutro && usuarioAtual ? "block" : "none";
+  document.getElementById("btnDenunciarPerfil").style.display = isOutro && usuarioAtual ? "block" : "none";
+  if (!perfilUsuarioId) return;
+  // Melhoria 1: talvez o perfil ainda não exista na tabela `usuarios` (ex: conta recém-criada).
+  // `.maybeSingle()` retorna data:null sem lançar erro 406 (PGRST116), evitando travar em "Carregando...".
+  const { data: perfil } = await supabase.from("usuarios").select("*").eq("id", perfilUsuarioId).maybeSingle();
+  if (!perfil) {
+    nomeExibido.textContent = "Usuário";
+    return;
+  }
+  nomeExibido.textContent = perfil.nome || "Usuário";
+  fotoPerfil.src = perfil.foto || "https://via.placeholder.com/150";
+  capaFoto.src = perfil.capa_foto || "https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop";
+  bioExibido.textContent = perfil.bio || "Sem biografia";
+  document.getElementById("seguidoresCount").textContent = perfil.seguidores || 0;
+  document.getElementById("seguindoCount").textContent = perfil.seguindo || 0;
+  if (perfil.nota_media > 0) {
+    document.getElementById("nota-media-container").style.display = "flex";
+    const estrelas = "★".repeat(Math.round(perfil.nota_media)) + "☆".repeat(5-Math.round(perfil.nota_media));
+    document.getElementById("nota-estrelas").textContent = estrelas;
+    document.getElementById("nota-texto").textContent = ` ${Number(perfil.nota_media).toFixed(1)} (${perfil.total_avaliacoes} avaliações)`;
+  }
+  let redes = "";
+  if (perfil.instagram) {
+    // O usuário do Instagram deve conter só letras, números, ponto e underline.
+    // Qualquer coisa fora disso é rejeitada (não vira link), o que também barra
+    // tentativa de injeção via esse campo.
+    const igUser = String(perfil.instagram).replace('@', '').trim();
+    if (/^[A-Za-z0-9._]{1,30}$/.test(igUser)) {
+      redes += `<a href="https://instagram.com/${encodeURIComponent(igUser)}" target="_blank" rel="noopener noreferrer" class="redes-link">📷 Instagram</a>`;
+    }
+  }
+  if (perfil.site) {
+    // Só aceita http(s) — bloqueia "javascript:" e outros esquemas perigosos.
+    let siteUrl = null;
+    try {
+      const parsed = new URL(perfil.site, window.location.origin);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") siteUrl = parsed.href;
+    } catch (e) { /* URL inválida: ignora */ }
+    if (siteUrl) {
+      redes += `<a href="${escapeHtml(siteUrl)}" target="_blank" rel="noopener noreferrer" class="redes-link">🌐 Site</a>`;
+    }
+  }
+  redesExibido.innerHTML = redes;
+  if (usuarioAtual && isOutro) {
+    // Melhoria 1: "ainda não segue" é o resultado esperado na primeira vez -> maybeSingle().
+    const { data: segue } = await supabase.from("seguidores").select("id").eq("seguidor_id",usuarioAtual.id).eq("seguido_id",perfilUsuarioId).maybeSingle();
+    if (segue) { btnSeguir.textContent = "Seguindo"; btnSeguir.classList.add("seguindo"); }
+    else { btnSeguir.textContent = "Seguir"; btnSeguir.classList.remove("seguindo"); }
+  }
+  if (isOutro) await carregarAnunciosOutro();
+  else { await carregarMeusAnuncios(); await carregarPausados(); }
+  await carregarCurtidasRecebidas();
+}
+
+async function carregarMeusAnuncios() {
+  if (!perfilUsuarioId) return;
+  const { data: anuncios } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).neq("pausado",true).order("criado_em",{ascending:false});
+  document.getElementById("anunciosCount").textContent = anuncios?.length || 0;
+  const cont = document.getElementById("meus-anuncios-lista");
+  if (!anuncios || anuncios.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
+  cont.innerHTML = "";
+  for (const a of anuncios) {
+    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).order("ordem").limit(1);
+    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const card = document.createElement("div"); card.className = "anuncio-card";
+    const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">⏳ Pendente aprovação</span>' : '';
+    // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
+    card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">❤️ ${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${a.id}">🗑 Excluir</button></div>`;
+    card.querySelector('img').alt = (a.marcas?.nome || '');
+    card.querySelector('.anuncio-info h3').textContent = `${a.marcas?.nome || ''} ${a.modelos?.nome || ''}`.trim();
+    card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`; });
+    cont.appendChild(card);
+  }
+  cont.querySelectorAll(".btn-excluir-anuncio").forEach(btn => btn.addEventListener("click", async e => {
+    e.stopPropagation(); if (!confirm("Excluir anúncio?")) return;
+    const ok = await executarOuAvisar(supabase.from("anuncios").delete().eq("id",btn.dataset.id), "Não foi possível excluir o anúncio.");
+    if (ok === null) return;
+    carregarMeusAnuncios();
+  }));
+}
+
+async function carregarPausados() {
+  const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("pausado",true);
+  const cont = document.getElementById("pausados-lista");
+  if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio pausado.</p>"; return; }
+  cont.innerHTML = "";
+  for (const a of data) {
+    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
+    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const card = document.createElement("div"); card.className = "anuncio-card";
+    // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
+    card.innerHTML = `<img src="${foto}" alt="" style="filter:grayscale(.6)"><div class="anuncio-info" style="opacity:.8;"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p><span style="background:#e0e0e0;color:#666;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">⏸ Pausado</span><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><button class="btn-reativar" data-id="${a.id}" style="width:100%;padding:8px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:800;margin-top:8px;">▶ Reativar</button></div>`;
+    card.querySelector('img').alt = (a.marcas?.nome || '');
+    card.querySelector('.anuncio-info h3').textContent = `${a.marcas?.nome || ''} ${a.modelos?.nome || ''}`.trim();
+    cont.appendChild(card);
+  }
+  cont.querySelectorAll(".btn-reativar").forEach(btn => btn.addEventListener("click", async e => {
+    e.stopPropagation();
+    const ok = await executarOuAvisar(supabase.from("anuncios").update({pausado:false,status:"ativo"}).eq("id",btn.dataset.id), "Não foi possível reativar o anúncio.");
+    if (ok === null) return;
+    alert("✅ Anúncio reativado com sucesso!"); carregarPausados(); carregarMeusAnuncios();
+  }));
+}
+
+async function carregarAnunciosOutro() {
+  const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("status","ativo").neq("pausado",true);
+  document.getElementById("anunciosCount").textContent = data?.length || 0;
+  const cont = document.getElementById("anuncios-outro-lista");
+  if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
+  cont.innerHTML = "";
+  for (const a of data) {
+    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
+    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const card = document.createElement("div"); card.className = "anuncio-card";
+    // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
+    card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">❤️ ${a.curtidas||0} curtidas</div></div>`;
+    card.querySelector('img').alt = (a.marcas?.nome || '');
+    card.querySelector('.anuncio-info h3').textContent = `${a.marcas?.nome || ''} ${a.modelos?.nome || ''}`.trim();
+    card.addEventListener("click", () => window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`);
+    cont.appendChild(card);
+  }
+}
+
+async function carregarCurtidasRecebidas() {
+  const { data } = await supabase.from("anuncios").select("curtidas").eq("usuario_id",perfilUsuarioId);
+  document.getElementById("curtidasRecebidasCount").textContent = data?.reduce((s,a)=>s+(a.curtidas||0),0)||0;
+}
+
+btnSeguir.addEventListener("click", async () => {
+  if (!usuarioAtual) { alert("Faça login"); window.location.href="../MG-LOGIN/login.html"; return; }
+  const seg = btnSeguir.classList.contains("seguindo");
+  if (seg) {
+    const ok = await executarOuAvisar(supabase.from("seguidores").delete().eq("seguidor_id",usuarioAtual.id).eq("seguido_id",perfilUsuarioId), "Não foi possível deixar de seguir.");
+    if (ok === null) return;
+    btnSeguir.textContent="Seguir"; btnSeguir.classList.remove("seguindo");
+  } else {
+    const ok = await executarOuAvisar(supabase.from("seguidores").insert({seguidor_id:usuarioAtual.id,seguido_id:perfilUsuarioId}), "Não foi possível seguir este usuário.");
+    if (ok === null) return;
+    btnSeguir.textContent="Seguindo"; btnSeguir.classList.add("seguindo");
+  }
+  // Perfil já foi carregado acima; maybeSingle() evita 406 em leitura concorrente.
+  const { data: p } = await supabase.from("usuarios").select("seguidores").eq("id",perfilUsuarioId).maybeSingle();
+  document.getElementById("seguidoresCount").textContent = p?.seguidores||0;
+});
+
+document.getElementById("btnDenunciarPerfil").addEventListener("click", () => { document.getElementById("modal-denuncia").style.display="flex"; });
+document.getElementById("btn-enviar-denuncia")?.addEventListener("click", async () => {
+  const motivo = document.getElementById("denuncia-motivo").value;
+  if (!motivo || !usuarioAtual) { alert("Selecione um motivo."); return; }
+  const ok = await executarOuAvisar(supabase.from("denuncias").insert({tipo:"perfil",alvo_id:perfilUsuarioId,denunciante_id:usuarioAtual.id,motivo,descricao:document.getElementById("denuncia-desc").value}), "Não foi possível enviar a denúncia.");
+  if (ok === null) return;
+  document.getElementById("modal-denuncia").style.display="none";
+  alert("✅ Denúncia enviada. Analisaremos em breve.");
+});
+
+document.querySelectorAll(".estrela").forEach(e => {
+  e.style.cursor="pointer"; e.style.fontSize="28px"; e.style.color="#ddd";
+  e.addEventListener("mouseover", () => { document.querySelectorAll(".estrela").forEach((s,i)=>s.style.color=i<Number(e.dataset.v)?"#ffd700":"#ddd"); });
+  e.addEventListener("mouseout", () => { document.querySelectorAll(".estrela").forEach((s,i)=>s.style.color=i<notaEscolhida?"#ffd700":"#ddd"); });
+  e.addEventListener("click", () => { notaEscolhida=Number(e.dataset.v); document.querySelectorAll(".estrela").forEach((s,i)=>s.style.color=i<notaEscolhida?"#ffd700":"#ddd"); });
+});
+
+document.getElementById("btn-enviar-avaliacao")?.addEventListener("click", async () => {
+  if (!usuarioAtual) { alert("Faça login para avaliar."); return; }
+  if (!notaEscolhida) { alert("Selecione uma nota."); return; }
+  const { error } = await supabase.from("avaliacoes").upsert({avaliador_id:usuarioAtual.id,avaliado_id:perfilUsuarioId,nota:notaEscolhida,comentario:document.getElementById("avaliacao-comentario").value},{onConflict:"avaliador_id,avaliado_id"});
+  if (error) { alert("Erro: "+error.message); return; }
+  const { data: avals } = await supabase.from("avaliacoes").select("nota").eq("avaliado_id",perfilUsuarioId);
+  if (avals?.length) {
+    const media = avals.reduce((s,a)=>s+a.nota,0)/avals.length;
+    // Atualização derivada da média — falha aqui não bloqueia o usuário, mas é avisada no console.
+    const { error: errMedia } = await supabase.from("usuarios").update({nota_media:media,total_avaliacoes:avals.length}).eq("id",perfilUsuarioId);
+    if (errMedia) console.error("Falha ao atualizar média do avaliado:", errMedia.message);
+  }
+  alert("⭐ Avaliação enviada!");
+});
+
+document.getElementById("btnEditarFoto").addEventListener("click", ()=>document.getElementById("uploadFoto").click());
+document.getElementById("btnEditarCapa").addEventListener("click", ()=>document.getElementById("uploadCapa").click());
+
+document.getElementById("uploadFoto").addEventListener("change", async e => {
+  const file = e.target.files[0]; if (!file||!usuarioAtual) return;
+  if (!file.type.startsWith('image/')||file.size>5*1024*1024) { alert("Imagem inválida ou > 5MB"); return; }
+  const cam = `perfil/${usuarioAtual.id}/foto_${Date.now()}.jpg`;
+  const { error: ue } = await supabase.storage.from("fotos-perfil").upload(cam, file);
+  if (ue) { alert("Erro: "+ue.message); return; }
+  const { data: u } = supabase.storage.from("fotos-perfil").getPublicUrl(cam);
+  const ok = await executarOuAvisar(supabase.from("usuarios").update({foto:u.publicUrl}).eq("id",usuarioAtual.id), "Não foi possível salvar a foto de perfil.");
+  if (ok === null) return;
+  fotoPerfil.src=u.publicUrl; document.getElementById("header-foto").src=u.publicUrl; alert("Foto atualizada!");
+});
+
+document.getElementById("uploadCapa").addEventListener("change", async e => {
+  const file = e.target.files[0]; if (!file||!usuarioAtual) return;
+  const cam = `perfil/${usuarioAtual.id}/capa_${Date.now()}.jpg`;
+  const { error: ue } = await supabase.storage.from("fotos-perfil").upload(cam, file);
+  if (ue) { alert("Erro no upload da capa: "+ue.message); return; }
+  const { data: u } = supabase.storage.from("fotos-perfil").getPublicUrl(cam);
+  const ok = await executarOuAvisar(supabase.from("usuarios").update({capa_foto:u.publicUrl}).eq("id",usuarioAtual.id), "Não foi possível salvar a capa.");
+  if (ok === null) return;
+  capaFoto.src=u.publicUrl; alert("Capa atualizada!");
+});
+
+document.getElementById("form-dados")?.addEventListener("submit", async e => {
+  e.preventDefault(); if (!usuarioAtual) return;
+  const { error } = await supabase.from("usuarios").update({nome:document.getElementById("nome").value,idade:document.getElementById("idade").value?Number(document.getElementById("idade").value):null,cidade:document.getElementById("cidade").value,estado:document.getElementById("estado").value,telefone:document.getElementById("telefone").value,bio:document.getElementById("bio").value,instagram:document.getElementById("instagram").value,site:document.getElementById("site").value,atualizado_em:new Date().toISOString()}).eq("id",usuarioAtual.id);
+  if (error) { alert("Erro: "+error.message); return; }
+  alert("Dados salvos!"); nomeExibido.textContent = document.getElementById("nome").value;
+});
+
+document.getElementById("excluirConta")?.addEventListener("click", async () => {
+  if (!confirm("Excluir conta permanentemente?")) return;
+  const ok = await executarOuAvisar(supabase.from("usuarios").delete().eq("id",usuarioAtual.id), "Não foi possível excluir a conta.");
+  if (ok === null) return;
+  await supabase.auth.signOut(); alert("Conta excluída"); window.location.href="../MG-LOGIN/login.html";
+});
+
+async function carregarDadosForm() {
+  if (!usuarioAtual) return;
+  // Melhoria 1: maybeSingle() — perfil do próprio usuário pode não ter sido criado ainda.
+  const { data } = await supabase.from("usuarios").select("*").eq("id",usuarioAtual.id).maybeSingle();
+  if (data) {
+    document.getElementById("nome").value = data.nome||"";
+    document.getElementById("idade").value = data.idade||"";
+    document.getElementById("cidade").value = data.cidade||"";
+    document.getElementById("estado").value = data.estado||"";
+    document.getElementById("telefone").value = data.telefone||"";
+    document.getElementById("bio").value = data.bio||"";
+    document.getElementById("instagram").value = data.instagram||"";
+    document.getElementById("site").value = data.site||"";
+    document.getElementById("email").value = usuarioAtual.email||"";
+    document.getElementById("dataCriacao").value = usuarioAtual.created_at?new Date(usuarioAtual.created_at).toLocaleDateString("pt-BR"):"";
+  }
+}
+
+document.querySelectorAll(".tab-btn[data-tab]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn[data-tab]").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll("#tabs-proprio .tab-content").forEach(c=>c.classList.remove("active"));
+    btn.classList.add("active"); document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+  });
+});
+document.querySelectorAll(".tab-btn[data-tab-outro]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn[data-tab-outro]").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll("#tabs-outro .tab-content").forEach(c=>c.classList.remove("active"));
+    btn.classList.add("active"); document.getElementById(`tab-${btn.dataset.tabOutro}`).classList.add("active");
+    if (btn.dataset.tabOutro === "fotos-outro") {
+      const uid = new URLSearchParams(location.search).get("id");
+      carregarPostsOutro(uid);
+    }
+  });
+});
+
+async function carregarPostsOutro(uid) {
+  const grid = document.getElementById("posts-grid-outro"); if (!grid) return;
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;">Carregando...</p>';
+  const { data } = await supabase.from("posts_usuario").select("*").eq("usuario_id", uid).order("criado_em", {ascending: false});
+  if (!data || data.length === 0) { grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;padding:30px 0;">Nenhuma foto publicada ainda.</p>'; return; }
+  grid.innerHTML = data.map(p => `
+    <div class="post-card-outro" data-id="${escapeHtml(p.id)}" data-imagem="${escapeHtml(p.imagem)}" data-legenda="${escapeHtml(p.legenda || '')}" data-curtidas="${Number(p.curtidas || 0)}" style="aspect-ratio:1;overflow:hidden;border-radius:8px;cursor:pointer;background:#eee;">
+      <img src="${escapeHtml(p.imagem)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+    </div>
+  `).join('');
+  grid.querySelectorAll(".post-card-outro").forEach(el => {
+    el.addEventListener("click", () => {
+      abrirFotoPostEl(el.dataset.id, el.dataset.imagem, el.dataset.legenda, el.dataset.curtidas);
+    });
+  });
+}
+
+async function abrirModalSeguidores(tipo) {
+  const modal = document.getElementById("modal-seguidores");
+  const lista = document.getElementById("modal-seg-lista");
+  const titulo = document.getElementById("modal-seg-titulo");
+  titulo.textContent = tipo === 'seguidores' ? '👥 Seguidores' : '👣 Seguindo';
+  lista.innerHTML = '<p style="text-align:center;color:#888;">Carregando...</p>';
+  modal.style.display = 'flex';
+  let users = [];
+  if (tipo === 'seguidores') {
+    const { data } = await supabase.from("seguidores").select("seguidor_id, usuarios!seguidor_id(id,nome,foto,cidade)").eq("seguido_id", perfilUsuarioId);
+    users = data?.map(r => r.usuarios) || [];
+  } else {
+    const { data } = await supabase.from("seguidores").select("seguido_id, usuarios!seguido_id(id,nome,foto,cidade)").eq("seguidor_id", perfilUsuarioId);
+    users = data?.map(r => r.usuarios) || [];
+  }
+  if (!users.length) { lista.innerHTML = '<p style="text-align:center;color:#888;">Nenhum usuário aqui ainda.</p>'; return; }
+  lista.innerHTML = users.map(u => `
+    <a href="conta.html?id=${u.id}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1.5px solid rgba(20,75,113,.1);text-decoration:none;color:inherit;transition:background .2s;" onmouseover="this.style.background='rgba(20,75,113,.05)'" onmouseout="this.style.background=''">
+      <img src="${u.foto||'../imagens/usuario.png'}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+      <div><div style="font-weight:800;font-size:14px;color:#144b71;">${escapeHtml(u.nome)||'Usuário'}</div>${u.cidade?`<div style="font-size:12px;color:#888;">${escapeHtml(u.cidade)}</div>`:''}</div>
+    </a>
+  `).join('');
+}
+
+document.getElementById("stat-seguidores").addEventListener("click", () => abrirModalSeguidores('seguidores'));
+document.getElementById("stat-seguindo").addEventListener("click", () => abrirModalSeguidores('seguindo'));
+
+// ---- FOTOS / POSTS ----
+async function carregarPostsFotos() {
+  const uid = new URLSearchParams(location.search).get("id") || usuarioAtual?.id;
+  if (!uid) return;
+  const grid = document.getElementById("posts-grid");
+  if (!grid) return;
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;">Carregando...</p>';
+  const { data } = await supabase.from("posts_usuario").select("*").eq("usuario_id", uid).order("criado_em", {ascending: false});
+  if (!data || data.length === 0) {
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;padding:30px 0;">Nenhuma foto publicada ainda.</p>'; return;
+  }
+  grid.innerHTML = data.map(p => `
+    <div class="post-card" data-id="${escapeHtml(p.id)}" data-imagem="${escapeHtml(p.imagem)}" data-legenda="${escapeHtml(p.legenda || '')}" data-curtidas="${Number(p.curtidas || 0)}" style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:8px;cursor:pointer;background:#eee;">
+      <img src="${escapeHtml(p.imagem)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+      <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:8px 10px;color:#fff;font-size:12px;display:flex;gap:6px;align-items:center;">
+        <span>❤️ ${Number(p.curtidas||0)}</span>
+      </div>
+      ${uid === usuarioAtual?.id ? `<button class="post-card-excluir" data-id="${escapeHtml(p.id)}" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;">✕</button>` : ''}
+    </div>
+  `).join('');
+  grid.querySelectorAll(".post-card").forEach(el => {
+    el.addEventListener("click", () => {
+      abrirFotoPostEl(el.dataset.id, el.dataset.imagem, el.dataset.legenda, el.dataset.curtidas);
+    });
+  });
+  grid.querySelectorAll(".post-card-excluir").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      excluirPost(btn.dataset.id, btn.closest(".post-card"));
+    });
+  });
+}
+
+async function excluirPost(id, card) {
+  if (!confirm("Excluir esta foto?")) return;
+  const ok = await executarOuAvisar(supabase.from("posts_usuario").delete().eq("id", id), "Não foi possível excluir a foto.");
+  if (ok === null) return;
+  card?.remove();
+}
+
+function abrirFotoPostEl(id, imagem, legenda, curtidas) {
+  document.getElementById("modal-foto-post-img").src = imagem;
+  document.getElementById("modal-foto-post-legenda").textContent = legenda || '';
+  document.getElementById("modal-foto-post-curtidas").textContent = '❤️ ' + curtidas;
+  document.getElementById("modal-foto-post").style.display = 'flex';
+};
+
+// Upload nova foto/post (função nomeada para poder re-anexar o listener após recriar o input)
+async function handleUploadPostFoto(e) {
+  const file = e.target.files[0]; if (!file || !usuarioAtual) return;
+  if (file.size > 5 * 1024 * 1024) { alert("Foto muito grande. Máximo: 5MB."); return; }
+  const legenda = prompt("Adicione uma legenda (opcional):") || '';
+  const btn = document.getElementById("btn-nova-foto");
+  btn.textContent = "⏳ Enviando...";
+  const ext = file.name.split('.').pop();
+  const path = `posts/${usuarioAtual.id}/${Date.now()}.${ext}`;
+  const { data: up, error } = await supabase.storage.from("fotos-perfil").upload(path, file, {upsert: true});
+  if (error) { alert("Erro ao enviar: " + error.message); btn.innerHTML = '📷 Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }
+  const { data: url } = supabase.storage.from("fotos-perfil").getPublicUrl(path);
+  const okPost = await executarOuAvisar(supabase.from("posts_usuario").insert({ usuario_id: usuarioAtual.id, imagem: url.publicUrl, legenda, curtidas: 0 }), "Não foi possível publicar a foto.");
+  if (okPost === null) { btn.innerHTML = '📷 Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }
+  btn.innerHTML = '📷 Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">';
+  reatacharUploadFoto();
+  carregarPostsFotos();
+}
+function reatacharUploadFoto() {
+  document.getElementById("upload-post-foto")?.addEventListener("change", handleUploadPostFoto);
+}
+reatacharUploadFoto();
+
+// Tab switch — carregar fotos ao abrir tab
+const tabOriginal = document.querySelectorAll(".tab-btn[data-tab]");
+tabOriginal.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (btn.dataset.tab === "fotos") carregarPostsFotos();
+  });
+});
+
+await carregarDadosForm();
+await carregarPerfil();
+</script>
+<!-- Modal visualizar foto do post -->
+<div id="modal-foto-post" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:3000;justify-content:center;align-items:center;backdrop-filter:blur(8px);">
+  <div style="background:var(--branco,#fff);border-radius:20px;overflow:hidden;max-width:520px;width:96%;position:relative;">
+    <span onclick="document.getElementById('modal-foto-post').style.display='none'" style="position:absolute;top:12px;right:16px;font-size:26px;cursor:pointer;color:#fff;z-index:1;text-shadow:0 2px 8px rgba(0,0,0,.6);">×</span>
+    <img id="modal-foto-post-img" src="" style="width:100%;max-height:420px;object-fit:cover;display:block;">
+    <div style="padding:16px 18px;">
+      <p id="modal-foto-post-legenda" style="font-size:14px;color:var(--texto,#1a2a38);margin-bottom:8px;"></p>
+      <span id="modal-foto-post-curtidas" style="font-size:13px;color:#e84040;font-weight:700;"></span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

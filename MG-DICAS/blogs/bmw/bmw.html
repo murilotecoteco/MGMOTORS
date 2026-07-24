@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG-BMW</title>
+    <link rel="stylesheet" href="bmw.css">
+    <link rel="stylesheet" href="../../../global.css">
+</head>
+
+<body>
+
+<header id="header-global"></header>
+
+    <main>
+
+        <h1>História</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A BMW (Bayerische Motoren Werke) é uma fabricante alemã de carros e motocicletas fundada em 1916. É conhecida por unir luxo, desempenho e inovação tecnológica em seus veículos.
+                </p>
+                <!-- Fonte: https://www.bmw.com 
+                     https://pt.wikipedia.org/wiki/BMW
+                -->
+            </div>
+            <div class="pic">
+                <img src="bmw-img/bmw_fundadores.webp" alt="Fundador BMW">
+            </div>
+                <!--https://blog.logomyway.com/bmw-logo/-->
+        </div>
+
+        <h1>Design e Performance</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    Os carros da BMW se destacam pelo design elegante e esportivo, além de sistemas de direção e suspensão que proporcionam uma experiência de condução dinâmica e segura.
+                </p>
+                <!-- Fonte: https://www.bmw.com 
+                     https://www.motor1.com/news/441910/bmw-m4-review/
+                -->
+            </div>
+            <div class="pic">
+                <img src="../imagem-marcas/bmw.png" alt="Design BMW">
+            </div>
+        </div>
+
+        <h1>Tecnologia</h1>
+        <div class="box">
+            <div class="text">
+                <p>
+                    A BMW aplica tecnologias avançadas em seus veículos, como assistentes de direção, sistemas híbridos e elétricos, conectividade inteligente e construção leve para desempenho e eficiência.
+                </p>
+                <!-- Fonte: https://www.bmw.com 
+                     https://en.wikipedia.org/wiki/BMW
+                -->
+            </div>
+            <div class="pic">
+                <img src="bmw-img/bmw_tecnologia.webp" alt="Tecnologia BMW">
+            </div>
+                <!--https://blog.logomyway.com/bmw-logo/-->
+        </div>
+
+        <h1>Modelos Mais Vendidos</h1>
+        <div class="box">
+            <div class="text">
+                <h2>BMW M3</h2>
+                <p>
+                    O M3 é um dos modelos esportivos mais icônicos da BMW, com motor potente, chassi aprimorado e tecnologia de alto desempenho.
+                </p>
+            </div>
+            <div class="pic">
+                <img src="bmw-img/bmw_m3.webp" alt="BMW M3">
+            </div>
+                <!--https://www.iesabmw.com.br/novos/bmw-m3-competition-->
+        </div>
+
+        <div class="box">
+            <div class="text">
+                <h2>BMW X5</h2>
+                <p>
+                    O X5 é um SUV de luxo com design moderno, conforto e tecnologias avançadas, ideal para quem busca performance e espaço.
+                </p>
+            </div>
+            <div class="pic">
+                <img src="bmw-img/bmw_x5.webp" alt="BMW X5">
+            </div>
+        </div>
+                <!--https://www.iesabmw.com.br/novos/bmw-x5-->
+
+        <div class="box">
+            <div class="text">
+                <h2>BMW i8</h2>
+                <p>
+                    O i8 é um híbrido esportivo da BMW, unindo design futurista, motor elétrico e a potência de um motor a combustão para alta performance sustentável.
+                </p>
+            </div>
+            <div class="pic">
+                <img src="bmw-img/bmw_i8.webp" alt="BMW i8">
+            </div>
+                <!--https://www.pngmart.com/image/465693-->
+        </div>
+
+        <footer>
+            <p>© 2026 MG Motors Inc. Todos os direitos reservados.</p>
+            <h1><span class="mg">MG</span><span class="motors">Motors</span></h1>
+        </footer>
+
+    </main>
+
+<script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
+    import { carregarHeaderGlobal } from "../../../headerGlobal.js";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    await carregarHeaderGlobal(supabase);
+</script>
+
+</body>
+
+</html>

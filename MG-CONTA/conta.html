@@ -1,7 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+  <link rel="shortcut icon" href="../imagens/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Minha Conta - MG Motors | Perfil e Anúncios</title>
 <meta name="description" content="Gerencie seu perfil, anúncios publicados, favoritos e avaliações recebidas na MG Motors.">
@@ -12,9 +14,17 @@
 <link rel="stylesheet" href="conta.css">
 <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
+<link rel="canonical" href="https://mgmotors.vercel.app/MG-CONTA/conta.html">
 </head>
 <body>
 <header id="header-global"></header>
+  <!-- Breadcrumb -->
+  <nav class="mg-breadcrumb" aria-label="Navegação estrutural">
+    <a href="../MG-INICIO/inicio.html">Início</a>
+    <span class="sep" aria-hidden="true">›</span>
+    <span class="current" aria-current="page">Minha Conta</span>
+  </nav>
+
 
 <div class="container-principal">
   <div class="perfil-header">
@@ -202,7 +212,7 @@ async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. 
   const { data, error } = await promise;
   if (error) {
     console.error(error);
-    alert(mensagemErroPadrao + (error.message ? `\n(${error.message})` : ""));
+    window.mgToast?.(mensagemErroPadrao + (error.message ? ` (${error.message})` : ""), "error");
     return null;
   }
   return data;
@@ -328,7 +338,7 @@ async function carregarPausados() {
     e.stopPropagation();
     const ok = await executarOuAvisar(supabase.from("anuncios").update({pausado:false,status:"ativo"}).eq("id",btn.dataset.id), "Não foi possível reativar o anúncio.");
     if (ok === null) return;
-    alert("✅ Anúncio reativado com sucesso!"); carregarPausados(); carregarMeusAnuncios();
+    window.mgToast?.("✅ Anúncio reativado com sucesso!", "success"); carregarPausados(); carregarMeusAnuncios();
   }));
 }
 
@@ -357,7 +367,7 @@ async function carregarCurtidasRecebidas() {
 }
 
 btnSeguir.addEventListener("click", async () => {
-  if (!usuarioAtual) { alert("Faça login"); window.location.href="../MG-LOGIN/login.html"; return; }
+  if (!usuarioAtual) { window.mgToast?.("Faça login", "info"); window.location.href="../MG-LOGIN/login.html"; return; }
   const seg = btnSeguir.classList.contains("seguindo");
   if (seg) {
     const ok = await executarOuAvisar(supabase.from("seguidores").delete().eq("seguidor_id",usuarioAtual.id).eq("seguido_id",perfilUsuarioId), "Não foi possível deixar de seguir.");
@@ -376,11 +386,11 @@ btnSeguir.addEventListener("click", async () => {
 document.getElementById("btnDenunciarPerfil").addEventListener("click", () => { document.getElementById("modal-denuncia").style.display="flex"; });
 document.getElementById("btn-enviar-denuncia")?.addEventListener("click", async () => {
   const motivo = document.getElementById("denuncia-motivo").value;
-  if (!motivo || !usuarioAtual) { alert("Selecione um motivo."); return; }
+  if (!motivo || !usuarioAtual) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
   const ok = await executarOuAvisar(supabase.from("denuncias").insert({tipo:"perfil",alvo_id:perfilUsuarioId,denunciante_id:usuarioAtual.id,motivo,descricao:document.getElementById("denuncia-desc").value}), "Não foi possível enviar a denúncia.");
   if (ok === null) return;
   document.getElementById("modal-denuncia").style.display="none";
-  alert("✅ Denúncia enviada. Analisaremos em breve.");
+  window.mgToast?.("✅ Denúncia enviada. Analisaremos em breve.", "success");
 });
 
 document.querySelectorAll(".estrela").forEach(e => {
@@ -391,10 +401,10 @@ document.querySelectorAll(".estrela").forEach(e => {
 });
 
 document.getElementById("btn-enviar-avaliacao")?.addEventListener("click", async () => {
-  if (!usuarioAtual) { alert("Faça login para avaliar."); return; }
-  if (!notaEscolhida) { alert("Selecione uma nota."); return; }
+  if (!usuarioAtual) { window.mgToast?.("Faça login para avaliar.", "warning"); return; }
+  if (!notaEscolhida) { window.mgToast?.("Selecione uma nota.", "warning"); return; }
   const { error } = await supabase.from("avaliacoes").upsert({avaliador_id:usuarioAtual.id,avaliado_id:perfilUsuarioId,nota:notaEscolhida,comentario:document.getElementById("avaliacao-comentario").value},{onConflict:"avaliador_id,avaliado_id"});
-  if (error) { alert("Erro: "+error.message); return; }
+  if (error) { window.mgToast?.("Erro: " + error.message, "error"); return; }
   const { data: avals } = await supabase.from("avaliacoes").select("nota").eq("avaliado_id",perfilUsuarioId);
   if (avals?.length) {
     const media = avals.reduce((s,a)=>s+a.nota,0)/avals.length;
@@ -402,7 +412,7 @@ document.getElementById("btn-enviar-avaliacao")?.addEventListener("click", async
     const { error: errMedia } = await supabase.from("usuarios").update({nota_media:media,total_avaliacoes:avals.length}).eq("id",perfilUsuarioId);
     if (errMedia) console.error("Falha ao atualizar média do avaliado:", errMedia.message);
   }
-  alert("⭐ Avaliação enviada!");
+  window.mgToast?.("⭐ Avaliação enviada!", "info");
 });
 
 document.getElementById("btnEditarFoto").addEventListener("click", ()=>document.getElementById("uploadFoto").click());
@@ -410,39 +420,39 @@ document.getElementById("btnEditarCapa").addEventListener("click", ()=>document.
 
 document.getElementById("uploadFoto").addEventListener("change", async e => {
   const file = e.target.files[0]; if (!file||!usuarioAtual) return;
-  if (!file.type.startsWith('image/')||file.size>5*1024*1024) { alert("Imagem inválida ou > 5MB"); return; }
+  if (!file.type.startsWith('image/')||file.size>5*1024*1024) { window.mgToast?.("Imagem inválida ou > 5MB", "info"); return; }
   const cam = `perfil/${usuarioAtual.id}/foto_${Date.now()}.jpg`;
   const { error: ue } = await supabase.storage.from("fotos-perfil").upload(cam, file);
-  if (ue) { alert("Erro: "+ue.message); return; }
+  if (ue) { window.mgToast?.("Erro: " + ue.message, "error"); return; }
   const { data: u } = supabase.storage.from("fotos-perfil").getPublicUrl(cam);
   const ok = await executarOuAvisar(supabase.from("usuarios").update({foto:u.publicUrl}).eq("id",usuarioAtual.id), "Não foi possível salvar a foto de perfil.");
   if (ok === null) return;
-  fotoPerfil.src=u.publicUrl; document.getElementById("header-foto").src=u.publicUrl; alert("Foto atualizada!");
+  fotoPerfil.src=u.publicUrl; document.getElementById("header-foto").src=u.publicUrl; window.mgToast?.("Foto atualizada!", "info");
 });
 
 document.getElementById("uploadCapa").addEventListener("change", async e => {
   const file = e.target.files[0]; if (!file||!usuarioAtual) return;
   const cam = `perfil/${usuarioAtual.id}/capa_${Date.now()}.jpg`;
   const { error: ue } = await supabase.storage.from("fotos-perfil").upload(cam, file);
-  if (ue) { alert("Erro no upload da capa: "+ue.message); return; }
+  if (ue) { window.mgToast?.("Erro no upload da capa: " + ue.message, "error"); return; }
   const { data: u } = supabase.storage.from("fotos-perfil").getPublicUrl(cam);
   const ok = await executarOuAvisar(supabase.from("usuarios").update({capa_foto:u.publicUrl}).eq("id",usuarioAtual.id), "Não foi possível salvar a capa.");
   if (ok === null) return;
-  capaFoto.src=u.publicUrl; alert("Capa atualizada!");
+  capaFoto.src=u.publicUrl; window.mgToast?.("Capa atualizada!", "info");
 });
 
 document.getElementById("form-dados")?.addEventListener("submit", async e => {
   e.preventDefault(); if (!usuarioAtual) return;
   const { error } = await supabase.from("usuarios").update({nome:document.getElementById("nome").value,idade:document.getElementById("idade").value?Number(document.getElementById("idade").value):null,cidade:document.getElementById("cidade").value,estado:document.getElementById("estado").value,telefone:document.getElementById("telefone").value,bio:document.getElementById("bio").value,instagram:document.getElementById("instagram").value,site:document.getElementById("site").value,atualizado_em:new Date().toISOString()}).eq("id",usuarioAtual.id);
-  if (error) { alert("Erro: "+error.message); return; }
-  alert("Dados salvos!"); nomeExibido.textContent = document.getElementById("nome").value;
+  if (error) { window.mgToast?.("Erro: " + error.message, "error"); return; }
+  window.mgToast?.("Dados salvos!", "info"); nomeExibido.textContent = document.getElementById("nome").value;
 });
 
 document.getElementById("excluirConta")?.addEventListener("click", async () => {
   if (!confirm("Excluir conta permanentemente?")) return;
   const ok = await executarOuAvisar(supabase.from("usuarios").delete().eq("id",usuarioAtual.id), "Não foi possível excluir a conta.");
   if (ok === null) return;
-  await supabase.auth.signOut(); alert("Conta excluída"); window.location.href="../MG-LOGIN/login.html";
+  await supabase.auth.signOut(); window.mgToast?.("Conta excluída", "info"); window.location.href="../MG-LOGIN/login.html";
 });
 
 async function carregarDadosForm() {
@@ -576,14 +586,14 @@ function abrirFotoPostEl(id, imagem, legenda, curtidas) {
 // Upload nova foto/post (função nomeada para poder re-anexar o listener após recriar o input)
 async function handleUploadPostFoto(e) {
   const file = e.target.files[0]; if (!file || !usuarioAtual) return;
-  if (file.size > 5 * 1024 * 1024) { alert("Foto muito grande. Máximo: 5MB."); return; }
+  if (file.size > 5 * 1024 * 1024) { window.mgToast?.("Foto muito grande. Máximo: 5MB.", "info"); return; }
   const legenda = prompt("Adicione uma legenda (opcional):") || '';
   const btn = document.getElementById("btn-nova-foto");
   btn.textContent = "⏳ Enviando...";
   const ext = file.name.split('.').pop();
   const path = `posts/${usuarioAtual.id}/${Date.now()}.${ext}`;
   const { data: up, error } = await supabase.storage.from("fotos-perfil").upload(path, file, {upsert: true});
-  if (error) { alert("Erro ao enviar: " + error.message); btn.innerHTML = '📷 Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }
+  if (error) { window.mgToast?.("Erro ao enviar: " + error.message, "error"); btn.innerHTML = '📷 Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }
   const { data: url } = supabase.storage.from("fotos-perfil").getPublicUrl(path);
   const okPost = await executarOuAvisar(supabase.from("posts_usuario").insert({ usuario_id: usuarioAtual.id, imagem: url.publicUrl, legenda, curtidas: 0 }), "Não foi possível publicar a foto.");
   if (okPost === null) { btn.innerHTML = '📷 Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }

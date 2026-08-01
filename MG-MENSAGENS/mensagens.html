@@ -1,7 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+  <link rel="shortcut icon" href="../imagens/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensagens - MG Motors | Negocie com Segurança</title>
     <meta name="description" content="Converse com compradores e vendedores de veículos de forma segura pelo sistema de mensagens da MG Motors.">
@@ -12,9 +14,17 @@
     <link rel="stylesheet" href="mensagens.css">
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
+<link rel="canonical" href="https://mgmotors.vercel.app/MG-MENSAGENS/mensagens.html">
 </head>
 <body>
 <header id="header-global"></header>
+  <!-- Breadcrumb -->
+  <nav class="mg-breadcrumb" aria-label="Navegação estrutural">
+    <a href="../MG-INICIO/inicio.html">Início</a>
+    <span class="sep" aria-hidden="true">›</span>
+    <span class="current" aria-current="page">Mensagens</span>
+  </nav>
+
 
 <div class="container">
     <h1 class="page-title">💬 Minhas Mensagens</h1>
@@ -70,7 +80,7 @@ async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. 
   const { data, error } = await promise;
   if (error) {
     console.error(error);
-    alert(mensagemErroPadrao + (error.message ? `\n(${error.message})` : ""));
+    window.mgToast?.(mensagemErroPadrao + (error.message ? ` (${error.message})` : ""), "error");
     return null;
   }
   return data;
@@ -299,11 +309,11 @@ document.getElementById("btn-enviar").addEventListener('click', enviarMensagem);
 document.getElementById("input-foto-msg").addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file || !conversaAtual || !usuarioAtual) return;
-  if (file.size > 5 * 1024 * 1024) { alert("Foto máx. 5MB!"); return; }
+  if (file.size > 5 * 1024 * 1024) { window.mgToast?.("Foto máx. 5MB!", "info"); return; }
   const ext = file.name.split('.').pop();
   const caminho = `mensagens/${usuarioAtual.id}/${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, file);
-  if (error) { alert("Erro ao enviar foto: " + error.message); return; }
+  if (error) { window.mgToast?.("Erro ao enviar foto: " + error.message, "error"); return; }
   const { data: urlData } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
   // Melhoria 1: conversa nova -> maybeSingle().
   const { data: lastMsg } = await supabase.from('mensagens').select('carro_info').or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`).limit(1).maybeSingle();
@@ -319,7 +329,7 @@ let denunciaMsgId = null;
 let denunciaMsgTipo = null;
 
 function abrirDenunciaMensagem(msgId, tipo) {
-  if (!usuarioAtual) { alert("Faça login para denunciar."); return; }
+  if (!usuarioAtual) { window.mgToast?.("Faça login para denunciar.", "warning"); return; }
   denunciaMsgId = msgId;
   denunciaMsgTipo = tipo;
   document.getElementById("denuncia-msg-motivo").value = "";
@@ -330,7 +340,7 @@ function abrirDenunciaMensagem(msgId, tipo) {
 
 document.getElementById("btn-enviar-denuncia-msg").addEventListener("click", async () => {
   const motivo = document.getElementById("denuncia-msg-motivo").value;
-  if (!motivo) { alert("Selecione um motivo."); return; }
+  if (!motivo) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
   const { error } = await supabase.from("denuncias").insert({
     tipo: 'mensagem',
     alvo_id: denunciaMsgId,
@@ -338,9 +348,9 @@ document.getElementById("btn-enviar-denuncia-msg").addEventListener("click", asy
     motivo,
     descricao: document.getElementById("denuncia-msg-desc").value || null
   });
-  if (error) { alert("Erro: " + error.message); return; }
+  if (error) { window.mgToast?.("Erro: " + error.message, "error"); return; }
   document.getElementById("modal-denuncia-msg").style.display = "none";
-  alert("✅ Denúncia enviada. Analisaremos em breve.");
+  window.mgToast?.("✅ Denúncia enviada. Analisaremos em breve.", "success");
 });
 document.getElementById("mensagem-texto").addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarMensagem(); } });
 setInterval(() => { if (conversaAtual) carregarMensagensConversa(conversaAtual); carregarConversas(); }, 5000);

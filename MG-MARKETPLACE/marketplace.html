@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+  <link rel="shortcut icon" href="../imagens/favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Marketplace - MG Motors | Compra e Venda de Veículos</title>
   <meta name="description" content="Encontre carros esportivos, seminovos e importados no marketplace da MG Motors. Filtros avançados, anúncios verificados e negociação segura.">
@@ -12,7 +14,29 @@
   <meta property="og:type" content="website">
   <link rel="stylesheet" href="marketplace.css">
   <link rel="stylesheet" href="../global.css">
+  <style>
+    /* Animação de entrada dos cards */
+    @keyframes cardEntrada {
+      from { opacity: 0; transform: translateY(22px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+    .card { opacity: 0; animation: cardEntrada 0.4s ease forwards; }
+    @media (prefers-reduced-motion: reduce) {
+      .card { opacity: 1; animation: none; }
+    }
+    /* Contador de chars */
+    .textarea-wrap { position: relative; }
+    .char-counter {
+      position: absolute; bottom: 10px; right: 14px;
+      font-size: 11px; font-weight: 700;
+      color: var(--texto-suave); pointer-events: none;
+      transition: color 0.2s;
+    }
+    .char-counter.quase { color: #f59e0b; }
+    .char-counter.limite { color: #ef4444; }
+  </style>
 <script src="../tema.js"></script>
+<link rel="canonical" href="https://mgmotors.vercel.app/MG-MARKETPLACE/marketplace.html">
 </head>
 
 <body>
@@ -24,6 +48,13 @@
       <p>Compra e venda de carros esportivos, seminovos e importados</p>
     </div>
   </div>
+
+  <!-- Breadcrumb -->
+  <nav class="mg-breadcrumb" aria-label="Navegação estrutural">
+    <a href="../MG-INICIO/inicio.html">Início</a>
+    <span class="sep" aria-hidden="true">›</span>
+    <span class="current" aria-current="page">Marketplace</span>
+  </nav>
 
   <main>
     <div class="pesquisa">
@@ -76,10 +107,32 @@
 
     <div id="resultados-info" class="resultados-info"></div>
     <div id="lista-anuncios" class="grid-quadrado">
-      <div class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Carregando anúncios...</p>
-      </div>
+      <!-- Skeleton loaders exibidos enquanto os anúncios carregam -->
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+      <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
+    </div>
+
+    <!-- Controles de paginação -->
+    <div id="paginacao" class="paginacao" style="display:none;" aria-label="Paginação">
+      <button id="btn-pag-anterior" class="btn-pag" aria-label="Página anterior" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        Anterior
+      </button>
+      <span id="pag-info" class="pag-info"></span>
+      <button id="btn-pag-proxima" class="btn-pag" aria-label="Próxima página">
+        Próxima
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
     </div>
   </main>
 
@@ -95,7 +148,10 @@
         <select id="select-modelo" required disabled>
           <option value="">Selecione o Modelo</option>
         </select>
-        <input type="text" id="car-whatsapp" placeholder="WhatsApp (ex: 44999999999)" required>
+        <input type="tel" id="car-whatsapp" placeholder="WhatsApp (ex: 44999999999)" required
+          pattern="^\d{10,11}$" maxlength="11" inputmode="numeric"
+          title="Informe DDD + número, ex: 44999999999 (10 ou 11 dígitos)">
+        <small id="whatsapp-erro" style="color:#e84040;font-size:11px;display:none;margin-top:-6px;">Número inválido. Use DDD + número (ex: 44999999999).</small>
         <div class="form-row">
           <input type="number" id="car-ano" placeholder="Ano fabricação" required>
           <input type="number" id="car-ano-modelo" placeholder="Ano modelo" required>
@@ -119,17 +175,22 @@
           </select>
         </div>
         <button type="button" id="btn-usar-gps" class="btn-gps">Usar minha localização</button>
-        <textarea id="car-descricao" placeholder="Descrição do veículo" rows="3" required></textarea>
+        <div class="textarea-wrap">
+          <textarea id="car-descricao" placeholder="Descrição do veículo" rows="3" required maxlength="500"></textarea>
+          <span class="char-counter" id="descricao-counter" aria-live="polite">0/500</span>
+        </div>
         <div class="upload-area">
           <label class="upload-label">Foto principal (obrigatória)</label>
-          <input type="file" id="car-image" accept="image/*" required>
+          <input type="file" id="car-image" accept="image/jpeg,image/png,image/webp" required>
+          <small id="upload-principal-info" style="font-size:11px;color:var(--texto-suave);margin-top:4px;display:block;"></small>
         </div>
         <div class="upload-area">
           <label class="upload-label">Fotos adicionais (até 4)</label>
-          <input type="file" id="car-images-adicionais" accept="image/*" multiple>
+          <input type="file" id="car-images-adicionais" accept="image/jpeg,image/png,image/webp" multiple>
+          <small id="upload-adicionais-info" style="font-size:11px;color:var(--texto-suave);margin-top:4px;display:block;"></small>
         </div>
-        <small class="upload-hint">Formatos: JPG, PNG. Máx. 5MB por foto.</small>
-        <button type="submit" class="btn-submit">Publicar Anúncio</button>
+        <small class="upload-hint">ℹ️ Formatos aceitos: JPG, PNG, WEBP. Máx. 5 MB por foto.</small>
+        <button type="submit" class="btn-submit" id="btn-publicar">Publicar Anúncio</button>
       </form>
     </div>
   </div>
@@ -231,6 +292,9 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     let filtroTextoAtual = "";
     let userLat = null, userLng = null, raioFiltro = 100;
     let denunciaAlvoId = null, denunciaTipo = null;
+    const ITENS_POR_PAGINA = 12;
+    let paginaAtual = 1;
+    let anunciosFiltradosAtual = [];
 
     // --- Helper de escrita com aviso ao usuário (Melhoria 2) ---
     // Executa uma promise do Supabase (insert/update/delete) e, se falhar,
@@ -240,7 +304,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const { data, error } = await promise;
       if (error) {
         console.error(error);
-        alert(mensagemErroPadrao + (error.message ? `\n(${error.message})` : ""));
+        window.mgToast?.(mensagemErroPadrao + (error.message ? ` (${error.message})` : ""), "error");
         return null;
       }
       return data;
@@ -284,7 +348,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         document.getElementById("loc-info").style.display = "flex";
         document.getElementById("loc-texto").textContent = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
         aplicarFiltroOrdenacao();
-      }, () => alert("Não foi possível obter sua localização. Verifique as permissões do navegador."));
+      }, () => window.mgToast?.("Não foi possível obter sua localização. Verifique as permissões do navegador.", "warning"));
     });
 
     document.getElementById("btn-loc-limpar").addEventListener("click", () => {
@@ -312,7 +376,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
           else selEstado.value = "";
         } catch (e) { }
         document.getElementById("btn-usar-gps").textContent = "Localização obtida";
-      }, () => alert("Não foi possível obter a localização."));
+      }, () => window.mgToast?.("Não foi possível obter a localização.", "warning"));
     });
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -366,8 +430,35 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       else if (ord === "recente") filtrados = filtrados.sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
       const info = document.getElementById("resultados-info");
       if (info) info.textContent = `${filtrados.length} veículo${filtrados.length !== 1 ? "s" : ""} encontrado${filtrados.length !== 1 ? "s" : ""}`;
-      exibirAnuncios(filtrados);
+      anunciosFiltradosAtual = filtrados;
+      paginaAtual = 1; // volta à primeira página ao filtrar
+      exibirPagina();
     }
+
+    function exibirPagina() {
+      const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
+      const fatia  = anunciosFiltradosAtual.slice(inicio, inicio + ITENS_POR_PAGINA);
+      exibirAnuncios(fatia);
+      renderPaginacao();
+    }
+
+    function renderPaginacao() {
+      const total  = anunciosFiltradosAtual.length;
+      const paginas = Math.ceil(total / ITENS_POR_PAGINA);
+      const ctrl   = document.getElementById('paginacao');
+      ctrl.style.display = paginas > 1 ? 'flex' : 'none';
+      document.getElementById('pag-info').textContent = `Página ${paginaAtual} de ${paginas}`;
+      document.getElementById('btn-pag-anterior').disabled = paginaAtual === 1;
+      document.getElementById('btn-pag-proxima').disabled  = paginaAtual === paginas;
+    }
+
+    document.getElementById('btn-pag-anterior').addEventListener('click', () => {
+      if (paginaAtual > 1) { paginaAtual--; exibirPagina(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+    document.getElementById('btn-pag-proxima').addEventListener('click', () => {
+      const paginas = Math.ceil(anunciosFiltradosAtual.length / ITENS_POR_PAGINA);
+      if (paginaAtual < paginas) { paginaAtual++; exibirPagina(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
 
     function exibirAnuncios(anuncios) {
       const cont = document.getElementById("lista-anuncios");
@@ -397,6 +488,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
         const card = document.createElement("div");
         card.className = "card"; card.dataset.id = anuncio.id;
+        card.style.animationDelay = `${anuncios.indexOf(anuncio) * 55}ms`;
 
         // Estrutura fixa do card (sem texto de usuário via innerHTML)
         card.innerHTML = `
@@ -436,7 +528,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     }
 
     function abrirDenuncia(alvoId, tipo) {
-      if (!usuarioAtual) { alert("Faça login para denunciar."); return; }
+      if (!usuarioAtual) { window.mgToast?.("Faça login para denunciar.", "warning"); return; }
       denunciaAlvoId = alvoId; denunciaTipo = tipo;
       document.getElementById("denuncia-motivo").value = "";
       document.getElementById("denuncia-descricao").value = "";
@@ -445,11 +537,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     document.getElementById("btn-enviar-denuncia").addEventListener("click", async () => {
       const motivo = document.getElementById("denuncia-motivo").value;
-      if (!motivo) { alert("Selecione um motivo."); return; }
+      if (!motivo) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
       const { error } = await supabase.from("denuncias").insert({ tipo: denunciaTipo, alvo_id: denunciaAlvoId, denunciante_id: usuarioAtual.id, motivo, descricao: document.getElementById("denuncia-descricao").value });
-      if (error) { alert("Erro ao enviar: " + error.message); return; }
+      if (error) { window.mgToast?.("Erro ao enviar: " + error.message, "error"); return; }
       document.getElementById("modal-denuncia").style.display = "none";
-      alert("Denúncia enviada. Analisaremos em breve.");
+      window.mgToast?.("Denúncia enviada. Analisaremos em breve.", "info");
     });
 
     document.getElementById("close-denuncia").onclick = () => document.getElementById("modal-denuncia").style.display = "none";
@@ -460,9 +552,9 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     const curtidasEmProcessamento = new Set();
 
     async function toggleCurtida(anuncioId, btn) {
-      if (!usuarioAtual) { alert("Faça login para curtir!"); window.location.href = "../MG-LOGIN/login.html"; return; }
+      if (!usuarioAtual) { window.mgToast?.("Faça login para curtir!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; }
       const anuncio = todosAnuncios.find(a => a.id === anuncioId);
-      if (anuncio?.usuario_id === usuarioAtual.id) { alert("Você não pode curtir seu próprio anúncio!"); return; }
+      if (anuncio?.usuario_id === usuarioAtual.id) { window.mgToast?.("Você não pode curtir seu próprio anúncio!", "info"); return; }
       if (curtidasEmProcessamento.has(anuncioId)) return;
       curtidasEmProcessamento.add(anuncioId);
       btn.disabled = true;
@@ -470,7 +562,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         const estaCurtido = btn.classList.contains('curtido');
         if (estaCurtido) {
           const { error } = await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id);
-          if (error) { console.error(error); alert("Não foi possível descurtir." + (error.message ? `\n(${error.message})` : "")); return; }
+          if (error) { console.error(error); window.mgToast?.("Não foi possível descurtir." + (error.message ? ` (${error.message})` : ""), "error"); return; }
           btn.classList.remove('curtido');
           const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'none');
         } else {
@@ -484,7 +576,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
               const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'currentColor');
             } else {
               console.error(error);
-              alert("Não foi possível curtir." + (error.message ? `\n(${error.message})` : ""));
+              window.mgToast?.("Não foi possível curtir." + (error.message ? ` (${error.message})` : ""), "error");
               return;
             }
           } else {
@@ -518,7 +610,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       if (okFotos === null) return;
       const okAn = await executarOuAvisar(supabase.from("anuncios").delete().eq("id", anuncioId), "Não foi possível excluir o anúncio.");
       if (okAn === null) return;
-      alert("Anúncio excluído!"); carregarAnuncios();
+      window.mgToast?.("Anúncio excluído!", "success"); carregarAnuncios();
     }
 
     async function abrirVisualizacao(anuncioId) {
@@ -560,7 +652,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         if (c) { vizCurtir.classList.add("curtido"); vizCurtir.textContent = "Curtido"; } else { vizCurtir.classList.remove("curtido"); vizCurtir.textContent = "Curtir"; }
         vizCurtir.disabled = !podeCurtir;
         vizCurtir.onclick = async () => {
-          if (a.usuario_id === usuarioAtual.id) { alert("Não pode curtir seu próprio anúncio!"); return; }
+          if (a.usuario_id === usuarioAtual.id) { window.mgToast?.("Não pode curtir seu próprio anúncio!", "warning"); return; }
           if (curtidasEmProcessamento.has(anuncioId)) return;
           curtidasEmProcessamento.add(anuncioId);
           vizCurtir.disabled = true;
@@ -568,11 +660,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
             const curtido = vizCurtir.classList.contains("curtido");
             if (curtido) {
               const { error } = await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id);
-              if (error) { console.error(error); alert("Não foi possível descurtir." + (error.message ? `\n(${error.message})` : "")); return; }
+              if (error) { console.error(error); window.mgToast?.("Não foi possível descurtir." + (error.message ? ` (${error.message})` : ""), "error"); return; }
               vizCurtir.classList.remove("curtido"); vizCurtir.textContent = "Curtir";
             } else {
               const { error } = await supabase.from("curtidas_anuncio").insert({ anuncio_id: anuncioId, usuario_id: usuarioAtual.id });
-              if (error && error.code !== "23505") { console.error(error); alert("Não foi possível curtir." + (error.message ? `\n(${error.message})` : "")); return; }
+              if (error && error.code !== "23505") { console.error(error); window.mgToast?.("Não foi possível curtir." + (error.message ? ` (${error.message})` : ""), "error"); return; }
               vizCurtir.classList.add("curtido"); vizCurtir.textContent = "Curtido";
             }
             const { data: novo } = await supabase.from("anuncios").select("curtidas").eq("id", anuncioId).maybeSingle();
@@ -586,25 +678,98 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         };
       } else {
         vizCurtir.disabled = false; vizCurtir.textContent = "Curtir"; vizCurtir.classList.remove("curtido");
-        vizCurtir.onclick = () => { alert("Faça login para curtir!"); window.location.href = "../MG-LOGIN/login.html"; };
+        vizCurtir.onclick = () => { window.mgToast?.("Faça login para curtir!", "warning"); window.location.href = "../MG-LOGIN/login.html"; };
       }
       document.getElementById("modal-visualizar").style.display = "flex";
     }
 
     document.getElementById("close-visualizar").onclick = () => document.getElementById("modal-visualizar").style.display = "none";
-    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { alert("Faça login para anunciar!"); window.location.href = "../MG-LOGIN/login.html"; return; } document.getElementById("modal-add-car").style.display = "flex"; };
+    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { window.mgToast?.("Faça login para anunciar!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; } document.getElementById("modal-add-car").style.display = "flex"; };
     document.getElementById("close-modal").onclick = () => document.getElementById("modal-add-car").style.display = "none";
     document.getElementById("filtro-marca").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("barra_pesquisa").addEventListener("input", e => { filtroTextoAtual = e.target.value; aplicarFiltroOrdenacao(); });
 
+    // --- Validação WhatsApp em tempo real ---
+    const inputWa = document.getElementById('car-whatsapp');
+    const erroWa  = document.getElementById('whatsapp-erro');
+    const RE_WA   = /^\d{10,11}$/;
+    inputWa.addEventListener('input', () => {
+      const digits = inputWa.value.replace(/\D/g, '');
+      inputWa.value = digits.slice(0, 11); // aceita só dígitos
+      const ok = RE_WA.test(digits);
+      erroWa.style.display  = ok || digits.length === 0 ? 'none' : 'block';
+      inputWa.style.borderColor = ok || digits.length === 0 ? '' : '#e84040';
+    });
+
+    // --- Contador de caracteres na descrição ---
+    const descEl  = document.getElementById('car-descricao');
+    const counterEl = document.getElementById('descricao-counter');
+    const MAX_DESC = 500;
+    descEl.addEventListener('input', () => {
+      const len = descEl.value.length;
+      counterEl.textContent = `${len}/${MAX_DESC}`;
+      counterEl.className = 'char-counter' +
+        (len >= MAX_DESC ? ' limite' : len >= MAX_DESC * 0.85 ? ' quase' : '');
+    });
+
+    // --- Preview e validação de upload em tempo real ---
+    const TIPOS_OK  = ['image/jpeg', 'image/png', 'image/webp'];
+    const MAX_BYTES = 5 * 1024 * 1024;
+
+    function formatBytes(b) { return b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB'; }
+
+    function validarArquivos(files, infoEl) {
+      if (!files || files.length === 0) { infoEl.textContent = ''; infoEl.style.color = 'var(--texto-suave)'; return true; }
+      const invalidos = [];
+      const grandes   = [];
+      const nomes     = [];
+      [...files].forEach(f => {
+        if (!TIPOS_OK.includes(f.type)) invalidos.push(f.name);
+        else if (f.size > MAX_BYTES) grandes.push(f.name);
+        else nomes.push(`${f.name} (${formatBytes(f.size)})`);
+      });
+      if (invalidos.length) {
+        infoEl.textContent = `❌ Tipo inválido: ${invalidos.join(', ')} — use JPG, PNG ou WEBP.`;
+        infoEl.style.color = '#e84040'; return false;
+      }
+      if (grandes.length) {
+        infoEl.textContent = `❌ Muito grande (máx 5 MB): ${grandes.join(', ')}.`;
+        infoEl.style.color = '#e84040'; return false;
+      }
+      infoEl.textContent = `✅ ${nomes.join(' | ')}`;
+      infoEl.style.color = '#28a745'; return true;
+    }
+
+    document.getElementById('car-image').addEventListener('change', function () {
+      validarArquivos(this.files, document.getElementById('upload-principal-info'));
+    });
+    document.getElementById('car-images-adicionais').addEventListener('change', function () {
+      if (this.files.length > 4) {
+        document.getElementById('upload-adicionais-info').textContent = '⚠️ Máximo de 4 fotos adicionais. As extras serão ignoradas.';
+        document.getElementById('upload-adicionais-info').style.color = '#f5a623';
+      } else {
+        validarArquivos(this.files, document.getElementById('upload-adicionais-info'));
+      }
+    });
+
     document.getElementById("car-form").addEventListener("submit", async e => {
       e.preventDefault();
-      if (!usuarioAtual) { alert("Faça login!"); return; }
+      if (!usuarioAtual) { window.mgToast?.('Faça login para anunciar.', 'warning') || window.mgToast?.("Faça login!", "warning"); return; }
+
+      // Validar WhatsApp
+      const waInput  = document.getElementById("car-whatsapp");
+      const waDigits = waInput.value.replace(/\D/g, '');
+      if (!/^\d{10,11}$/.test(waDigits)) {
+        document.getElementById('whatsapp-erro').style.display = 'block';
+        waInput.focus(); return;
+      }
+
       const foto = document.getElementById("car-image").files[0];
-      if (!foto) { alert("Selecione uma foto principal!"); return; }
-      if (foto.size > 5 * 1024 * 1024) { alert("Foto máx 5MB!"); return; }
+      if (!foto) { window.mgToast?.('Selecione uma foto principal.', 'warning'); return; }
+      if (!TIPOS_OK.includes(foto.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); return; }
+      if (foto.size > MAX_BYTES) { window.mgToast?.('Foto principal excede 5 MB.', 'error'); return; }
       let lat = null, lng = null;
       try {
         const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 3000 }));
@@ -617,7 +782,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       // (nenhum fallback tipo `estado || "NA"` deve existir aqui).
       const UFS_VALIDAS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
       if (!UFS_VALIDAS.includes(estado)) {
-        alert("Selecione um Estado (UF) válido no campo Estado. A geolocalização pode não ter preenchido — escolha manualmente.");
+        window.mgToast?.('Selecione um Estado (UF) válido. A geolocalização pode não ter preenchido — escolha manualmente.', 'warning');
         document.getElementById("car-estado").focus();
         return;
       }
@@ -630,11 +795,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         status: "pendente", cidade: cidade || "Não informada", estado: estado,
         latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)
       }).select().single();
-      if (error) { alert("Erro: " + error.message); return; }
+      if (error) { window.mgToast?.('Erro ao publicar: ' + error.message, 'error'); return; }
       const ext = foto.name.split('.').pop();
       const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
       const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
-      if (errUpload) { alert("Erro ao enviar a foto principal: " + errUpload.message); return; }
+      if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); return; }
       const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
       const okFoto = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
       if (okFoto === null) return;
@@ -648,9 +813,10 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         const okExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");
         if (okExtra === null) continue;
       }
-      alert("Anúncio enviado! Aguarda aprovação dos moderadores em até 24h.");
+      window.mgToast?.('Anúncio enviado! Aguarda aprovação dos moderadores em até 24h.', 'success', 'Anúncio publicado');
       document.getElementById("modal-add-car").style.display = "none";
       document.getElementById("car-form").reset();
+      if (counterEl) { counterEl.textContent = '0/500'; counterEl.className = 'char-counter'; }
       document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>"; document.getElementById("select-modelo").disabled = true;
       carregarAnuncios();
     });

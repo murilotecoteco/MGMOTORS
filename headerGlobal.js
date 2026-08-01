@@ -108,6 +108,7 @@ function ativarLinkAtual() {
   });
 }
 
+
 function configurarMenuMobile(headerContainer) {
   const nav = document.getElementById("main-nav");
   const navToggle = headerContainer.querySelector(".nav-toggle");
@@ -135,3 +136,61 @@ function configurarMenuMobile(headerContainer) {
     if (event.key === "Escape") fecharMenu();
   });
 }
+
+/* ═══════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS — window.mgToast(msg, tipo, titulo)
+   tipo: 'success' | 'error' | 'info' | 'warning'
+   ═══════════════════════════════════════════════════════ */
+(function initToast() {
+  if (document.getElementById('mg-toast-container')) return;
+  const c = document.createElement('div');
+  c.id = 'mg-toast-container';
+  c.setAttribute('aria-live', 'polite');
+  c.setAttribute('aria-atomic', 'false');
+  document.body.appendChild(c);
+})();
+
+window.mgToast = function(msg, tipo = 'info', titulo = '') {
+  let c = document.getElementById('mg-toast-container');
+  if (!c) {
+    c = document.createElement('div');
+    c.id = 'mg-toast-container';
+    c.setAttribute('aria-live', 'polite');
+    document.body.appendChild(c);
+  }
+  const t = document.createElement('div');
+  t.className = `mg-toast ${tipo}`;
+  t.setAttribute('role', 'alert');
+  const tituloMap = { success: 'Sucesso', error: 'Erro', info: 'Informação', warning: 'Atenção' };
+  const tituloFinal = titulo || tituloMap[tipo] || 'Aviso';
+  t.innerHTML = `
+    <div class="mg-toast-icon" aria-hidden="true"></div>
+    <div class="mg-toast-body">
+      <div class="mg-toast-title">${tituloFinal}</div>
+      <div class="mg-toast-msg">${msg}</div>
+    </div>`;
+  c.appendChild(t);
+  const dur = tipo === 'error' ? 5500 : 3800;
+  setTimeout(() => {
+    t.classList.add('hide');
+    setTimeout(() => t.remove(), 300);
+  }, dur);
+};
+
+/* ═══════════════════════════════════════════════════════
+   BOTÃO VOLTAR AO TOPO — injetado automaticamente
+   ═══════════════════════════════════════════════════════ */
+(function initBtnTopo() {
+  if (document.getElementById('btn-topo')) return;
+  const btn = document.createElement('button');
+  btn.id = 'btn-topo';
+  btn.setAttribute('aria-label', 'Voltar ao topo');
+  btn.setAttribute('title', 'Voltar ao topo');
+  btn.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>`;
+  document.body.appendChild(btn);
+
+  const onScroll = () => btn.classList.toggle('visivel', window.scrollY > 320);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
+

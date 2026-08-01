@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background -->
+  <rect width="64" height="64" rx="14" fill="#0d1b2a"/>
+  <!-- Wheel rim -->
+  <circle cx="32" cy="36" r="18" stroke="#c9a84c" stroke-width="3" fill="none"/>
+  <!-- Spokes -->
+  <line x1="32" y1="18" x2="32" y2="54" stroke="#c9a84c" stroke-width="2.2"/>
+  <line x1="14" y1="36" x2="50" y2="36" stroke="#c9a84c" stroke-width="2.2"/>
+  <line x1="19.4" y1="21.4" x2="44.6" y2="50.6" stroke="#c9a84c" stroke-width="2.2"/>
+  <line x1="44.6" y1="21.4" x2="19.4" y2="50.6" stroke="#c9a84c" stroke-width="2.2"/>
+  <!-- Center hub -->
+  <circle cx="32" cy="36" r="4.5" fill="#c9a84c"/>
+  <!-- MG letters -->
+  <text x="32" y="22" font-family="Arial, sans-serif" font-weight="900" font-size="13" fill="#c9a84c" text-anchor="middle" letter-spacing="1">MG</text>
+</svg>

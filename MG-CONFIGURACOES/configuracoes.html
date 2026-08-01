@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+  <link rel="shortcut icon" href="../imagens/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - MG Motors | Gerencie sua Conta</title>
     <meta name="description" content="Gerencie suas preferências, notificações, privacidade e configurações de conta na MG Motors.">
@@ -13,10 +15,18 @@
     <link rel="stylesheet" href="configuracoes.css">
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
+<link rel="canonical" href="https://mgmotors.vercel.app/MG-CONFIGURACOES/configuracoes.html">
 </head>
 
 <body>
     <header id="header-global"></header>
+  <!-- Breadcrumb -->
+  <nav class="mg-breadcrumb" aria-label="Navegação estrutural">
+    <a href="../MG-INICIO/inicio.html">Início</a>
+    <span class="sep" aria-hidden="true">›</span>
+    <span class="current" aria-current="page">Configurações</span>
+  </nav>
+
 
     <div class="configs-container">
         <div class="configs-hero">
@@ -234,6 +244,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         const DEVS = ["murilofrank157@gmail.com", "guilhermefrankadami@gmail.com", "candidomurilo809@gmail.com"];
         let usuarioAtual = null;
         let preferencias = {};
+        let isDirty = false; // true quando há alterações não salvas
+
+        // Avisa o usuário antes de sair com alterações não salvas
+        window.addEventListener('beforeunload', (e) => {
+          if (!isDirty) return;
+          e.preventDefault();
+          e.returnValue = 'Você tem configurações não salvas. Deseja realmente sair?';
+        });
 
         async function init() {
             usuarioAtual = await carregarHeaderGlobal(supabase);
@@ -269,16 +287,19 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
             document.documentElement.setAttribute("data-tema", tema);
             preferencias.tema = tema;
             localStorage.setItem("mg_tema", tema);
+            isDirty = true;
         };
 
         window.toggleNotif = function (tipo, btn) {
             btn.classList.toggle("on");
             preferencias["notif_" + tipo] = btn.classList.contains("on");
+            isDirty = true;
         };
 
         window.toggleConfig = function (chave, btn) {
             btn.classList.toggle("on");
             preferencias[chave] = btn.classList.contains("on");
+            isDirty = true;
         };
 
         window.toggleLocalizacao = function () {
@@ -289,32 +310,36 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
                     preferencias.localizacao = true;
                     preferencias.lat = pos.coords.latitude;
                     preferencias.lng = pos.coords.longitude;
-                    alert("Localização salva com sucesso!");
-                }, () => { btn.classList.remove("on"); alert("Não foi possível obter a localização."); });
+                    window.mgToast?.("Localização salva com sucesso!", "success");
+                }, () => { btn.classList.remove("on"); window.mgToast?.("Não foi possível obter a localização.", "warning"); });
             } else { preferencias.localizacao = false; }
         };
 
-        window.salvarPreferencia = function (chave, valor) { preferencias[chave] = valor; };
+        window.salvarPreferencia = function (chave, valor) { preferencias[chave] = valor; isDirty = true; };
 
         window.salvarTodasConfigs = async function () {
-            if (!usuarioAtual) { alert("Faça login primeiro."); return; }
+            if (!usuarioAtual) { window.mgToast?.("Faça login primeiro.", "warning"); return; }
+            const btnSalvar = document.querySelector('.btn-salvar-configs');
+            if (btnSalvar) { btnSalvar.textContent = '⏳ Salvando...'; btnSalvar.disabled = true; }
             const { error } = await supabase.from("usuarios").update({ preferencias, atualizado_em: new Date().toISOString() }).eq("id", usuarioAtual.id);
-            if (error) { alert("Erro ao salvar: " + error.message); return; }
-            alert("✅ Configurações salvas com sucesso!");
+            if (btnSalvar) { btnSalvar.textContent = '💾 Salvar todas as configurações'; btnSalvar.disabled = false; }
+            if (error) { window.mgToast?.("Erro ao salvar: " + error.message, "error"); return; }
+            isDirty = false; // Limpa a flag após salvar com sucesso
+            window.mgToast?.("✅ Configurações salvas com sucesso!", "success");
         };
 
         window.encerrarSessoes = async function () {
             if (!confirm("Encerrar todas as outras sessões?")) return;
             await supabase.auth.signOut({ scope: "global" });
-            alert("Sessões encerradas. Faça login novamente.");
+            window.mgToast?.("Sessões encerradas. Faça login novamente.", "info");
             window.location.href = "../MG-LOGIN/login.html";
         };
 
         document.getElementById("btn-alterar-senha")?.addEventListener("click", async () => {
             if (!usuarioAtual) return;
             const { error } = await supabase.auth.resetPasswordForEmail(usuarioAtual.email);
-            if (!error) alert("Email de redefinição enviado para " + usuarioAtual.email);
-            else alert("Erro: " + error.message);
+            if (!error) window.mgToast?.("Email de redefinição enviado para " + usuarioAtual.email, "success");
+            else window.mgToast?.("Erro: " + error.message, "error");
         });
 
         const temaLocal = localStorage.getItem("mg_tema");

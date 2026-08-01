@@ -3,13 +3,61 @@
 
 <head>
     <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="../../../imagens/favicon.svg">
+  <link rel="shortcut icon" href="../../../imagens/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MG-BMW</title>
+    <meta name="description" content="Conheça a BMW, a marca do Prazer em Dirigir. Da Série 3 ao M5, explore a engenharia alemã e os modelos mais desejados do mundo.">
+    <meta property="og:title" content="BMW - Prazer em Dirigir e Engenharia Alemã | MG Motors Blog">
+    <meta property="og:description" content="Conheça a BMW, a marca do Prazer em Dirigir. Da Série 3 ao M5, explore a engenharia alemã e os modelos mais desejados do mundo.">
+    <meta property="og:image" content="../../../imagens/logo.webp">
+    <meta property="og:type" content="article">
+
+    <title>BMW - Prazer em Dirigir e Engenharia Alemã | MG Motors Blog</title>
     <link rel="stylesheet" href="bmw.css">
     <link rel="stylesheet" href="../../../global.css">
-</head>
+<link rel="canonical" href="https://mgmotors.vercel.app/MG-DICAS/blogs/bmw/bmw.html">
+<style>
+  /* ── Skeleton header loader ────────────────────────────────── */
+  #blog-skeleton-header {
+    height: 64px;
+    background: var(--card-bg, #1a1a2e);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  #blog-skeleton-header .sk-logo {
+    width: 100px; height: 22px; border-radius: 6px;
+    background: linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.06) 75%);
+    background-size: 200% 100%;
+    animation: sk-shimmer 1.4s infinite;
+  }
+  #blog-skeleton-header .sk-nav { display:flex; gap:12px; margin-left: auto; }
+  #blog-skeleton-header .sk-nav-item {
+    width: 64px; height: 14px; border-radius: 4px;
+    background: linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.05) 75%);
+    background-size: 200% 100%;
+    animation: sk-shimmer 1.4s infinite;
+  }
+  @keyframes sk-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style></head>
 
 <body>
+  <!-- Skeleton header: visível enquanto o JS carrega o header real -->
+  <div id="blog-skeleton-header" aria-hidden="true">
+    <div class="sk-logo"></div>
+    <div class="sk-nav">
+      <div class="sk-nav-item"></div>
+      <div class="sk-nav-item"></div>
+      <div class="sk-nav-item"></div>
+      <div class="sk-nav-item"></div>
+    </div>
+  </div>
+
 
 <header id="header-global"></header>
 
@@ -26,7 +74,7 @@
                 -->
             </div>
             <div class="pic">
-                <img src="bmw-img/bmw_fundadores.webp" alt="Fundador BMW">
+                <img src="bmw-img/bmw_fundadores.webp" alt="Fundador BMW" loading="lazy" decoding="async">
             </div>
                 <!--https://blog.logomyway.com/bmw-logo/-->
         </div>
@@ -42,7 +90,7 @@
                 -->
             </div>
             <div class="pic">
-                <img src="../imagem-marcas/bmw.png" alt="Design BMW">
+                <img src="../imagem-marcas/bmw.png" alt="Design BMW" loading="lazy" decoding="async">
             </div>
         </div>
 
@@ -57,7 +105,7 @@
                 -->
             </div>
             <div class="pic">
-                <img src="bmw-img/bmw_tecnologia.webp" alt="Tecnologia BMW">
+                <img src="bmw-img/bmw_tecnologia.webp" alt="Tecnologia BMW" loading="lazy" decoding="async">
             </div>
                 <!--https://blog.logomyway.com/bmw-logo/-->
         </div>
@@ -71,7 +119,7 @@
                 </p>
             </div>
             <div class="pic">
-                <img src="bmw-img/bmw_m3.webp" alt="BMW M3">
+                <img src="bmw-img/bmw_m3.webp" alt="BMW M3" loading="lazy" decoding="async">
             </div>
                 <!--https://www.iesabmw.com.br/novos/bmw-m3-competition-->
         </div>
@@ -84,7 +132,7 @@
                 </p>
             </div>
             <div class="pic">
-                <img src="bmw-img/bmw_x5.webp" alt="BMW X5">
+                <img src="bmw-img/bmw_x5.webp" alt="BMW X5" loading="lazy" decoding="async">
             </div>
         </div>
                 <!--https://www.iesabmw.com.br/novos/bmw-x5-->
@@ -97,7 +145,7 @@
                 </p>
             </div>
             <div class="pic">
-                <img src="bmw-img/bmw_i8.webp" alt="BMW i8">
+                <img src="bmw-img/bmw_i8.webp" alt="BMW i8" loading="lazy" decoding="async">
             </div>
                 <!--https://www.pngmart.com/image/465693-->
         </div>
@@ -117,6 +165,30 @@ import { supabaseUrl, supabaseKey } from "../../../mgConfig.js";
     await carregarHeaderGlobal(supabase);
 </script>
 
+
+  <script>
+    // Remove o skeleton do header assim que o header real for inserido
+    (function() {
+      var sk = document.getElementById('blog-skeleton-header');
+      if (!sk) return;
+      var header = document.getElementById('header-global');
+      if (!header) return;
+      var obs = new MutationObserver(function(mutations) {
+        for (var m of mutations) {
+          if (m.addedNodes.length > 0) {
+            sk.style.transition = 'opacity .25s';
+            sk.style.opacity = '0';
+            setTimeout(function() { sk.remove(); }, 260);
+            obs.disconnect();
+            break;
+          }
+        }
+      });
+      obs.observe(header, { childList: true, subtree: false });
+      // fallback: remove após 3s mesmo se o JS não carregar
+      setTimeout(function() { if (sk.parentNode) { sk.style.opacity = '0'; setTimeout(function(){ sk.remove(); }, 300); } }, 3000);
+    })();
+  </script>
 </body>
 
 </html>

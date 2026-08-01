@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Conta - MG Motors</title>
+<title>Minha Conta - MG Motors | Perfil e Anúncios</title>
+<meta name="description" content="Gerencie seu perfil, anúncios publicados, favoritos e avaliações recebidas na MG Motors.">
+<meta property="og:title" content="Minha Conta - MG Motors">
+<meta property="og:description" content="Veja e edite seu perfil, anúncios e informações pessoais no marketplace MG Motors.">
+<meta property="og:image" content="../imagens/logo.webp">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="conta.css">
 <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
@@ -14,13 +19,13 @@
 <div class="container-principal">
   <div class="perfil-header">
     <div class="capa-container">
-      <img id="capaFoto" class="capa-imagem" src="https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop" alt="Capa">
+      <img id="capaFoto" class="capa-imagem" src="https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop" alt="Capa" loading="lazy">
       <button id="btnEditarCapa" class="btn-editar-capa">📷 Editar Capa</button>
       <input type="file" id="uploadCapa" accept="image/*" style="display:none">
     </div>
     <div class="perfil-info">
       <div class="foto-container">
-        <img id="fotoPerfil" class="foto-perfil" src="https://via.placeholder.com/150" alt="Foto">
+        <img id="fotoPerfil" class="foto-perfil" src="https://via.placeholder.com/150" alt="Foto" loading="lazy">
         <button id="btnEditarFoto" class="btn-editar-foto">✏️</button>
         <input type="file" id="uploadFoto" accept="image/*" style="display:none">
       </div>
@@ -181,7 +186,7 @@
 </footer>
 
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
 import { carregarHeaderGlobal } from "../headerGlobal.js";
 const supabase = createClient(supabaseUrl, supabaseKey);

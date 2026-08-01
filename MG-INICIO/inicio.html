@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MG Motors - O Marketplace de Veículos Exclusivos</title>
+  <meta name="description" content="MG Motors é o marketplace premium de veículos exclusivos. Compre ou venda carros esportivos, seminovos e importados com segurança e experiência premium.">
+  <meta property="og:title" content="MG Motors - O Marketplace de Veículos Exclusivos">
+  <meta property="og:description" content="Conectamos compradores e vendedores de veículos exclusivos em um só lugar. Experiência premium, rápida e sem burocracia.">
+  <meta property="og:image" content="../imagens/logo.webp">
+  <meta property="og:type" content="website">
   <link rel="stylesheet" href="inicio.css" />
   <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
@@ -281,7 +286,7 @@
 </footer>
 
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 import { carregarHeaderGlobal } from "../headerGlobal.js";
 
@@ -403,7 +408,7 @@ async function carregarVeiculosDestaque() {
     card.className = "veiculo-card reveal";
     card.innerHTML = `
       <div class="veiculo-img-wrap">
-        <img src="${foto}" alt="${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}" onerror="this.src='../imagens/sem-foto.png'">
+        <img src="${foto}" alt="${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}" onerror="this.src='../imagens/sem-foto.png'" loading="lazy">
         <button class="veiculo-favorito ${isFav ? "ativo" : ""}" data-id="${anuncio.id}">${favIcon}</button>
       </div>
       <div class="veiculo-info">

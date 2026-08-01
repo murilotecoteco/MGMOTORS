@@ -619,7 +619,9 @@ header {
 /* MODAL VISUALIZAR */
 .modal-visualizar {
   max-width: 96%;
-  width: 940px;
+  width: 1000px;
+  padding: 40px;
+  border-radius: 28px;
 }
 
 .visualizar-container {
@@ -635,11 +637,12 @@ header {
 
 .foto-principal {
   width: 100%;
-  height: 340px;
-  border-radius: 16px;
+  height: 420px;
+  border-radius: 20px;
   overflow: hidden;
-  border: 2px solid rgba(20, 75, 113, 0.12);
+  border: 1px solid rgba(20, 75, 113, 0.08);
   background-color: var(--cinza-claro);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .foto-principal img {
@@ -662,21 +665,24 @@ header {
 
 .miniatura {
   width: 100%;
-  height: 68px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   border: 2px solid transparent;
   background-color: var(--cinza-claro);
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color 0.2s, transform 0.2s, opacity 0.2s;
+  opacity: 0.7;
 }
 
 .miniatura:hover {
-  transform: scale(1.04);
+  transform: translateY(-2px);
+  opacity: 1;
 }
 
 .miniatura.ativa {
   border-color: var(--azul);
+  opacity: 1;
 }
 
 .info-container {
@@ -685,91 +691,108 @@ header {
 }
 
 .info-container h2 {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 900;
-  color: var(--azul);
-  margin-bottom: 4px;
+  color: var(--texto);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .visualizar-preco {
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 900;
   color: var(--verde);
-  text-align: center;
-  padding: 14px;
-  background: linear-gradient(135deg, #f0fff5, #e8f8ee);
-  border-radius: 14px;
-  margin: 14px 0;
-  border: 1px solid rgba(40, 167, 69, 0.2);
+  text-align: left;
+  padding: 16px 24px;
+  background: rgba(4, 120, 87, 0.08);
+  border-radius: 16px;
+  margin: 20px 0;
+  border: none;
+  display: inline-block;
+  letter-spacing: -0.01em;
 }
 
 .viz-detalhes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 16px 0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 24px 0;
 }
 
 .viz-detalhe {
   background: var(--cinza-claro);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 12px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  border: 1px solid rgba(20, 75, 113, 0.07);
+  gap: 4px;
+  border: 1px solid rgba(20, 75, 113, 0.05);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.viz-detalhe:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
 }
 
 .viz-label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--texto-suave);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .viz-detalhe span:last-child {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
-  color: var(--azul);
+  color: var(--texto);
 }
 
 .visualizar-descricao {
-  font-size: 14px;
-  color: var(--texto-suave);
-  line-height: 1.65;
-  padding: 14px;
-  background: var(--cinza-claro);
-  border-radius: 10px;
-  margin-bottom: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  color: var(--texto);
+  line-height: 1.7;
+  padding: 20px;
+  background: rgba(20, 75, 113, 0.02);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  font-weight: 500;
+  border: 1px solid rgba(20, 75, 113, 0.04);
 }
 
 .visualizar-acoes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
 }
 
-.visualizar-acoes button {
-  padding: 12px;
+.visualizar-acoes button,
+.visualizar-acoes a {
+  padding: 14px;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: 14px;
+  font-size: 15px;
   font-weight: 900;
   cursor: pointer;
   transition: all 0.25s;
   font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-mensagem-visualizar {
   background: var(--azul);
   color: var(--branco);
+  grid-column: 1 / -1; /* Make message button take full width */
 }
 
 .btn-mensagem-visualizar:hover {
   background: var(--azul-escuro);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
 }
 
 .btn-curtir {

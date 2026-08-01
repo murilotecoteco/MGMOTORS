@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - MG Motors</title>
+<title>Login - MG Motors | Acesse sua Conta</title>
+<meta name="description" content="Acesse sua conta na MG Motors para gerenciar anúncios, mensagens e favoritos no marketplace premium de veículos.">
+<meta property="og:title" content="Login - MG Motors">
+<meta property="og:description" content="Entre na sua conta MG Motors e acesse o marketplace premium de veículos.">
+<meta property="og:image" content="../imagens/logo.webp">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="login.css">
 </head>
 <body>
@@ -37,7 +42,7 @@
 </main>
 
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 const supa = createClient(supabaseUrl, supabaseKey);
 const feedback = document.getElementById("form-feedback");

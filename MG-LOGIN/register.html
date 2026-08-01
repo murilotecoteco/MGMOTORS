@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cadastro - MG Motors</title>
+<title>Cadastro - MG Motors | Crie sua Conta</title>
+<meta name="description" content="Crie sua conta gratuita na MG Motors e comece a comprar ou vender veículos no marketplace premium.">
+<meta property="og:title" content="Cadastro - MG Motors">
+<meta property="og:description" content="Crie sua conta e acesse o marketplace premium de veículos da MG Motors.">
+<meta property="og:image" content="../imagens/logo.webp">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="register.css">
 </head>
 <body>
@@ -40,7 +45,7 @@
 </main>
 
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 const supa = createClient(supabaseUrl, supabaseKey);
 const feedback = document.getElementById("form-feedback");

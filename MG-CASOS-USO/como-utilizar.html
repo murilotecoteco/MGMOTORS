@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Como Utilizar – MG Motors</title>
+  <title>Como Utilizar – MG Motors | Guia Completo</title>
+  <meta name="description" content="Aprenda como utilizar a plataforma MG Motors: como criar anúncios, negociar com segurança, configurar seu perfil e aproveitar todas as funcionalidades.">
+  <meta property="og:title" content="Como Utilizar – MG Motors">
+  <meta property="og:description" content="Guia passo a passo para comprar, vender e negociar veículos na plataforma MG Motors.">
+  <meta property="og:image" content="../imagens/logo.webp">
+  <meta property="og:type" content="website">
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="como-utilizar.css" />
@@ -943,7 +948,7 @@
        SCRIPTS (autenticação)
   ============================================================ -->
   <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     import { carregarHeaderGlobal } from "../headerGlobal.js";
     const supabase = createClient(supabaseUrl, supabaseKey);

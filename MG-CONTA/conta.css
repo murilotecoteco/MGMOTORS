@@ -115,6 +115,7 @@ header {
   overflow: hidden;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  max-width: 100%;
 }
 
 .capa-container {
@@ -257,6 +258,7 @@ header {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
 }
 
 .tabs {
@@ -656,4 +658,40 @@ footer {
 }
 [data-tema="escuro"] footer {
   background: linear-gradient(135deg, #000000, #0A0A0A) !important;
+}
+
+@media (max-width: 360px) {
+  .container-principal {
+    padding: 8px;
+  }
+
+  .capa-container {
+    height: 90px;
+  }
+
+  .foto-container {
+    margin-top: -38px;
+  }
+
+  .foto-perfil {
+    width: 75px;
+    height: 75px;
+  }
+
+  .nome-usuario {
+    font-size: 15px;
+  }
+
+  .stats-container {
+    gap: 8px;
+  }
+
+  .tab-btn {
+    padding: 8px 4px;
+    font-size: 11px;
+  }
+
+  .tab-content {
+    padding: 12px 8px;
+  }
 }

@@ -5,6 +5,12 @@
   --mg-focus: #93c5fd;
 }
 
+/* Impede scroll horizontal em qualquer pagina */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 #header-global {
   position: fixed;
   top: 0;
@@ -23,14 +29,14 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* permite quebra em telas muito pequenas */
 }
 
 #header-global .logo {
-  flex: 0 0 auto;
+  flex: 0 1 auto; /* permite encolher se necessario */
   display: flex;
   align-items: center;
-  min-width: max-content;
+  min-width: 0; /* remove restricao que causava overflow */
 }
 
 #header-global .logo-link,

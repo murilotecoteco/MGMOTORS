@@ -21,6 +21,7 @@
 body {
   background-color: var(--fundo);
   padding-top: 100px;
+  overflow-x: hidden;
 }
 
 header {
@@ -104,6 +105,8 @@ header {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .perfil-header {
@@ -417,27 +420,56 @@ header {
 }
 
 @media (max-width: 768px) {
+  body {
+    padding-top: 72px;
+  }
+
+  .container-principal {
+    padding: 12px;
+  }
+
+  .perfil-header {
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .capa-container {
+    height: 140px;
+  }
+
   .perfil-info {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 0 16px 20px;
   }
 
   .foto-container {
+    margin-top: -50px;
     margin-right: 0;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+  }
+
+  .foto-perfil {
+    width: 100px;
+    height: 100px;
+  }
+
+  .nome-usuario {
+    font-size: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .stats-container {
     justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-group.full {
-    grid-column: span 1;
+  .tabs-container {
+    border-radius: 12px;
   }
 
   .tabs {
@@ -447,6 +479,86 @@ header {
   .tab-btn {
     flex: 1;
     text-align: center;
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .form-group.full {
+    grid-column: span 1;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-size: 16px; /* evita zoom automatico no iOS */
+  }
+
+  .btn-salvar,
+  .btn-danger {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 8px;
+    font-size: 15px;
+  }
+
+  .anuncios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* footer mobile */
+  footer {
+    padding: 30px 16px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .capa-container {
+    height: 110px;
+  }
+
+  .foto-container {
+    margin-top: -45px;
+  }
+
+  .foto-perfil {
+    width: 85px;
+    height: 85px;
+  }
+
+  .nome-usuario {
+    font-size: 17px;
+  }
+
+  .stats-container {
+    gap: 12px;
+  }
+
+  .stat-number {
+    font-size: 16px;
+  }
+
+  .tab-btn {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 

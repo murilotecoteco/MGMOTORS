@@ -11,6 +11,25 @@ html, body {
   max-width: 100%;
 }
 
+/* Footer sempre colado na base, mesmo em paginas com pouco conteudo */
+html {
+  height: 100%;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+/* Vira flex item some quebra o "margin: 0 auto" dos containers internos
+   (o item deixa de esticar e encolhe para o conteudo). Forcamos
+   width: 100% para devolver o comportamento normal de bloco. */
+body > * {
+  width: 100%;
+}
+body > footer {
+  margin-top: auto;
+}
+
 #header-global {
   position: fixed;
   top: 0;

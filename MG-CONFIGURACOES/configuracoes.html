@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotors.vercel.app/MG-CONFIGURACOES/configuracoes.html">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -30,7 +31,7 @@
 
     <div class="configs-container">
         <div class="configs-hero">
-            <div class="configs-hero-icon">⚙️</div>
+            <div class="configs-hero-icon"><i data-lucide="settings" style="width:36px;height:36px;"></i></div>
             <div>
                 <h1>Configurações</h1>
                 <p>Personalize sua experiência na MG Motors</p>
@@ -38,7 +39,7 @@
         </div>
 
         <div class="configs-section">
-            <h2>🎨 Aparência</h2>
+            <h2><i data-lucide="palette" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Aparência</h2>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Tema Escuro</h3>
@@ -61,7 +62,7 @@
         </div>
 
         <div class="configs-section">
-            <h2>🔔 Notificações</h2>
+            <h2><i data-lucide="bell" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Notificações</h2>
             <div class="notif-grid">
                 <div class="config-item"
                     style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
@@ -99,7 +100,7 @@
         </div>
 
         <div class="configs-section">
-            <h2>🔒 Privacidade</h2>
+            <h2><i data-lucide="lock" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Privacidade</h2>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Perfil público</h3>
@@ -127,7 +128,7 @@
         </div>
 
         <div class="configs-section">
-            <h2>🌍 Localização</h2>
+            <h2><i data-lucide="map-pin" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Localização</h2>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Compartilhar localização aproximada</h3>
@@ -151,7 +152,7 @@
         </div>
 
         <div class="configs-section">
-            <h2>💬 Chat e Mensagens</h2>
+            <h2><i data-lucide="message-circle" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Chat e Mensagens</h2>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Confirmação de leitura</h3>
@@ -170,7 +171,7 @@
         </div>
 
         <div class="configs-section">
-            <h2>🔐 Segurança</h2>
+            <h2><i data-lucide="shield" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Segurança</h2>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Alterar senha</h3>
@@ -189,18 +190,18 @@
         </div>
 
         <div class="configs-section" id="secao-dev" style="display:none;">
-            <h2>🛡️ Área Restrita</h2>
+            <h2><i data-lucide="shield-alert" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Área Restrita</h2>
             <a href="../MG-DEV/devpanel.html" class="dev-link">
-                <div class="dev-link-icon">⚡</div>
+                <div class="dev-link-icon"><i data-lucide="zap" style="width:22px;height:22px;"></i></div>
                 <div class="dev-link-info">
                     <h3>Painel de Moderação</h3>
                     <p>Acesso exclusivo para desenvolvedores e administradores</p>
                 </div>
-                <span style="color:#ffd700;margin-left:auto;font-size:20px;">→</span>
+                <span style="color:#ffd700;margin-left:auto;"><i data-lucide="arrow-right" style="width:20px;height:20px;"></i></span>
             </a>
         </div>
 
-        <button class="btn-salvar-configs" onclick="salvarTodasConfigs()">💾 Salvar todas as configurações</button>
+        <button class="btn-salvar-configs" onclick="salvarTodasConfigs()"><i data-lucide="save" style="width:16px;height:16px;vertical-align:-2px;margin-right:6px;"></i> Salvar todas as configurações</button>
     </div>
 
     <footer>
@@ -231,7 +232,7 @@
         </div>
         <div class="footer-bottom">
             <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
-            <span>Desenvolvido com ❤️ no Brasil</span>
+            <span>Desenvolvido com <i data-lucide="heart" style="width:13px;height:13px;fill:currentColor;vertical-align:-1px;"></i> no Brasil</span>
         </div>
     </footer>
 
@@ -320,12 +321,12 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         window.salvarTodasConfigs = async function () {
             if (!usuarioAtual) { window.mgToast?.("Faça login primeiro.", "warning"); return; }
             const btnSalvar = document.querySelector('.btn-salvar-configs');
-            if (btnSalvar) { btnSalvar.textContent = '⏳ Salvando...'; btnSalvar.disabled = true; }
+            if (btnSalvar) { btnSalvar.textContent = 'Salvando...'; btnSalvar.disabled = true; }
             const { error } = await supabase.from("usuarios").update({ preferencias, atualizado_em: new Date().toISOString() }).eq("id", usuarioAtual.id);
-            if (btnSalvar) { btnSalvar.textContent = '💾 Salvar todas as configurações'; btnSalvar.disabled = false; }
+            if (btnSalvar) { btnSalvar.textContent = 'Salvar todas as configurações'; btnSalvar.disabled = false; }
             if (error) { window.mgToast?.("Erro ao salvar: " + error.message, "error"); return; }
             isDirty = false; // Limpa a flag após salvar com sucesso
-            window.mgToast?.("✅ Configurações salvas com sucesso!", "success");
+            window.mgToast?.("Configurações salvas com sucesso!", "success");
         };
 
         window.encerrarSessoes = async function () {
@@ -346,6 +347,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         if (temaLocal === "escuro") { document.body.setAttribute("data-tema", "escuro"); }
 
         init();
+        lucide.createIcons();
     </script>
 </body>
 

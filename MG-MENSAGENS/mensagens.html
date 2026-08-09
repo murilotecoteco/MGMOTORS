@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotors.vercel.app/MG-MENSAGENS/mensagens.html">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>.lucide-icon{width:20px;height:20px;stroke:currentColor;stroke-width:2;vertical-align:middle;display:inline-block;}</style>
 </head>
 <body>
 <header id="header-global"></header>
@@ -27,14 +29,14 @@
 
 
 <div class="container">
-    <h1 class="page-title">💬 Minhas Mensagens</h1>
+    <h1 class="page-title"><i data-lucide="message-circle" style="width:28px;height:28px;vertical-align:-5px;margin-right:8px;"></i> Minhas Mensagens</h1>
     <div class="conversas-lista" id="conversas-lista"><div class="empty-state"><h3>Carregando conversas...</h3></div></div>
     <div class="chat-container" id="chat-container">
         <div class="chat-header"><h3 id="chat-titulo">Selecione uma conversa</h3></div>
         <div class="chat-messages" id="chat-messages"><div class="empty-state"><h3>Selecione uma conversa</h3></div></div>
         <div class="chat-input">
             <label id="label-upload-foto" class="btn-upload-foto" title="Enviar foto" style="display:inline-flex;align-items:center;justify-content:center;">
-              📷
+              <i data-lucide="camera"></i>
               <input type="file" id="input-foto-msg" accept="image/*" style="display:none;">
             </label>
             <textarea id="mensagem-texto" placeholder="Digite sua mensagem..." disabled></textarea>
@@ -48,7 +50,7 @@
 <div id="modal-denuncia-msg" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:3000;justify-content:center;align-items:center;">
   <div style="background:var(--branco,#fff);padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.35);">
     <span onclick="document.getElementById('modal-denuncia-msg').style.display='none'" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:#888;">×</span>
-    <h2 style="color:#144b71;margin-bottom:6px;font-size:19px;font-weight:900;">🚩 Denunciar</h2>
+    <h2 style="color:#144b71;margin-bottom:6px;font-size:19px;font-weight:900;"><i data-lucide="flag" style="width:18px;height:18px;vertical-align:-2px;margin-right:6px;"></i> Denunciar</h2>
     <p id="denuncia-msg-subtitulo" style="font-size:13px;color:#4a6070;margin-bottom:16px;">Selecione o motivo da denúncia.</p>
     <select id="denuncia-msg-motivo" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;font-family:inherit;background:#f4f8fb;color:#1a2a38;">
       <option value="">Selecione o motivo</option>
@@ -60,7 +62,7 @@
       <option value="Outro">Outro</option>
     </select>
     <textarea id="denuncia-msg-desc" placeholder="Detalhes adicionais (opcional)..." rows="3" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;font-family:inherit;resize:vertical;"></textarea>
-    <button id="btn-enviar-denuncia-msg" style="width:100%;margin-top:12px;background:linear-gradient(135deg,#144b71,#0f3652);color:#fff;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;">📨 Enviar Denúncia</button>
+    <button id="btn-enviar-denuncia-msg" style="width:100%;margin-top:12px;background:linear-gradient(135deg,#144b71,#0f3652);color:#fff;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;"><i data-lucide="send" style="width:16px;height:16px;vertical-align:-2px;margin-right:6px;"></i> Enviar Denúncia</button>
   </div>
 </div>
 
@@ -114,7 +116,7 @@ async function carregarConversas() {
 
         // Texto de preview: recorte de conteudo via textContent (nunca interpolado em innerHTML)
         const previewTexto = ultimaMsg.tipo === 'foto'
-            ? '📷 Foto'
+            ? '[Foto]'
             : (ultimaMsg.conteudo.length > 40 ? ultimaMsg.conteudo.substring(0, 40) + '...' : ultimaMsg.conteudo);
 
         // --- Raiz do item ---
@@ -143,7 +145,7 @@ async function carregarConversas() {
         const perfilSpan = document.createElement('span');
         perfilSpan.className = 'perfil-link';
         perfilSpan.dataset.usuario = outroId;
-        perfilSpan.textContent = '👤 Ver perfil';
+        perfilSpan.textContent = 'Ver perfil';
 
         tituloDiv.appendChild(avatarImg);
         tituloDiv.appendChild(nomeNode);
@@ -212,7 +214,7 @@ async function abrirConversa(outroUsuarioId, carroInfo) {
     tituloPerfilSpan.className = 'perfil-link';
     tituloPerfilSpan.dataset.usuario = outroUsuarioId;
     tituloPerfilSpan.style.marginLeft = '15px';
-    tituloPerfilSpan.textContent = '👤 Ver perfil';
+    tituloPerfilSpan.textContent = 'Ver perfil';
     tituloPerfilSpan.addEventListener('click', () => {
         window.location.href = `../MG-CONTA/conta.html?id=${outroUsuarioId}`;
     });
@@ -267,7 +269,7 @@ async function carregarMensagensConversa(outroUsuarioId) {
           reportBtn.dataset.id = msg.id;
           reportBtn.dataset.tipo = msg.tipo || 'texto';
           reportBtn.title = 'Denunciar';
-          reportBtn.textContent = '🚩';
+          reportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>'; reportBtn.setAttribute('aria-label','Denunciar');
           horaDiv.appendChild(reportBtn);
         }
 
@@ -350,7 +352,7 @@ document.getElementById("btn-enviar-denuncia-msg").addEventListener("click", asy
   });
   if (error) { window.mgToast?.("Erro: " + error.message, "error"); return; }
   document.getElementById("modal-denuncia-msg").style.display = "none";
-  window.mgToast?.("✅ Denúncia enviada. Analisaremos em breve.", "success");
+  window.mgToast?.("Denúncia enviada. Analisaremos em breve.", "success");
 });
 document.getElementById("mensagem-texto").addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarMensagem(); } });
 setInterval(() => { if (conversaAtual) carregarMensagensConversa(conversaAtual); carregarConversas(); }, 5000);
@@ -361,6 +363,7 @@ const carroId = urlParams.get('carro');
 if (usuarioId && carroId) setTimeout(() => abrirConversa(usuarioId, 'Carro do marketplace'), 1000);
 
 carregarConversas();
+lucide.createIcons();
 </script>
 <script>
 window.chtlConfig = {
@@ -401,7 +404,7 @@ window.chtlConfig = {
   </div>
   <div class="footer-bottom">
     <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
-    <span>Desenvolvido com ❤️ no Brasil</span>
+    <span>Desenvolvido com <i data-lucide="heart" style="width:13px;height:13px;fill:currentColor;vertical-align:-1px;"></i> no Brasil</span>
   </div>
 </footer>
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotors.vercel.app/MG-CONTATO/contato.html">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -109,7 +110,7 @@
     </div>
     <h2>Atendimento Especializado</h2>
     <p>Conte com nossa equipe para dúvidas, propostas e experiências personalizadas. A excelência é apenas o começo.</p>
-    <button class="btn-atendimento" id="btn-falar-now">FALAR COM ESPECIALISTA →</button>
+    <button class="btn-atendimento" id="btn-falar-now">FALAR COM ESPECIALISTA <i data-lucide="arrow-right" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i></button>
   </div>
 </div>
 
@@ -160,6 +161,7 @@ document.getElementById("btn-falar-now")?.addEventListener("click", () => {
 window.chtlConfig = { chatbotId: "6944231868" }
 </script>
 <script async data-id="6944231868" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+<script>lucide.createIcons();</script>
 
 </body>
 </html>

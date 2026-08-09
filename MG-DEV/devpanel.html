@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
@@ -56,36 +56,38 @@ header{background:#161b22;padding:16px 40px;position:fixed;top:0;left:0;width:10
 .toast{position:fixed;bottom:30px;right:30px;background:#1c2128;border:1px solid rgba(255,215,0,.3);color:#ffd700;padding:14px 22px;border-radius:12px;font-weight:800;font-size:14px;z-index:9999;transform:translateY(100px);transition:transform .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);}
 .motivo-input{background:#1c2128;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#e6edf3;font-size:12px;width:200px;font-family:inherit;}
+[data-lucide] { display:inline-block; vertical-align:middle; stroke-width:2; }
 </style>
   <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotors.vercel.app/MG-DEV/devpanel.html">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 <header>
   <div class="dev-brand">
-    <h1>⚡ MG Dev Panel</h1>
+    <h1><i data-lucide="zap" style="width:20px;height:20px;color:#ffd700;"></i> MG Dev Panel</h1>
     <span>RESTRITO</span>
   </div>
-  <a href="../MG-CONFIGURACOES/configuracoes.html" class="back-btn">← Voltar às configurações</a>
+  <a href="../MG-CONFIGURACOES/configuracoes.html" class="back-btn"><i data-lucide="arrow-left" style="width:16px;height:16px;vertical-align:-2px;margin-right:4px;"></i> Voltar às configurações</a>
 </header>
 
 <div id="acesso-negado">
-  <span style="font-size:60px;">🔒</span>
+  <span style="font-size:60px;"><i data-lucide="lock" style="width:60px;height:60px;color:#e84040;"></i></span>
   <h2>Acesso Restrito</h2>
   <p>Este painel é exclusivo para desenvolvedores autorizados.</p>
 </div>
 
 <div id="painel">
   <div class="tabs">
-    <button class="tab ativo" data-tab="dashboard">📊 Dashboard</button>
-    <button class="tab" data-tab="anuncios">📢 Anúncios Pendentes</button>
-    <button class="tab" data-tab="denuncias">🚨 Denúncias</button>
-    <button class="tab" data-tab="usuarios">👥 Usuários</button>
-    <button class="tab" data-tab="banidos">🔨 Banidos</button>
+    <button class="tab ativo" data-tab="dashboard"><i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i> Dashboard</button>
+    <button class="tab" data-tab="anuncios"><i data-lucide="megaphone" style="width:15px;height:15px;"></i> Anúncios Pendentes</button>
+    <button class="tab" data-tab="denuncias"><i data-lucide="alert-triangle" style="width:15px;height:15px;"></i> Denúncias</button>
+    <button class="tab" data-tab="usuarios"><i data-lucide="users" style="width:15px;height:15px;"></i> Usuários</button>
+    <button class="tab" data-tab="banidos"><i data-lucide="ban" style="width:15px;height:15px;"></i> Banidos</button>
   </div>
 
   <div id="tab-dashboard" class="tab-content ativo">
-    <div class="section-title">📊 Visão Geral</div>
+    <div class="section-title"><i data-lucide="bar-chart-2" style="width:18px;height:18px;"></i> Visão Geral</div>
     <div class="stats-grid">
       <div class="stat-card"><span class="num" id="stat-total-usuarios">-</span><div class="lbl">Usuários</div></div>
       <div class="stat-card"><span class="num" id="stat-total-anuncios">-</span><div class="lbl">Anúncios Ativos</div></div>
@@ -96,23 +98,23 @@ header{background:#161b22;padding:16px 40px;position:fixed;top:0;left:0;width:10
   </div>
 
   <div id="tab-anuncios" class="tab-content">
-    <div class="section-title">📢 Anúncios Aguardando Aprovação</div>
+    <div class="section-title"><i data-lucide="megaphone" style="width:18px;height:18px;"></i> Anúncios Aguardando Aprovação</div>
     <div id="lista-pendentes"><div class="empty-dev">Carregando...</div></div>
   </div>
 
   <div id="tab-denuncias" class="tab-content">
-    <div class="section-title">🚨 Denúncias Pendentes</div>
+    <div class="section-title"><i data-lucide="alert-triangle" style="width:18px;height:18px;"></i> Denúncias Pendentes</div>
     <div id="lista-denuncias"><div class="empty-dev">Carregando...</div></div>
   </div>
 
   <div id="tab-usuarios" class="tab-content">
-    <div class="section-title">👥 Gerenciar Usuários</div>
-    <input class="search-dev" type="text" id="busca-usuario" placeholder="🔍 Buscar por nome ou email...">
+    <div class="section-title"><i data-lucide="users" style="width:18px;height:18px;"></i> Gerenciar Usuários</div>
+    <input class="search-dev" type="text" id="busca-usuario" placeholder="Buscar por nome ou email...">
     <div id="lista-usuarios"><div class="empty-dev">Carregando...</div></div>
   </div>
 
   <div id="tab-banidos" class="tab-content">
-    <div class="section-title">🔨 Usuários Banidos</div>
+    <div class="section-title"><i data-lucide="ban" style="width:18px;height:18px;"></i> Usuários Banidos</div>
     <div id="lista-banidos"><div class="empty-dev">Carregando...</div></div>
   </div>
 </div>
@@ -168,7 +170,7 @@ async function carregarDashboard() {
 async function carregarPendentes() {
   const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("status","pendente").order("criado_em",{ascending:false});
   const cont = document.getElementById("lista-pendentes");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">✅ Nenhum anúncio pendente</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum anúncio pendente</div>'; return; }
   cont.innerHTML = "";
   for (const a of data) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
@@ -184,19 +186,20 @@ async function carregarPendentes() {
           <p style="margin-top:4px;font-size:12px;color:rgba(255,255,255,.35);">Publicado: ${new Date(a.criado_em).toLocaleString("pt-BR")}</p>
         </div>
         <div>
-          <button class="btn-dev btn-aprovar" data-id="${a.id}">✅ Aprovar</button>
-          <button class="btn-dev btn-rejeitar" data-id="${a.id}">❌ Rejeitar</button>
+          <button class="btn-dev btn-aprovar" data-id="${a.id}">Aprovar</button>
+          <button class="btn-dev btn-rejeitar" data-id="${a.id}">Rejeitar</button>
         </div>
       </div>
     `;
     d.querySelector(".btn-aprovar").onclick = async () => {
       await supabase.from("anuncios").update({status:"ativo"}).eq("id",a.id);
-      toast("✅ Anúncio aprovado"); d.remove(); carregarDashboard();
+      toast("Anúncio aprovado"); d.remove(); carregarDashboard();
     };
     d.querySelector(".btn-rejeitar").onclick = async () => {
       if (!confirm("Rejeitar este anúncio?")) return;
-      await supabase.from("anuncios").update({status:"rejeitado"}).eq("id",a.id);
-      toast("❌ Anúncio rejeitado"); d.remove(); carregarDashboard();
+      const { error } = await supabase.from("anuncios").update({status:"expirado", pausado:true}).eq("id",a.id);
+      if (error) { toast("Erro: " + error.message); return; }
+      toast("Anúncio rejeitado"); d.remove(); carregarDashboard();
     };
     cont.appendChild(d);
   }
@@ -205,7 +208,7 @@ async function carregarPendentes() {
 async function carregarDenuncias() {
   const { data } = await supabase.from("denuncias").select("*").eq("status","pendente").order("criado_em",{ascending:false});
   const cont = document.getElementById("lista-denuncias");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">✅ Nenhuma denúncia pendente</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhuma denúncia pendente</div>'; return; }
   cont.innerHTML = "";
   for (const den of data) {
     // Buscar info do denunciante
@@ -215,7 +218,7 @@ async function carregarDenuncias() {
       denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px;">
         <img src="${denunciante.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
         <div><div style="font-size:12px;font-weight:800;color:#e6edf3;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:rgba(255,255,255,.4);">${escapeHtml(denunciante.email)}</div></div>
-        <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev" style="background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2);text-decoration:none;padding:4px 10px;font-size:11px;">👤 Ver</a>
+        <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev" style="background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2);text-decoration:none;padding:4px 10px;font-size:11px;">Ver</a>
       </div>`;
     }
     // Buscar info do alvo
@@ -226,7 +229,7 @@ async function carregarDenuncias() {
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(232,64,64,.06);border-radius:8px;border:1px solid rgba(232,64,64,.15);">
           <img src="${alvo.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
           <div><div style="font-size:12px;font-weight:800;color:#e84040;">Usuário denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:rgba(255,255,255,.4);">${escapeHtml(alvo.email)}</div></div>
-          <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev" style="background:rgba(232,64,64,.1);color:#e84040;border:1px solid rgba(232,64,64,.2);text-decoration:none;padding:4px 10px;font-size:11px;">👤 Ver perfil</a>
+          <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev" style="background:rgba(232,64,64,.1);color:#e84040;border:1px solid rgba(232,64,64,.2);text-decoration:none;padding:4px 10px;font-size:11px;">Ver perfil</a>
         </div>`;
       }
     } else if (den.tipo === 'anuncio') {
@@ -248,7 +251,7 @@ async function carregarDenuncias() {
         <div style="flex:1;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
             <span class="badge badge-pend">Pendente</span>
-            <span style="font-size:13px;color:rgba(255,255,255,.4);">${den.tipo === 'anuncio' ? '📢 Anúncio' : den.tipo === 'mensagem' ? '💬 Mensagem/Foto' : '👤 Perfil'}</span>
+            <span style="font-size:13px;color:rgba(255,255,255,.4);">${den.tipo === 'anuncio' ? 'Anúncio' : den.tipo === 'mensagem' ? 'Mensagem/Foto' : 'Perfil'}</span>
           </div>
           <h3>${escapeHtml(den.motivo)}</h3>
           ${den.descricao ? `<p style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;">${escapeHtml(den.descricao)}</p>` : ''}
@@ -257,8 +260,8 @@ async function carregarDenuncias() {
           ${denuncianteInfo}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
-          ${den.tipo === 'anuncio' ? `<button class="btn-dev btn-rejeitar" data-id="${den.alvo_id}" data-den="${den.id}">🚫 Banir anúncio</button>` : den.tipo === 'mensagem' ? `<small style="color:rgba(255,255,255,.5);font-size:11px;">Msg ID: ${den.alvo_id?.substring(0,8)}...</small>` : `<button class="btn-dev btn-banir" data-uid="${den.alvo_id}" data-den="${den.id}">🔨 Banir usuário</button><button class="btn-dev btn-desbanir" data-uid="${den.alvo_id}" data-den="${den.id}">✅ Desbanir usuário</button>`}
-          <button class="btn-dev btn-aprovar" data-den="${den.id}" data-tipo="ignorar">✅ Ignorar</button>
+          ${den.tipo === 'anuncio' ? `<button class="btn-dev btn-rejeitar" data-id="${den.alvo_id}" data-den="${den.id}">Banir anúncio</button>` : den.tipo === 'mensagem' ? `<small style="color:rgba(255,255,255,.5);font-size:11px;">Msg ID: ${den.alvo_id?.substring(0,8)}...</small>` : `<button class="btn-dev btn-banir" data-uid="${den.alvo_id}" data-den="${den.id}">Banir usuário</button><button class="btn-dev btn-desbanir" data-uid="${den.alvo_id}" data-den="${den.id}">Desbanir usuário</button>`}
+          <button class="btn-dev btn-aprovar" data-den="${den.id}" data-tipo="ignorar">Ignorar</button>
         </div>
       </div>
     `;
@@ -269,23 +272,28 @@ async function carregarDenuncias() {
     };
     const banirAnuncio = d.querySelector('.btn-rejeitar');
     if (banirAnuncio) banirAnuncio.onclick = async () => {
-      await supabase.from("anuncios").update({status:"banido"}).eq("id",den.alvo_id);
+      if (!confirm("Remover este anúncio por violação?")) return;
+      const { error } = await supabase.from("anuncios").update({status:"expirado", pausado:true}).eq("id",den.alvo_id);
+      if (error) { toast("Erro: " + error.message); return; }
       await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
-      toast("🚫 Anúncio removido"); d.remove(); carregarDashboard();
+      toast("Anúncio removido"); d.remove(); carregarDashboard();
     };
     const banirUser = d.querySelector('.btn-banir');
     if (banirUser) banirUser.onclick = async () => {
       const motivo = prompt("Motivo do banimento:");
       if (!motivo) return;
+      const { data: meData } = await supabase.auth.getUser();
       await supabase.from("usuarios").update({banido:true}).eq("id",den.alvo_id);
+      await supabase.from("usuarios_banidos").upsert({usuario_id:den.alvo_id, motivo, banido_por:meData?.user?.id, banido_em:new Date().toISOString()}, {onConflict:'usuario_id'});
       await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
-      toast("🔨 Usuário banido"); d.remove(); carregarDashboard();
+      toast("Usuário banido"); d.remove(); carregarDashboard();
     };
     const desbanirUser = d.querySelector('.btn-desbanir');
     if (desbanirUser) desbanirUser.onclick = async () => {
       await supabase.from("usuarios").update({banido:false}).eq("id",den.alvo_id);
+      await supabase.from("usuarios_banidos").delete().eq("usuario_id",den.alvo_id);
       await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
-      toast("✅ Usuário desbanido"); d.remove(); carregarDashboard();
+      toast("Usuário desbanido"); d.remove(); carregarDashboard();
     };
     cont.appendChild(d);
   }
@@ -311,9 +319,9 @@ async function carregarUsuarios(busca = "") {
         </div>
         <div>
           ${u.banido
-            ? `<button class="btn-dev btn-desbanir" data-uid="${u.id}">✅ Desbanir</button>`
-            : `<button class="btn-dev btn-banir" data-uid="${u.id}">🔨 Banir</button>`}
-          <a href="../MG-CONTA/conta.html?id=${u.id}" target="_blank" class="btn-dev" style="background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2);text-decoration:none;">👤 Ver perfil</a>
+            ? `<button class="btn-dev btn-desbanir" data-uid="${u.id}">Desbanir</button>`
+            : `<button class="btn-dev btn-banir" data-uid="${u.id}">Banir</button>`}
+          <a href="../MG-CONTA/conta.html?id=${u.id}" target="_blank" class="btn-dev" style="background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2);text-decoration:none;">Ver perfil</a>
         </div>
       </div>
     `;
@@ -321,13 +329,18 @@ async function carregarUsuarios(busca = "") {
     if (btnBanir) btnBanir.onclick = async () => {
       const motivo = prompt("Motivo do banimento:");
       if (!motivo) return;
-      await supabase.from("usuarios").update({banido:true}).eq("id",u.id);
-      toast("🔨 Usuário banido"); carregarUsuarios(busca);
+      const { data: meData } = await supabase.auth.getUser();
+      const { error } = await supabase.from("usuarios").update({banido:true}).eq("id",u.id);
+      if (error) { toast("Erro: " + error.message); return; }
+      await supabase.from("usuarios_banidos").upsert({usuario_id:u.id, motivo, banido_por:meData?.user?.id, banido_em:new Date().toISOString()}, {onConflict:'usuario_id'});
+      toast("Usuário banido"); carregarUsuarios(busca);
     };
     const btnDesbanir = d.querySelector('.btn-desbanir');
     if (btnDesbanir) btnDesbanir.onclick = async () => {
-      await supabase.from("usuarios").update({banido:false}).eq("id",u.id);
-      toast("✅ Usuário desbanido"); carregarUsuarios(busca);
+      const { error } = await supabase.from("usuarios").update({banido:false}).eq("id",u.id);
+      if (error) { toast("Erro: " + error.message); return; }
+      await supabase.from("usuarios_banidos").delete().eq("usuario_id",u.id);
+      toast("Usuário desbanido"); carregarUsuarios(busca);
     };
     cont.appendChild(d);
   }
@@ -336,7 +349,7 @@ async function carregarUsuarios(busca = "") {
 async function carregarBanidos() {
   const { data } = await supabase.from("usuarios").select("id,nome,email,foto,cidade,estado").eq("banido",true).order("nome");
   const cont = document.getElementById("lista-banidos");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum usuário banido 🎉</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum usuário banido</div>'; return; }
   cont.innerHTML = "";
   for (const u of data) {
     const d = document.createElement("div");
@@ -348,12 +361,14 @@ async function carregarBanidos() {
           <h3 style="color:#e84040;">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
           <p style="font-size:12px;opacity:.6;">${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>
         </div>
-        <button class="btn-dev btn-desbanir" data-uid="${u.id}">✅ Desbanir</button>
+        <button class="btn-dev btn-desbanir" data-uid="${u.id}">Desbanir</button>
       </div>
     `;
     d.querySelector(".btn-desbanir").onclick = async () => {
-      await supabase.from("usuarios").update({banido:false}).eq("id",u.id);
-      toast("✅ Usuário desbanido com sucesso!"); d.remove();
+      const { error } = await supabase.from("usuarios").update({banido:false}).eq("id",u.id);
+      if (error) { toast("Erro: " + error.message); return; }
+      await supabase.from("usuarios_banidos").delete().eq("usuario_id",u.id);
+      toast("Usuário desbanido com sucesso!"); d.remove();
       document.getElementById("stat-banidos").textContent = Math.max(0, parseInt(document.getElementById("stat-banidos").textContent||0) - 1);
     };
     cont.appendChild(d);
@@ -377,6 +392,7 @@ document.getElementById("busca-usuario").addEventListener("input", e => {
 });
 
 init();
+lucide.createIcons();
 </script>
 </body>
 </html>

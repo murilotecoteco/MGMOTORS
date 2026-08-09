@@ -366,7 +366,7 @@ header {
 }
 
 footer {
-    background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+    background: var(--preto);
     padding: 40px 60px;
     color: #fff;
     margin-top: 40px;
@@ -387,7 +387,7 @@ footer {
 }
 
 .footer-brand span {
-    color: var(--dourado);
+    color: var(--branco);
 }
 
 .footer-brand p {
@@ -401,7 +401,7 @@ footer {
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: var(--dourado);
+    color: var(--branco);
     margin-bottom: 14px;
 }
 
@@ -412,6 +412,10 @@ footer {
     font-size: 13px;
     margin-bottom: 8px;
     transition: color .2s;
+}
+
+.footer-col a:visited {
+    color: rgba(255, 255, 255, .7);
 }
 
 .footer-col a:hover {

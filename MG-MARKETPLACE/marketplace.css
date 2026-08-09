@@ -1067,6 +1067,10 @@ header {
   transition: color .2s;
 }
 
+.footer-col a:visited {
+  color: rgba(255, 255, 255, .7);
+}
+
 .footer-col a:hover {
   color: #fff;
 }
@@ -1176,7 +1180,7 @@ header {
 }
 
 footer {
-  background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+  background: var(--preto);
   padding: 40px 60px;
   color: #fff;
   margin-top: 40px;
@@ -1412,7 +1416,7 @@ main {
 }
 
 footer {
-  background: #111827;
+  background: var(--preto);
 }
 
 [data-tema="escuro"] {

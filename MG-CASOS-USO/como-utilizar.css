@@ -292,7 +292,7 @@ header {
 
 /* ===== FOOTER (padronizado) ===== */
 footer {
-  background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+  background: var(--preto);
   padding: 40px 60px;
   color: #fff;
   margin-top: 40px;
@@ -306,10 +306,11 @@ footer {
   padding-bottom: 30px;
 }
 .footer-brand h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
-.footer-brand h2 span { color: var(--dourado); }
+.footer-brand h2 span { color: var(--branco); }
 .footer-brand p { opacity: .65; font-size: 13px; line-height: 1.6; }
-.footer-col h4 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--dourado); margin-bottom: 14px; }
+.footer-col h4 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--branco); margin-bottom: 14px; }
 .footer-col a { display: block; color: rgba(255,255,255,.7); text-decoration: none; font-size: 13px; margin-bottom: 8px; transition: color .2s; }
+.footer-col a:visited { color: rgba(255,255,255,.7); }
 .footer-col a:hover { color: #fff; }
 .footer-bottom {
   max-width: 1200px;

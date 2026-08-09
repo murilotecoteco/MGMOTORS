@@ -604,7 +604,7 @@ header {
 }
 /* ===== FOOTER PADRONIZADO ===== */
 footer {
-  background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+  background: var(--preto);
   padding: 40px 60px;
   color: var(--branco);
   margin-top: 40px;
@@ -619,8 +619,9 @@ footer {
 }
 .footer-brand h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
 .footer-brand p { opacity: .65; font-size: 13px; line-height: 1.6; }
-.footer-col h4 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--dourado); margin-bottom: 14px; }
+.footer-col h4 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--branco); margin-bottom: 14px; }
 .footer-col a { display: block; color: rgba(255,255,255,.7); text-decoration: none; font-size: 13px; margin-bottom: 8px; transition: color .2s; }
+.footer-col a:visited { color: rgba(255,255,255,.7); }
 .footer-col a:hover { color: var(--branco); }
 .footer-bottom { max-width: 1200px; margin: 20px auto 0; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.1); display: flex; justify-content: space-between; font-size: 12px; opacity: .5; flex-wrap: wrap; gap: 8px; }
 

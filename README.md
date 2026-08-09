@@ -1,4 +1,4 @@
-﻿# MG Motors
+# MG Motors
 
 <p align="center">
   Marketplace premium de compra e venda de veículos exclusivos — esportivos, seminovos e importados.
@@ -25,6 +25,10 @@
 </p>
 
 <p align="center">
+  <b>Clique nos botões abaixo para abrir o projeto:</b>
+</p>
+
+<p align="center">
 
 <a href="https://mgmotors.vercel.app/MG-INICIO/inicio.html">
 <img src="https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge">
@@ -36,11 +40,16 @@
 
 </p>
 
+# Limitações Conhecidas
+
+- Este projeto utiliza o plano gratuito do Supabase, que pausa o banco de dados automaticamente após um período de inatividade. Se o demo ao vivo parecer sem resposta, o banco pode precisar de alguns segundos para retomar, ou pode ser necessária a reativação manual pelo painel do Supabase.
+
 ---
 
 # Sumário
 
 - [Sobre](#sobre)
+- [Por que este projeto](#por-que-este-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Páginas do Site](#páginas-do-site)
 - [Stack de Tecnologias](#stack-de-tecnologias)
@@ -48,9 +57,11 @@
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Banco de Dados](#banco-de-dados)
 - [Segurança](#segurança)
-- [Deploy](#deploy)
 - [Como Rodar Localmente](#como-rodar-localmente)
+- [Variáveis de Ambiente](#variáveis-de-ambiente)
+- [Deploy](#deploy)
 - [Roadmap](#roadmap)
+- [Licença](#licença)
 
 ---
 
@@ -58,38 +69,62 @@
 
 **MG Motors** é um marketplace web premium focado na compra e venda de veículos exclusivos no Brasil. A plataforma conecta compradores e vendedores de carros esportivos, seminovos e importados em um ambiente seguro, moderno e sem burocracia.
 
-O projeto foi construído inteiramente com **HTML, CSS e JavaScript puro** (sem frameworks de frontend), utilizando o **Supabase** como backend completo — autenticação, banco de dados PostgreSQL, storage e Row Level Security (RLS).
+O projeto foi construído inteiramente com **HTML, CSS e JavaScript puro** (sem frameworks de frontend), utilizando o **Supabase** como backend completo — autenticação JWT, banco de dados PostgreSQL, storage de arquivos e Row Level Security (RLS).
+
+O frontend é servido como site **completamente estático** pelo Vercel, sem necessidade de servidor de aplicação.
+
+---
+
+# Por que este projeto
+
+Este projeto foi construído para praticar e demonstrar:
+
+- Arquitetura de aplicação web multi-página sem framework
+- Integração com APIs REST e Backend-as-a-Service (Supabase)
+- Autenticação segura com JWT
+- Design de banco de dados relacional com PostgreSQL
+- Políticas de Row Level Security (RLS)
+- Upload e gestão de arquivos com Supabase Storage
+- Chat em tempo real com Supabase Realtime
+- Interface responsiva e acessível
+- Boas práticas de segurança no frontend (XSS, clickjacking, headers HTTP)
+- SEO com meta tags, Open Graph e canonical URLs
+- Deploy e CI/CD com Vercel
 
 ---
 
 # Funcionalidades
 
-- Marketplace com listagem e busca de anúncios de veículos
-- Filtros avançados: marca, modelo, preço, categoria e localização (geolocalização)
-- Ordenação: mais curtidos, menor preço, maior preço, mais recentes
-- Publicação e gerenciamento de anúncios com upload de múltiplas fotos
-- Sistema de curtidas nos anúncios
-- Favoritos salvos localmente (localStorage)
-- Chat interno em tempo real entre comprador e vendedor
-- Envio de fotos no chat
-- Perfil de usuário com bio, foto, capa, redes sociais e anúncios
-- Feed de fotos estilo galeria no perfil
-- Sistema de seguir/seguidores entre usuários
-- Avaliação de usuários com estrelas e comentário
-- Autenticação completa: cadastro, login e recuperação de senha
-- Configurações da conta: tema escuro/claro, tamanho de fonte, notificações e privacidade
-- Sistema de denúncias de anúncios, mensagens e perfis
-- Painel administrativo (Dev Panel) com moderação de anúncios, denúncias e usuários
-- Banimento e desbanimento de usuários
-- Central de Ajuda com perguntas frequentes (FAQ)
-- Blog com dicas de compra/venda segura e artigos sobre marcas de luxo
-- Chatbot de atendimento integrado (Chatling)
-- Tema escuro e claro com persistência
-- Design responsivo para mobile e desktop
-- Estatísticas animadas em tempo real (total de anúncios, marcas, usuários)
-- Microanimações e revelação de elementos ao rolar a página
-- SEO otimizado com meta tags, Open Graph e canonical URLs
-- Segurança com headers HTTP via Vercel (DENY iframes, nosniff, referrer policy)
+- ✅ Marketplace com listagem e busca de anúncios de veículos
+- ✅ Filtros avançados: marca, modelo, preço, categoria e localização (geolocalização)
+- ✅ Ordenação: mais curtidos, menor preço, maior preço, mais recentes
+- ✅ Publicação e gerenciamento de anúncios com upload de múltiplas fotos
+- ✅ Sistema de curtidas nos anúncios
+- ✅ Favoritos salvos localmente (localStorage)
+- ✅ Chat interno em tempo real entre comprador e vendedor
+- ✅ Envio de fotos no chat
+- ✅ Perfil de usuário com bio, foto, capa, redes sociais e anúncios
+- ✅ Feed de fotos estilo galeria no perfil
+- ✅ Sistema de seguir/seguidores entre usuários
+- ✅ Avaliação de usuários com estrelas e comentário
+- ✅ Autenticação completa: cadastro, login e recuperação de senha
+- ✅ Configurações da conta: tema escuro/claro, tamanho de fonte, notificações e privacidade
+- ✅ Sistema de denúncias de anúncios, mensagens e perfis
+- ✅ Painel administrativo (Dev Panel) com moderação de anúncios, denúncias e usuários
+- ✅ Banimento e desbanimento de usuários
+- ✅ Central de Ajuda com perguntas frequentes (FAQ)
+- ✅ Blog com dicas de compra/venda segura e artigos sobre marcas de luxo
+- ✅ Chatbot de atendimento integrado (Chatling)
+- ✅ Tema escuro e claro com persistência
+- ✅ Design responsivo para mobile e desktop
+- ✅ Estatísticas animadas em tempo real (total de anúncios, marcas, usuários)
+- ✅ Microanimações e revelação de elementos ao rolar a página
+- ✅ SEO otimizado com meta tags, Open Graph e canonical URLs
+- ✅ Segurança com headers HTTP via Vercel (DENY iframes, nosniff, referrer policy)
+- ⏳ Simulador de financiamento integrado
+- ⏳ Notificações push em tempo real
+- ⏳ Comparador de veículos
+- ⏳ Exportação de anúncios em PDF
 
 ---
 
@@ -131,7 +166,7 @@ O projeto foi construído inteiramente com **HTML, CSS e JavaScript puro** (sem 
 |--------|------------|
 | Frontend | HTML5, CSS3 Vanilla, JavaScript ES2022 (módulos) |
 | Ícones | Lucide Icons (via CDN) |
-| Backend / Auth | Supabase (PostgreSQL + Auth + Storage) |
+| Backend / Auth | Supabase (PostgreSQL + Auth + Storage + Realtime) |
 | Banco de Dados | PostgreSQL (gerenciado pelo Supabase) |
 | Deploy | Vercel |
 | Chatbot | Chatling AI |
@@ -144,31 +179,37 @@ O projeto foi construído inteiramente com **HTML, CSS e JavaScript puro** (sem 
 
 ```
 Navegador do Usuário
-        |
-        v
+        │
+        ▼
   HTML + CSS + JS
   (sem framework)
-        |
-   +----+----+
-   |         |
-   v         v
-Supabase    localStorage
-   |         |
- +-+------+  +-- Favoritos
- |        |
- v        v
+        │
+   ┌────┴────┐
+   │         │
+   ▼         ▼
+Supabase  localStorage
+   │         │
+ ┌─┴──────┐  └── Favoritos
+ │        │
+ ▼        ▼
 Auth    PostgreSQL
 (JWT)   (anuncios, usuarios,
          mensagens, denuncias,
          marcas, modelos,
          fotos_anuncio, etc.)
+         │
+         ▼
+      Storage
+  (fotos de perfil,
+   capa e anúncios)
 ```
 
 Toda a lógica de backend é gerenciada pelo **Supabase**:
-- **Auth**: autenticação JWT com email/senha
+- **Auth**: autenticação JWT com email/senha e recuperação de senha
 - **Database**: queries diretas ao PostgreSQL usando a client lib `@supabase/supabase-js`
 - **RLS (Row Level Security)**: políticas no banco garantem que cada usuário só acessa e modifica seus próprios dados
-- **Storage**: upload de fotos de perfil, capa e anúncios
+- **Storage**: upload e gestão de fotos de perfil, capa e anúncios
+- **Realtime**: subscriptions para o chat em tempo real entre usuários
 
 O frontend é servido como **HTML estático** pelo Vercel, sem necessidade de servidor de aplicação.
 
@@ -178,69 +219,69 @@ O frontend é servido como **HTML estático** pelo Vercel, sem necessidade de se
 
 ```
 MGMOTORS/
-|
-+-- MG-INICIO/
-|   +-- inicio.html          # Landing page
-|   +-- inicio.css
-|
-+-- MG-MARKETPLACE/
-|   +-- marketplace.html     # Listagem + publicação de anúncios
-|   +-- marketplace.css
-|
-+-- MG-MENSAGENS/
-|   +-- mensagens.html       # Chat em tempo real
-|   +-- mensagens.css
-|
-+-- MG-CONTA/
-|   +-- conta.html           # Perfil do usuário
-|   +-- conta.css
-|
-+-- MG-LOGIN/
-|   +-- login.html           # Autenticação
-|   +-- login.css
-|   +-- register.html        # Cadastro
-|   +-- register.css
-|
-+-- MG-CONFIGURACOES/
-|   +-- configuracoes.html   # Preferências do usuário
-|   +-- configuracoes.css
-|
-+-- MG-DICAS/
-|   +-- dicas.html           # Guia de segurança
-|   +-- dicas.css
-|   +-- blogs/               # Artigos sobre marcas
-|       +-- astonmartin/
-|       +-- bmw/
-|       +-- bugatti/
-|       +-- ferrari/
-|       +-- lamborghini/
-|       +-- mclaren/
-|       +-- pagani/
-|       +-- porsche/
-|
-+-- MG-AJUDA/
-|   +-- ajuda.html           # FAQ / Central de ajuda
-|
-+-- MG-CONTATO/
-|   +-- contato.html         # Página de contato
-|   +-- contato.css
-|
-+-- MG-CASOS-USO/
-|   +-- como-utilizar.html   # Casos de uso documentados
-|   +-- como-utilizar.css
-|
-+-- MG-DEV/
-|   +-- devpanel.html        # Painel admin (restrito)
-|   +-- devpanel.css
-|
-+-- imagens/                 # Assets estáticos
-+-- global.css               # Estilos globais + header + toast
-+-- headerGlobal.js          # Header injetado dinamicamente em todas as páginas
-+-- mgConfig.js              # Configuração central do Supabase + escapeHtml()
-+-- tema.js                  # Tema escuro/claro aplicado antes do render
-+-- vercel.json              # Headers de segurança HTTP
-+-- supabase-rls-setup.sql   # Setup completo do banco + políticas RLS
-+-- index.html               # Redirect para MG-INICIO
+│
+├── MG-INICIO/
+│   ├── inicio.html          # Landing page
+│   └── inicio.css
+│
+├── MG-MARKETPLACE/
+│   ├── marketplace.html     # Listagem + publicação de anúncios
+│   └── marketplace.css
+│
+├── MG-MENSAGENS/
+│   ├── mensagens.html       # Chat em tempo real
+│   └── mensagens.css
+│
+├── MG-CONTA/
+│   ├── conta.html           # Perfil do usuário
+│   └── conta.css
+│
+├── MG-LOGIN/
+│   ├── login.html           # Autenticação
+│   ├── login.css
+│   ├── register.html        # Cadastro
+│   └── register.css
+│
+├── MG-CONFIGURACOES/
+│   ├── configuracoes.html   # Preferências do usuário
+│   └── configuracoes.css
+│
+├── MG-DICAS/
+│   ├── dicas.html           # Guia de segurança
+│   ├── dicas.css
+│   └── blogs/               # Artigos sobre marcas
+│       ├── astonmartin/
+│       ├── bmw/
+│       ├── bugatti/
+│       ├── ferrari/
+│       ├── lamborghini/
+│       ├── mclaren/
+│       ├── pagani/
+│       └── porsche/
+│
+├── MG-AJUDA/
+│   └── ajuda.html           # FAQ / Central de ajuda
+│
+├── MG-CONTATO/
+│   ├── contato.html         # Página de contato
+│   └── contato.css
+│
+├── MG-CASOS-USO/
+│   ├── como-utilizar.html   # Casos de uso documentados
+│   └── como-utilizar.css
+│
+├── MG-DEV/
+│   ├── devpanel.html        # Painel admin (restrito)
+│   └── devpanel.css
+│
+├── imagens/                 # Assets estáticos
+├── global.css               # Estilos globais + header + toast
+├── headerGlobal.js          # Header injetado dinamicamente em todas as páginas
+├── mgConfig.js              # Configuração central do Supabase + escapeHtml()
+├── tema.js                  # Tema escuro/claro aplicado antes do render
+├── vercel.json              # Headers de segurança HTTP
+├── supabase-rls-setup.sql   # Setup completo do banco + políticas RLS
+└── index.html               # Redirect para MG-INICIO
 ```
 
 ---
@@ -285,25 +326,16 @@ O schema completo com políticas de RLS está em [`supabase-rls-setup.sql`](./su
 
 ---
 
-# Deploy
-
-O projeto é hospedado no **Vercel** como site estático.
-
-Todo push para o branch `main` aciona automaticamente um novo deploy de produção.
-
-URL de produção:
-
-```
-https://mgmotors.vercel.app
-```
-
----
-
 # Como Rodar Localmente
 
-Como o projeto é 100% HTML/CSS/JS estático, basta abrir os arquivos num servidor local. Recomendamos a extensão **Live Server** do VS Code ou o `serve` do Node.js.
+Como o projeto é 100% HTML/CSS/JS estático, basta abrir os arquivos em um servidor local. Recomendamos a extensão **Live Server** do VS Code ou o `serve` do Node.js.
 
-### Com Node.js
+## Pré-requisitos
+
+- Node.js 18+ (opcional, para usar o `serve`)
+- Projeto no Supabase configurado
+
+## Com Node.js
 
 ```bash
 # Instale o serve globalmente (apenas uma vez)
@@ -323,13 +355,45 @@ O site ficará disponível em:
 http://localhost:3000/MG-INICIO/inicio.html
 ```
 
-### Com VS Code Live Server
+## Com VS Code Live Server
 
 1. Instale a extensão **Live Server** (Ritwick Dey)
 2. Clique com o botão direito em `MG-INICIO/inicio.html`
 3. Selecione **"Open with Live Server"**
 
-> **Atenção:** As funcionalidades que dependem do Supabase (autenticação, anúncios, chat etc.) requerem conexão com a internet, pois apontam para o projeto Supabase em produção.
+> **Atenção:** As funcionalidades que dependem do Supabase (autenticação, anúncios, chat etc.) requerem conexão com a internet e as variáveis de ambiente configuradas, pois apontam para o projeto Supabase em produção.
+
+---
+
+# Variáveis de Ambiente
+
+As credenciais do Supabase são referenciadas diretamente no arquivo [`mgConfig.js`](./mgConfig.js) na raiz do projeto.
+
+```js
+// mgConfig.js
+const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co';
+const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANONIMA';
+```
+
+Para rodar localmente com seu próprio projeto Supabase:
+
+1. Crie um projeto em [supabase.com](https://supabase.com)
+2. Execute o script [`supabase-rls-setup.sql`](./supabase-rls-setup.sql) no SQL Editor do Supabase para criar todas as tabelas, políticas de RLS e buckets de Storage
+3. Substitua a `SUPABASE_URL` e a `SUPABASE_ANON_KEY` em `mgConfig.js` com as credenciais do seu projeto
+
+---
+
+# Deploy
+
+O projeto é hospedado no **Vercel** como site estático.
+
+Todo push para o branch `main` aciona automaticamente um novo deploy de produção.
+
+URL de produção:
+
+```
+https://mgmotors.vercel.app
+```
 
 ---
 

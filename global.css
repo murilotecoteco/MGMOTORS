@@ -265,9 +265,7 @@
     display: none;
   }
 
-  #header-global .icone-link[href*="configuracoes"] {
-    display: none;
-  }
+  /* engrenagem visivel no mobile — acessivel via header */
 }
 
 @media (prefers-reduced-motion: reduce) {

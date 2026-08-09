@@ -153,7 +153,7 @@ async function init() {
 }
 
 async function carregarDashboard() {
-  const [u, a, p, d, b, pa] = await Promise.all([
+  const [u, a, p, d, b] = await Promise.all([
     supabase.from("usuarios").select("id",{count:"exact",head:true}),
     supabase.from("anuncios").select("id",{count:"exact",head:true}).eq("status","ativo"),
     supabase.from("anuncios").select("id",{count:"exact",head:true}).eq("status","pendente"),
@@ -211,9 +211,9 @@ async function carregarDenuncias() {
   if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhuma denúncia pendente</div>'; return; }
   cont.innerHTML = "";
   for (const den of data) {
-    // Buscar info do denunciante
+    // Buscar info do denunciante (maybeSingle evita erro 406 se usuário foi deletado)
     let denuncianteInfo = '';
-    const { data: denunciante } = await supabase.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).single();
+    const { data: denunciante } = await supabase.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).maybeSingle();
     if (denunciante) {
       denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px;">
         <img src="${denunciante.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
@@ -224,7 +224,7 @@ async function carregarDenuncias() {
     // Buscar info do alvo
     let alvoInfo = '';
     if (den.tipo === 'perfil') {
-      const { data: alvo } = await supabase.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).single();
+      const { data: alvo } = await supabase.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).maybeSingle();
       if (alvo) {
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(232,64,64,.06);border-radius:8px;border:1px solid rgba(232,64,64,.15);">
           <img src="${alvo.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
@@ -233,7 +233,7 @@ async function carregarDenuncias() {
         </div>`;
       }
     } else if (den.tipo === 'anuncio') {
-      const { data: anuncio } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", den.alvo_id).single();
+      const { data: anuncio } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", den.alvo_id).maybeSingle();
       if (anuncio) {
         const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", den.alvo_id).limit(1);
         const fotoAnuncio = fotos?.[0]?.url_foto || '';
@@ -299,9 +299,14 @@ async function carregarDenuncias() {
   }
 }
 
+// M2: Sanitiza chars especiais do PostgREST antes de montar filtro .or()
+function sanitizarBusca(str) {
+  return str.replace(/[(),\\*]/g, '').trim();
+}
+
 async function carregarUsuarios(busca = "") {
   let query = supabase.from("usuarios").select("*").order("criado_em",{ascending:false}).limit(50);
-  if (busca) query = query.or(`nome.ilike.%${busca}%,email.ilike.%${busca}%`);
+  if (busca) { const s = sanitizarBusca(busca); if (s) query = query.or(`nome.ilike.%${s}%,email.ilike.%${s}%`); }
   const { data } = await query;
   const cont = document.getElementById("lista-usuarios");
   if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum usuário encontrado</div>'; return; }

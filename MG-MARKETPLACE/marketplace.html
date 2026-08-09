@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -37,6 +37,7 @@
   </style>
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotors.vercel.app/MG-MARKETPLACE/marketplace.html">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -189,7 +190,7 @@
           <input type="file" id="car-images-adicionais" accept="image/jpeg,image/png,image/webp" multiple>
           <small id="upload-adicionais-info" style="font-size:11px;color:var(--texto-suave);margin-top:4px;display:block;"></small>
         </div>
-        <small class="upload-hint">ℹ️ Formatos aceitos: JPG, PNG, WEBP. Máx. 5 MB por foto.</small>
+        <small class="upload-hint"><i data-lucide="info" style="width:13px;height:13px;vertical-align:-1px;margin-right:3px;"></i> Formatos aceitos: JPG, PNG, WEBP. Máx. 5 MB por foto.</small>
         <button type="submit" class="btn-submit" id="btn-publicar">Publicar Anúncio</button>
       </form>
     </div>
@@ -383,19 +384,24 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     if (urlParams.get("ordenar") === "curtidas") { document.addEventListener("DOMContentLoaded", () => { const s = document.getElementById("ordenar"); if (s) s.value = "curtidas"; }); }
 
     async function carregarAnuncios() {
-      const { data: anuncios, error } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("status", "ativo");
-      if (error) { console.error(error); return; }
+      // C2: Uma única chamada RPC retorna fotos, vendedor e curtida por anúncio
+      // via JOINs + subqueries no banco — elimina o loop N+1 que gerava 100+ queries.
+      // A função SQL correspondente deve estar criada no Supabase (ver plano C2).
+      const { data: anuncios, error } = await supabase.rpc(
+        "get_anuncios_marketplace",
+        { usuario_id_param: usuarioAtual?.id ?? null }
+      );
+      if (error) { console.error("RPC get_anuncios_marketplace error:", error); return; }
+
+      // Normaliza shape para compatibilidade com o restante do código (a.marcas?.nome etc.)
       for (const a of anuncios) {
-        const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", a.id).order("ordem").limit(1);
-        a.foto_principal = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
-        const { data: vendedor } = await supabase.from("usuarios").select("foto").eq("id", a.usuario_id).maybeSingle();
-        a.vendedor_foto = vendedor?.foto || "../imagens/usuario.png";
-        if (usuarioAtual) {
-          // Melhoria 1: "ainda não curtiu" é resultado esperado -> maybeSingle().
-          const { data: c } = await supabase.from("curtidas_anuncio").select("id").eq("anuncio_id", a.id).eq("usuario_id", usuarioAtual.id).maybeSingle();
-          a.usuario_curtiu = !!c;
-        } else { a.usuario_curtiu = false; }
+        a.marcas  = { nome: a.marca_nome  ?? "" };
+        a.modelos = { nome: a.modelo_nome ?? "" };
+        a.foto_principal = a.foto_principal || "../imagens/sem-foto.png";
+        a.vendedor_foto  = a.vendedor_foto  || "../imagens/usuario.png";
+        // a.usuario_curtiu já vem calculado pelo banco
       }
+
       todosAnuncios = anuncios;
       if (urlParams.get("ordenar")) { const s = document.getElementById("ordenar"); if (s && urlParams.get("ordenar") === "curtidas") s.value = "curtidas"; }
       aplicarFiltroOrdenacao();
@@ -466,7 +472,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         const empty = document.createElement('div');
         empty.className = 'empty-state';
         const spanIcon = document.createElement('span');
-        spanIcon.textContent = '🔍';
+        spanIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>';
         const pMsg = document.createElement('p');
         pMsg.textContent = 'Nenhum anúncio encontrado';
         const smMsg = document.createElement('small');
@@ -614,6 +620,8 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     async function excluirAnuncio(anuncioId) {
       if (!confirm("Excluir este anúncio?")) return;
+      // A5: remover curtidas antes de excluir o anúncio (evita dados órfãos)
+      await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId);
       const { data: fotos } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
       if (fotos) for (const f of fotos) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
       const okFotos = await executarOuAvisar(supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId), "Não foi possível excluir as fotos do anúncio.");
@@ -741,14 +749,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         else nomes.push(`${f.name} (${formatBytes(f.size)})`);
       });
       if (invalidos.length) {
-        infoEl.textContent = `❌ Tipo inválido: ${invalidos.join(', ')} — use JPG, PNG ou WEBP.`;
+        infoEl.textContent = `Tipo inválido: ${invalidos.join(', ')} — use JPG, PNG ou WEBP.`;
         infoEl.style.color = '#e84040'; return false;
       }
       if (grandes.length) {
-        infoEl.textContent = `❌ Muito grande (máx 5 MB): ${grandes.join(', ')}.`;
+        infoEl.textContent = `Muito grande (máx 5 MB): ${grandes.join(', ')}.`;
         infoEl.style.color = '#e84040'; return false;
       }
-      infoEl.textContent = `✅ ${nomes.join(' | ')}`;
+      infoEl.textContent = `${nomes.join(' | ')}`;
       infoEl.style.color = '#28a745'; return true;
     }
 
@@ -757,7 +765,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     });
     document.getElementById('car-images-adicionais').addEventListener('change', function () {
       if (this.files.length > 4) {
-        document.getElementById('upload-adicionais-info').textContent = '⚠️ Máximo de 4 fotos adicionais. As extras serão ignoradas.';
+        document.getElementById('upload-adicionais-info').textContent = 'Máximo de 4 fotos adicionais. As extras serão ignoradas.';
         document.getElementById('upload-adicionais-info').style.color = '#f5a623';
       } else {
         validarArquivos(this.files, document.getElementById('upload-adicionais-info'));
@@ -767,6 +775,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     document.getElementById("car-form").addEventListener("submit", async e => {
       e.preventDefault();
       if (!usuarioAtual) { window.mgToast?.('Faça login para anunciar.', 'warning') || window.mgToast?.("Faça login!", "warning"); return; }
+      // B2: desabilitar botão durante submit para evitar duplo envio
+      const btnPublicar = document.getElementById('btn-publicar');
+      btnPublicar.disabled = true;
+      btnPublicar.textContent = 'Publicando...';
+      const restaurarBtn = () => { btnPublicar.disabled = false; btnPublicar.textContent = 'Publicar Anúncio'; };
 
       // Validar WhatsApp
       const waInput  = document.getElementById("car-whatsapp");
@@ -805,14 +818,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         status: "pendente", cidade: cidade || "Não informada", estado: estado,
         latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)
       }).select().single();
-      if (error) { window.mgToast?.('Erro ao publicar: ' + error.message, 'error'); return; }
+      if (error) { window.mgToast?.('Erro ao publicar: ' + error.message, 'error'); restaurarBtn(); return; }
       const ext = foto.name.split('.').pop();
       const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
       const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
-      if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); return; }
+      if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); restaurarBtn(); return; }
       const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
       const okFoto = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
-      if (okFoto === null) return;
+      if (okFoto === null) { restaurarBtn(); return; }
       const extras = document.getElementById("car-images-adicionais").files;
       for (let i = 0; i < Math.min(extras.length, 4); i++) {
         const f = extras[i]; if (f.size > 5 * 1024 * 1024) continue;
@@ -828,16 +841,19 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       document.getElementById("car-form").reset();
       if (counterEl) { counterEl.textContent = '0/500'; counterEl.className = 'char-counter'; }
       document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>"; document.getElementById("select-modelo").disabled = true;
+      restaurarBtn();
       carregarAnuncios();
     });
 
-    window.onclick = (e) => {
+    // C1: addEventListener em vez de window.onclick (que sobrescreve handlers globais)
+    window.addEventListener('click', (e) => {
       if (e.target === document.getElementById("modal-add-car")) document.getElementById("modal-add-car").style.display = "none";
       if (e.target === document.getElementById("modal-visualizar")) document.getElementById("modal-visualizar").style.display = "none";
       if (e.target === document.getElementById("modal-denuncia")) document.getElementById("modal-denuncia").style.display = "none";
-    };
+    });
 
     carregarAnuncios();
+    lucide.createIcons();
   </script>
   <script>window.chtlConfig = { chatbotId: "6944231868" }</script>
   <script async data-id="6944231868" id="chtl-script" type="text/javascript"

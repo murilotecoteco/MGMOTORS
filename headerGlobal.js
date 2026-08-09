@@ -73,12 +73,20 @@ export async function carregarHeaderGlobal(supabase) {
 
     const { data: perfil, error: dbError } = await supabase
       .from("usuarios")
-      .select("nome, foto")
+      .select("nome, foto, banido")
       .eq("id", data.user.id)
       .maybeSingle();
 
     if (dbError) {
       console.error("Erro ao carregar dados do perfil:", dbError.message);
+    }
+
+    if (perfil?.banido) {
+      await supabase.auth.signOut();
+      // Preserva a página atual para exibir mensagem contextual no login
+      const loginUrl = new URL("../MG-LOGIN/login.html", window.location.href).href;
+      window.location.replace(loginUrl + "?banido=1");
+      return null;
     }
 
     headerNome.textContent = perfil?.nome || data.user.email;
@@ -163,12 +171,22 @@ window.mgToast = function(msg, tipo = 'info', titulo = '') {
   t.setAttribute('role', 'alert');
   const tituloMap = { success: 'Sucesso', error: 'Erro', info: 'Informação', warning: 'Atenção' };
   const tituloFinal = titulo || tituloMap[tipo] || 'Aviso';
-  t.innerHTML = `
-    <div class="mg-toast-icon" aria-hidden="true"></div>
-    <div class="mg-toast-body">
-      <div class="mg-toast-title">${tituloFinal}</div>
-      <div class="mg-toast-msg">${msg}</div>
-    </div>`;
+  // M1: Constrói via DOM (textContent) — nunca innerHTML com dados externos (anti-XSS)
+  const iconEl = document.createElement('div');
+  iconEl.className = 'mg-toast-icon';
+  iconEl.setAttribute('aria-hidden', 'true');
+  const bodyEl = document.createElement('div');
+  bodyEl.className = 'mg-toast-body';
+  const titleEl = document.createElement('div');
+  titleEl.className = 'mg-toast-title';
+  titleEl.textContent = tituloFinal;
+  const msgEl = document.createElement('div');
+  msgEl.className = 'mg-toast-msg';
+  msgEl.textContent = msg;
+  bodyEl.appendChild(titleEl);
+  bodyEl.appendChild(msgEl);
+  t.appendChild(iconEl);
+  t.appendChild(bodyEl);
   c.appendChild(t);
   const dur = tipo === 'error' ? 5500 : 3800;
   setTimeout(() => {

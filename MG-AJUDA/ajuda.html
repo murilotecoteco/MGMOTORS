@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
@@ -309,8 +309,10 @@
       .stat strong { font-size: 20px; }
       .categorias-grid { grid-template-columns: 1fr 1fr; }
     }
+    .cat-icone [data-lucide] { width: 22px; height: 22px; stroke: var(--azul); stroke-width: 2; display: block; } .faq-grupo-titulo [data-lucide] { width: 16px; height: 16px; vertical-align: -2px; margin-right: 4px; }
   </style>
 <link rel="canonical" href="https://mgmotors.vercel.app/MG-AJUDA/ajuda.html">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -348,27 +350,27 @@
   <h2 class="secao-titulo">Navegar por tema</h2>
   <div class="categorias-grid">
     <a href="#anuncios" class="cat-card" data-cat="anuncios">
-      <div class="cat-icone">📢</div>
+      <div class="cat-icone"><i data-lucide="megaphone"></i></div>
       <div class="cat-info"><strong>Anúncios</strong><span>Criar, editar, excluir</span></div>
     </a>
     <a href="#conta" class="cat-card" data-cat="conta">
-      <div class="cat-icone">👤</div>
+      <div class="cat-icone"><i data-lucide="user"></i></div>
       <div class="cat-info"><strong>Conta e Perfil</strong><span>Login, cadastro, dados</span></div>
     </a>
     <a href="#compra" class="cat-card" data-cat="compra">
-      <div class="cat-icone">🚗</div>
+      <div class="cat-icone"><i data-lucide="car"></i></div>
       <div class="cat-info"><strong>Comprar</strong><span>Como negociar, filtros</span></div>
     </a>
     <a href="#seguranca" class="cat-card" data-cat="seguranca">
-      <div class="cat-icone">🔒</div>
+      <div class="cat-icone"><i data-lucide="lock"></i></div>
       <div class="cat-info"><strong>Segurança</strong><span>Golpes, denúncias, RLS</span></div>
     </a>
     <a href="#mensagens" class="cat-card" data-cat="mensagens">
-      <div class="cat-icone">💬</div>
+      <div class="cat-icone"><i data-lucide="message-circle"></i></div>
       <div class="cat-info"><strong>Mensagens</strong><span>Chat, fotos, privacidade</span></div>
     </a>
     <a href="#outros" class="cat-card" data-cat="outros">
-      <div class="cat-icone">⚙️</div>
+      <div class="cat-icone"><i data-lucide="settings"></i></div>
       <div class="cat-info"><strong>Outros</strong><span>Configurações, temas</span></div>
     </a>
   </div>
@@ -389,7 +391,7 @@
 
   <!-- ANÚNCIOS -->
   <div id="anuncios">
-    <div class="faq-grupo-titulo">📢 Anúncios</div>
+    <div class="faq-grupo-titulo"><i data-lucide="megaphone"></i> Anúncios</div>
 
     <div class="faq-item" data-cat="anuncios">
       <button class="faq-pergunta" aria-expanded="false" id="faq-1">
@@ -442,7 +444,7 @@
 
   <!-- CONTA -->
   <div id="conta">
-    <div class="faq-grupo-titulo">👤 Conta e Perfil</div>
+    <div class="faq-grupo-titulo"><i data-lucide="user"></i> Conta e Perfil</div>
 
     <div class="faq-item" data-cat="conta">
       <button class="faq-pergunta" aria-expanded="false" id="faq-5">
@@ -470,14 +472,14 @@
         <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-resposta" aria-labelledby="faq-7">
-        <p>Acesse sua <a href="../MG-CONTA/conta.html">Área da Conta</a> e clique no ícone de ✏️ sobre a foto de perfil. Selecione uma imagem do seu dispositivo (JPG/PNG, máx. 5MB). A foto é atualizada automaticamente.</p>
+        <p>Acesse sua <a href="../MG-CONTA/conta.html">Área da Conta</a> e clique no ícone de <i data-lucide="pencil" style="width:14px;height:14px;vertical-align:-1px;"></i> sobre a foto de perfil. Selecione uma imagem do seu dispositivo (JPG/PNG, máx. 5MB). A foto é atualizada automaticamente.</p>
       </div>
     </div>
   </div>
 
   <!-- COMPRA -->
   <div id="compra">
-    <div class="faq-grupo-titulo">🚗 Comprar</div>
+    <div class="faq-grupo-titulo"><i data-lucide="car"></i> Comprar</div>
 
     <div class="faq-item" data-cat="compra">
       <button class="faq-pergunta" aria-expanded="false" id="faq-8">
@@ -521,7 +523,7 @@
 
   <!-- SEGURANÇA -->
   <div id="seguranca">
-    <div class="faq-grupo-titulo">🔒 Segurança</div>
+    <div class="faq-grupo-titulo"><i data-lucide="lock"></i> Segurança</div>
 
     <div class="faq-item" data-cat="seguranca">
       <button class="faq-pergunta" aria-expanded="false" id="faq-11">
@@ -564,7 +566,7 @@
 
   <!-- MENSAGENS -->
   <div id="mensagens">
-    <div class="faq-grupo-titulo">💬 Mensagens</div>
+    <div class="faq-grupo-titulo"><i data-lucide="message-circle"></i> Mensagens</div>
 
     <div class="faq-item" data-cat="mensagens">
       <button class="faq-pergunta" aria-expanded="false" id="faq-14">
@@ -572,7 +574,7 @@
         <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-resposta" aria-labelledby="faq-14">
-        <p>Abra qualquer anúncio no Marketplace e clique em <strong>"Mensagem"</strong>. Você será redirecionado para o chat interno onde poderá conversar de forma segura. Você também pode enviar fotos clicando no ícone 📷.</p>
+        <p>Abra qualquer anúncio no Marketplace e clique em <strong>"Mensagem"</strong>. Você será redirecionado para o chat interno onde poderá conversar de forma segura. Você também pode enviar fotos clicando no ícone <i data-lucide="camera" style="width:14px;height:14px;vertical-align:-1px;"></i>.</p>
       </div>
     </div>
 
@@ -582,14 +584,14 @@
         <span class="faq-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-resposta" aria-labelledby="faq-15">
-        <p>No chat, cada mensagem recebida tem o botão 🚩 ao lado. Clique nele, selecione o motivo e envie a denúncia. Nossa equipe analisa e pode suspender o usuário infrator.</p>
+        <p>No chat, cada mensagem recebida tem o botão <i data-lucide="flag" style="width:14px;height:14px;vertical-align:-1px;"></i> ao lado. Clique nele, selecione o motivo e envie a denúncia. Nossa equipe analisa e pode suspender o usuário infrator.</p>
       </div>
     </div>
   </div>
 
   <!-- OUTROS -->
   <div id="outros">
-    <div class="faq-grupo-titulo">⚙️ Configurações e Outros</div>
+    <div class="faq-grupo-titulo"><i data-lucide="settings"></i> Configurações e Outros</div>
 
     <div class="faq-item" data-cat="outros">
       <button class="faq-pergunta" aria-expanded="false" id="faq-16">
@@ -625,7 +627,7 @@
 <footer>
   <div class="footer-bottom">
     <span>© 2026 MG Motors Inc. Todos os direitos reservados.</span>
-    <span>Desenvolvido com ❤️ no Brasil</span>
+    <span>Desenvolvido com <i data-lucide="heart" style="width:13px;height:13px;fill:currentColor;vertical-align:-1px;"></i> no Brasil</span>
   </div>
 </footer>
 
@@ -697,6 +699,8 @@ document.querySelectorAll('.cat-card[data-cat]').forEach(card => {
     document.querySelector('.faq-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
+
+lucide.createIcons();
 </script>
 </body>
 </html>

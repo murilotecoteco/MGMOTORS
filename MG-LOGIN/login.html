@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -34,6 +34,9 @@
 
     <label for="senha-login">Senha</label>
     <input type="password" id="senha-login" placeholder="Digite sua senha" autocomplete="current-password" required>
+    <p style="text-align:right;margin-top:-8px;margin-bottom:4px;">
+      <a href="../MG-CONFIGURACOES/configuracoes.html#recuperar-senha" style="font-size:13px;color:#144b71;text-decoration:none;opacity:.75;">Esqueci minha senha</a>
+    </p>
 
     <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
 
@@ -55,8 +58,22 @@ function mostrarFeedback(mensagem, tipo = "erro") {
   feedback.dataset.tipo = tipo;
 }
 
-supa.auth.onAuthStateChange((event, session) => {
+// Exibe mensagem de suspensão quando redirecionado pelo headerGlobal
+// (sessão ativa banida, login via Google com conta banida, etc.)
+const _params = new URLSearchParams(window.location.search);
+if (_params.get("banido") === "1") {
+  mostrarFeedback("Sua conta está suspensa. Entre em contato com o suporte se acreditar que isso é um erro.");
+}
+
+supa.auth.onAuthStateChange(async (event, session) => {
   if (event === "SIGNED_IN" && session) {
+    // A1: Verifica banimento ANTES de redirecionar — cobre login via Google OAuth
+    const { data: perfil } = await supa.from("usuarios").select("banido").eq("id", session.user.id).maybeSingle();
+    if (perfil?.banido) {
+      await supa.auth.signOut();
+      mostrarFeedback("Sua conta está suspensa. Entre em contato com o suporte se acredita que isso é um erro.");
+      return;
+    }
     window.location.href = "../MG-CONTA/conta.html";
   }
 });

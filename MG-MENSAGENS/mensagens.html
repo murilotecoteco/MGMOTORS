@@ -343,12 +343,17 @@ function abrirDenunciaMensagem(msgId, tipo) {
 document.getElementById("btn-enviar-denuncia-msg").addEventListener("click", async () => {
   const motivo = document.getElementById("denuncia-msg-motivo").value;
   if (!motivo) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
+  // C6: tipo 'mensagem' viola CHECK(tipo = ANY (ARRAY['anuncio','perfil'])).
+  // Usamos tipo:'perfil' + alvo_id = ID do usuário da conversa.
+  // O ID da mensagem vai na descrição para contexto do moderador.
+  const descBase = document.getElementById("denuncia-msg-desc").value || '';
+  const descComContexto = `[Denúncia de ${denunciaMsgTipo === 'foto' ? 'foto' : 'mensagem'} — msg_id:${denunciaMsgId}]` + (descBase ? ' ' + descBase : '');
   const { error } = await supabase.from("denuncias").insert({
-    tipo: 'mensagem',
-    alvo_id: denunciaMsgId,
+    tipo: 'perfil',
+    alvo_id: conversaAtual,
     denunciante_id: usuarioAtual.id,
     motivo,
-    descricao: document.getElementById("denuncia-msg-desc").value || null
+    descricao: descComContexto
   });
   if (error) { window.mgToast?.("Erro: " + error.message, "error"); return; }
   document.getElementById("modal-denuncia-msg").style.display = "none";

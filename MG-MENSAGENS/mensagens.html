@@ -74,10 +74,11 @@ import { carregarHeaderGlobal } from "../headerGlobal.js";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 let conversaAtual = null;
+let realtimeChannel = null;
+const conversasCache = new Map();
+const mensagensRenderizadas = new Set();
 
-// --- Helper de escrita com aviso ao usuário (Melhoria 2) ---
-// Executa uma promise do Supabase (insert/update/delete) e, se falhar, mostra um alerta
-// claro em vez de falhar silenciosamente. Retorna `null` em erro, ou `data` em sucesso.
+// --- Helper de escrita com aviso ao usuário ---
 async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. Tente novamente.") {
   const { data, error } = await promise;
   if (error) {
@@ -90,240 +91,468 @@ async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. 
 
 let usuarioAtual = await carregarHeaderGlobal(supabase);
 
-
-async function carregarConversas() {
-    if (!usuarioAtual) { document.getElementById("conversas-lista").innerHTML = '<div class="empty-state"><h3>Faça login</h3></div>'; return; }
-    const { data: mensagens } = await supabase.from('mensagens').select('*').or(`remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${usuarioAtual.id}`).order('data_envio', { ascending: false });
-    if (!mensagens || mensagens.length === 0) { document.getElementById("conversas-lista").innerHTML = '<div class="empty-state"><h3>Nenhuma mensagem</h3></div>'; return; }
-    
-    const conversasAgrupadas = {};
-    for (const msg of mensagens) {
-        const outroId = msg.remetente_id === usuarioAtual.id ? msg.destinatario_id : msg.remetente_id;
-        if (!conversasAgrupadas[outroId]) conversasAgrupadas[outroId] = { mensagens: [], naoLidas: 0, carroInfo: msg.carro_info };
-        conversasAgrupadas[outroId].mensagens.push(msg);
-        if (!msg.lida && msg.destinatario_id === usuarioAtual.id) conversasAgrupadas[outroId].naoLidas++;
-    }
-    
-    // --- Correção XSS: nenhum dado de usuário entra em innerHTML ---
-    const listaEl = document.getElementById("conversas-lista");
-    listaEl.innerHTML = '';
-
-    for (const outroId in conversasAgrupadas) {
-        const conv = conversasAgrupadas[outroId];
-        const ultimaMsg = conv.mensagens[0];
-        // Melhoria 1: maybeSingle() — outro usuário pode não ter perfil na tabela `usuarios`.
-        const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroId).maybeSingle();
-
-        // Texto de preview: recorte de conteudo via textContent (nunca interpolado em innerHTML)
-        const previewTexto = ultimaMsg.tipo === 'foto'
-            ? '[Foto]'
-            : (ultimaMsg.conteudo.length > 40 ? ultimaMsg.conteudo.substring(0, 40) + '...' : ultimaMsg.conteudo);
-
-        // --- Raiz do item ---
-        const item = document.createElement('div');
-        item.className = 'conversa-item' + (conv.naoLidas > 0 ? ' nao-lida' : '');
-        item.dataset.userId   = outroId;          // dataset, não interpolação em atributo
-        item.dataset.carroInfo = conv.carroInfo;  // dataset, não interpolação em atributo
-
-        // --- conversa-info ---
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'conversa-info';
-
-        // --- conversa-titulo ---
-        const tituloDiv = document.createElement('div');
-        tituloDiv.className = 'conversa-titulo';
-
-        const avatarImg = document.createElement('img');
-        avatarImg.src = outroUser?.foto || '../imagens/usuario.png';
-        avatarImg.style.cssText = 'width:30px;height:30px;border-radius:50%;margin-right:10px;vertical-align:middle;';
-
-        // Nome e carroInfo como texto puro (textNode impede injeção de HTML)
-        const nomeNode = document.createTextNode(
-            (outroUser?.nome || 'Usuário') + ' - ' + conv.carroInfo
-        );
-
-        const perfilSpan = document.createElement('span');
-        perfilSpan.className = 'perfil-link';
-        perfilSpan.dataset.usuario = outroId;
-        perfilSpan.textContent = 'Ver perfil';
-
-        tituloDiv.appendChild(avatarImg);
-        tituloDiv.appendChild(nomeNode);
-        tituloDiv.appendChild(perfilSpan);
-
-        // --- conversa-preview ---
-        const previewDiv = document.createElement('div');
-        previewDiv.className = 'conversa-preview';
-        previewDiv.textContent = previewTexto;    // textContent — nunca innerHTML
-
-        infoDiv.appendChild(tituloDiv);
-        infoDiv.appendChild(previewDiv);
-
-        // --- conversa-data ---
-        const dataDiv = document.createElement('div');
-        dataDiv.className = 'conversa-data';
-        dataDiv.textContent = new Date(ultimaMsg.data_envio).toLocaleDateString();
-
-        if (conv.naoLidas > 0) {
-            const badge = document.createElement('span');
-            badge.style.cssText = 'background:#ff4444;color:white;border-radius:50%;padding:2px 6px;margin-left:5px;';
-            badge.textContent = conv.naoLidas;
-            dataDiv.appendChild(badge);
-        }
-
-        item.appendChild(infoDiv);
-        item.appendChild(dataDiv);
-        listaEl.appendChild(item);
-    }
-
-    // Event listeners (idênticos aos anteriores)
-    listaEl.querySelectorAll('.conversa-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('perfil-link')) {
-                abrirConversa(item.dataset.userId, item.dataset.carroInfo);
-            }
-        });
-    });
-    listaEl.querySelectorAll('.perfil-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.stopPropagation();
-            window.location.href = `../MG-CONTA/conta.html?id=${link.dataset.usuario}`;
-        });
-    });
+function getOutroId(msg) {
+  return msg.remetente_id === usuarioAtual.id ? msg.destinatario_id : msg.remetente_id;
 }
 
-async function abrirConversa(outroUsuarioId, carroInfo) {
-    if (!usuarioAtual) return;
-    conversaAtual = outroUsuarioId;
-    // Melhoria 1: maybeSingle() — outro usuário pode não ter perfil.
-    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroUsuarioId).maybeSingle();
-    // --- Correção XSS: chat-titulo montado via DOM, sem interpolação de dados do usuário ---
-    const chatTitulo = document.getElementById("chat-titulo");
-    chatTitulo.innerHTML = '';  // limpa estrutura anterior
+function getPreview(msg) {
+  if (!msg) return '';
+  if (msg.tipo === 'foto') return '[Foto]';
+  const texto = msg.conteudo || '';
+  return texto.length > 40 ? texto.substring(0, 40) + '...' : texto;
+}
 
-    const tituloAvatar = document.createElement('img');
-    tituloAvatar.src = outroUser?.foto || '../imagens/usuario.png';
-    tituloAvatar.style.cssText = 'width:35px;height:35px;border-radius:50%;margin-right:10px;vertical-align:middle;';
+function atualizarItemConversa(outroId) {
+  const conv = conversasCache.get(outroId);
+  const item = document.querySelector(`.conversa-item[data-user-id="${CSS.escape(outroId)}"]`);
+  if (!item || !conv) return;
 
-    // Nome e carroInfo como textNode puro (impede injeção de HTML)
-    const tituloNomeNode = document.createTextNode(
-        (outroUser?.nome || 'Usuário') + ' - ' + carroInfo
-    );
+  const preview = item.querySelector('.conversa-preview');
+  const data = item.querySelector('.conversa-data');
+  if (preview) preview.textContent = getPreview(conv.ultimaMsg);
+  if (data) {
+    data.textContent = new Date(conv.ultimaMsg.data_envio).toLocaleDateString();
+    if (conv.naoLidas > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'badge-nao-lida';
+      badge.style.cssText = 'background:#ff4444;color:white;border-radius:50%;padding:2px 6px;margin-left:5px;';
+      badge.textContent = conv.naoLidas;
+      data.appendChild(badge);
+      item.classList.add('nao-lida');
+    } else {
+      item.classList.remove('nao-lida');
+    }
+  }
+}
 
-    const tituloPerfilSpan = document.createElement('span');
-    tituloPerfilSpan.className = 'perfil-link';
-    tituloPerfilSpan.dataset.usuario = outroUsuarioId;
-    tituloPerfilSpan.style.marginLeft = '15px';
-    tituloPerfilSpan.textContent = 'Ver perfil';
-    tituloPerfilSpan.addEventListener('click', () => {
-        window.location.href = `../MG-CONTA/conta.html?id=${outroUsuarioId}`;
+function ordenarListaConversas() {
+  const lista = document.getElementById('conversas-lista');
+  const itens = [...lista.querySelectorAll('.conversa-item')];
+  itens.sort((a, b) => {
+    const ca = conversasCache.get(a.dataset.userId);
+    const cb = conversasCache.get(b.dataset.userId);
+    return new Date(cb?.ultimaMsg?.data_envio || 0) - new Date(ca?.ultimaMsg?.data_envio || 0);
+  });
+  itens.forEach(item => lista.appendChild(item));
+}
+
+function criarItemConversa(outroId, conv, outroUser) {
+  const item = document.createElement('div');
+  item.className = 'conversa-item' + (conv.naoLidas > 0 ? ' nao-lida' : '');
+  item.dataset.userId = outroId;
+  item.dataset.carroInfo = conv.carroInfo || 'Carro não especificado';
+
+  const infoDiv = document.createElement('div');
+  infoDiv.className = 'conversa-info';
+
+  const tituloDiv = document.createElement('div');
+  tituloDiv.className = 'conversa-titulo';
+
+  const avatarImg = document.createElement('img');
+  avatarImg.src = outroUser?.foto || '../imagens/usuario.png';
+  avatarImg.style.cssText = 'width:30px;height:30px;border-radius:50%;margin-right:10px;vertical-align:middle;';
+
+  const nomeNode = document.createTextNode((outroUser?.nome || 'Usuário') + ' - ' + (conv.carroInfo || 'Carro não especificado'));
+  const perfilSpan = document.createElement('span');
+  perfilSpan.className = 'perfil-link';
+  perfilSpan.dataset.usuario = outroId;
+  perfilSpan.textContent = 'Ver perfil';
+
+  tituloDiv.appendChild(avatarImg);
+  tituloDiv.appendChild(nomeNode);
+  tituloDiv.appendChild(perfilSpan);
+
+  const previewDiv = document.createElement('div');
+  previewDiv.className = 'conversa-preview';
+  previewDiv.textContent = getPreview(conv.ultimaMsg);
+
+  infoDiv.appendChild(tituloDiv);
+  infoDiv.appendChild(previewDiv);
+
+  const dataDiv = document.createElement('div');
+  dataDiv.className = 'conversa-data';
+  dataDiv.textContent = new Date(conv.ultimaMsg.data_envio).toLocaleDateString();
+
+  if (conv.naoLidas > 0) {
+    const badge = document.createElement('span');
+    badge.className = 'badge-nao-lida';
+    badge.style.cssText = 'background:#ff4444;color:white;border-radius:50%;padding:2px 6px;margin-left:5px;';
+    badge.textContent = conv.naoLidas;
+    dataDiv.appendChild(badge);
+  }
+
+  item.appendChild(infoDiv);
+  item.appendChild(dataDiv);
+
+  item.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('perfil-link')) abrirConversa(item.dataset.userId, item.dataset.carroInfo);
+  });
+  perfilSpan.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.location.href = `../MG-CONTA/conta.html?id=${perfilSpan.dataset.usuario}`;
+  });
+
+  return item;
+}
+
+async function adicionarOuAtualizarConversa(msg) {
+  const outroId = getOutroId(msg);
+  if (!outroId) return;
+
+  let conv = conversasCache.get(outroId);
+  if (!conv) {
+    conv = { ultimaMsg: msg, naoLidas: 0, carroInfo: msg.carro_info || 'Carro não especificado' };
+    conversasCache.set(outroId, conv);
+  } else {
+    const dataAtual = new Date(msg.data_envio);
+    const dataAnterior = new Date(conv.ultimaMsg?.data_envio || 0);
+    if (dataAtual >= dataAnterior) {
+      conv.ultimaMsg = msg;
+      conv.carroInfo = msg.carro_info || conv.carroInfo || 'Carro não especificado';
+    }
+  }
+
+  if (!msg.lida && msg.destinatario_id === usuarioAtual.id && !conversasCache.get(outroId)._contabilizada?.has?.(msg.id)) {
+    conv.naoLidas = (conv.naoLidas || 0) + 1;
+  }
+
+  let item = document.querySelector(`.conversa-item[data-user-id="${CSS.escape(outroId)}"]`);
+  if (!item) {
+    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroId).maybeSingle();
+    item = criarItemConversa(outroId, conv, outroUser);
+    const lista = document.getElementById('conversas-lista');
+    const empty = lista.querySelector('.empty-state');
+    if (empty) lista.innerHTML = '';
+    lista.appendChild(item);
+  } else {
+    atualizarItemConversa(outroId);
+  }
+  ordenarListaConversas();
+}
+
+async function carregarConversas() {
+  if (!usuarioAtual) {
+    document.getElementById('conversas-lista').innerHTML = '<div class="empty-state"><h3>Faça login</h3></div>';
+    return;
+  }
+
+  // Esta função só é usada na inicialização. Depois disso, o Supabase Realtime
+  // atualiza a interface sem reconstruir a lista inteira.
+  const { data: mensagens, error } = await supabase
+    .from('mensagens')
+    .select('*')
+    .or(`remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${usuarioAtual.id}`)
+    .order('data_envio', { ascending: false });
+
+  if (error) {
+    console.error(error);
+    document.getElementById('conversas-lista').innerHTML = '<div class="empty-state"><h3>Não foi possível carregar as conversas</h3></div>';
+    return;
+  }
+
+  conversasCache.clear();
+  mensagensRenderizadas.clear();
+
+  for (const msg of mensagens || []) {
+    mensagensRenderizadas.add(msg.id);
+    const outroId = getOutroId(msg);
+    if (!outroId) continue;
+    if (!conversasCache.has(outroId)) {
+      conversasCache.set(outroId, {
+        ultimaMsg: msg,
+        naoLidas: (!msg.lida && msg.destinatario_id === usuarioAtual.id) ? 1 : 0,
+        carroInfo: msg.carro_info || 'Carro não especificado'
+      });
+    } else if (!msg.lida && msg.destinatario_id === usuarioAtual.id) {
+      conversasCache.get(outroId).naoLidas++;
+    }
+  }
+
+  const listaEl = document.getElementById('conversas-lista');
+  listaEl.innerHTML = '';
+
+  if (conversasCache.size === 0) {
+    listaEl.innerHTML = '<div class="empty-state"><h3>Nenhuma mensagem</h3></div>';
+    return;
+  }
+
+  for (const [outroId, conv] of conversasCache) {
+    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroId).maybeSingle();
+    listaEl.appendChild(criarItemConversa(outroId, conv, outroUser));
+  }
+  ordenarListaConversas();
+}
+
+function renderizarMensagem(msg, rolar = true) {
+  if (!msg || mensagensRenderizadas.has(msg.id)) return false;
+  mensagensRenderizadas.add(msg.id);
+
+  const container = document.getElementById('chat-messages');
+  const empty = container.querySelector('.empty-state');
+  if (empty) empty.remove();
+
+  const isEnviada = msg.remetente_id === usuarioAtual.id;
+  const div = document.createElement('div');
+  div.className = `mensagem ${isEnviada ? 'enviada' : 'recebida'}`;
+  div.dataset.messageId = msg.id;
+
+  let conteudoEl;
+  if (msg.tipo === 'foto' && typeof msg.conteudo === 'string' && msg.conteudo.startsWith('http')) {
+    const img = document.createElement('img');
+    img.src = msg.conteudo;
+    img.className = 'msg-foto';
+    img.onerror = () => { img.style.display = 'none'; };
+    img.addEventListener('click', () => window.open(msg.conteudo, '_blank'));
+    conteudoEl = img;
+  } else {
+    const textDiv = document.createElement('div');
+    textDiv.textContent = msg.conteudo || '';
+    conteudoEl = textDiv;
+  }
+
+  const horaDiv = document.createElement('div');
+  horaDiv.className = 'mensagem-hora';
+  horaDiv.textContent = new Date(msg.data_envio).toLocaleTimeString();
+
+  if (!isEnviada) {
+    const reportBtn = document.createElement('button');
+    reportBtn.className = 'btn-denunciar-msg';
+    reportBtn.dataset.id = msg.id;
+    reportBtn.dataset.tipo = msg.tipo || 'texto';
+    reportBtn.title = 'Denunciar';
+    reportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+    reportBtn.setAttribute('aria-label', 'Denunciar');
+    reportBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      abrirDenunciaMensagem(reportBtn.dataset.id, reportBtn.dataset.tipo);
     });
+    horaDiv.appendChild(reportBtn);
+  }
 
-    chatTitulo.appendChild(tituloAvatar);
-    chatTitulo.appendChild(tituloNomeNode);
-    chatTitulo.appendChild(tituloPerfilSpan);
-    document.getElementById("chat-container").style.display = 'flex';
-    document.getElementById("mensagem-texto").disabled = false;
-    document.getElementById("btn-enviar").disabled = false;
-    document.getElementById("label-upload-foto").style.display = "flex";
-    await carregarMensagensConversa(outroUsuarioId);
-    await marcarMensagensComoLida(outroUsuarioId);
+  div.appendChild(conteudoEl);
+  div.appendChild(horaDiv);
+  container.appendChild(div);
+
+  if (rolar) container.scrollTop = container.scrollHeight;
+  return true;
 }
 
 async function carregarMensagensConversa(outroUsuarioId) {
-    if (!usuarioAtual) return;
-    const { data: mensagens } = await supabase.from('mensagens').select('*').or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${outroUsuarioId}),and(remetente_id.eq.${outroUsuarioId},destinatario_id.eq.${usuarioAtual.id})`).order('data_envio', { ascending: true });
-    const container = document.getElementById("chat-messages");
-    container.innerHTML = '';
-    if (!mensagens || mensagens.length === 0) { container.innerHTML = '<div class="empty-state"><h3>Nenhuma mensagem</h3></div>'; return; }
-    for (const msg of mensagens) {
-        const isEnviada = msg.remetente_id === usuarioAtual.id;
-        const div = document.createElement('div');
-        div.className = `mensagem ${isEnviada ? 'enviada' : 'recebida'}`;
+  if (!usuarioAtual) return;
+  const { data: mensagens, error } = await supabase
+    .from('mensagens')
+    .select('*')
+    .or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${outroUsuarioId}),and(remetente_id.eq.${outroUsuarioId},destinatario_id.eq.${usuarioAtual.id})`)
+    .order('data_envio', { ascending: true });
 
-        // --- Correção XSS: msg.conteudo nunca entra em innerHTML diretamente ---
-        let conteudoEl;
-        if (msg.tipo === 'foto' && msg.conteudo.startsWith('http')) {
-          // Mensagem de foto: criar <img> via DOM, atribuir src/eventos por propriedade
-          const img = document.createElement('img');
-          img.src = msg.conteudo;                          // propriedade, não template string
-          img.className = 'msg-foto';
-          img.onerror = () => { img.style.display = 'none'; };
-          img.addEventListener('click', () => window.open(msg.conteudo, '_blank'));
-          conteudoEl = img;
-        } else {
-          // Mensagem de texto: usar textContent para evitar injeção de HTML
-          const textDiv = document.createElement('div');
-          textDiv.textContent = msg.conteudo;              // textContent, não innerHTML
-          conteudoEl = textDiv;
-        }
+  if (error) {
+    console.error(error);
+    return;
+  }
 
-        // Estrutura de hora + botão de denúncia (estática, sem dado do usuário interpolado)
-        const horaDiv = document.createElement('div');
-        horaDiv.className = 'mensagem-hora';
-        horaDiv.textContent = new Date(msg.data_envio).toLocaleTimeString();
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = '';
 
-        if (!isEnviada) {
-          const reportBtn = document.createElement('button');
-          reportBtn.className = 'btn-denunciar-msg';
-          reportBtn.dataset.id = msg.id;
-          reportBtn.dataset.tipo = msg.tipo || 'texto';
-          reportBtn.title = 'Denunciar';
-          reportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>'; reportBtn.setAttribute('aria-label','Denunciar');
-          horaDiv.appendChild(reportBtn);
-        }
+  if (!mensagens || mensagens.length === 0) {
+    container.innerHTML = '<div class="empty-state"><h3>Nenhuma mensagem</h3></div>';
+    return;
+  }
 
-        div.appendChild(conteudoEl);
-        div.appendChild(horaDiv);
-        container.appendChild(div);
+  for (const msg of mensagens) {
+    mensagensRenderizadas.add(msg.id);
+    // Renderização inicial da conversa: não bloqueia mensagens futuras do Realtime.
+    const isEnviada = msg.remetente_id === usuarioAtual.id;
+    const div = document.createElement('div');
+    div.className = `mensagem ${isEnviada ? 'enviada' : 'recebida'}`;
+    div.dataset.messageId = msg.id;
+
+    let conteudoEl;
+    if (msg.tipo === 'foto' && typeof msg.conteudo === 'string' && msg.conteudo.startsWith('http')) {
+      const img = document.createElement('img');
+      img.src = msg.conteudo;
+      img.className = 'msg-foto';
+      img.onerror = () => { img.style.display = 'none'; };
+      img.addEventListener('click', () => window.open(msg.conteudo, '_blank'));
+      conteudoEl = img;
+    } else {
+      const textDiv = document.createElement('div');
+      textDiv.textContent = msg.conteudo || '';
+      conteudoEl = textDiv;
     }
-    // Bind report buttons
-    container.querySelectorAll('.btn-denunciar-msg').forEach(btn => {
-      btn.addEventListener('click', (e) => { e.stopPropagation(); abrirDenunciaMensagem(btn.dataset.id, btn.dataset.tipo); });
-    });
-    container.scrollTop = container.scrollHeight;
+
+    const horaDiv = document.createElement('div');
+    horaDiv.className = 'mensagem-hora';
+    horaDiv.textContent = new Date(msg.data_envio).toLocaleTimeString();
+
+    if (!isEnviada) {
+      const reportBtn = document.createElement('button');
+      reportBtn.className = 'btn-denunciar-msg';
+      reportBtn.dataset.id = msg.id;
+      reportBtn.dataset.tipo = msg.tipo || 'texto';
+      reportBtn.title = 'Denunciar';
+      reportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+      reportBtn.setAttribute('aria-label', 'Denunciar');
+      reportBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirDenunciaMensagem(reportBtn.dataset.id, reportBtn.dataset.tipo);
+      });
+      horaDiv.appendChild(reportBtn);
+    }
+
+    div.appendChild(conteudoEl);
+    div.appendChild(horaDiv);
+    container.appendChild(div);
+  }
+  container.scrollTop = container.scrollHeight;
 }
 
-async function enviarMensagem() {
-    const texto = document.getElementById("mensagem-texto").value.trim();
-    if (!texto || !conversaAtual || !usuarioAtual) return;
-    // Melhoria 1: a conversa pode ser nova (ainda sem mensagens) -> maybeSingle().
-    const { data: lastMsg } = await supabase.from('mensagens').select('carro_info').or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`).limit(1).maybeSingle();
-    const carroInfo = lastMsg?.carro_info || 'Carro não especificado';
-    const ok = await executarOuAvisar(supabase.from('mensagens').insert({ remetente_id: usuarioAtual.id, destinatario_id: conversaAtual, conteudo: texto, carro_info: carroInfo, lida: false }), "Não foi possível enviar a mensagem.");
-    if (ok === null) return;
-    document.getElementById("mensagem-texto").value = '';
-    await carregarMensagensConversa(conversaAtual);
-    await carregarConversas();
+async function abrirConversa(outroUsuarioId, carroInfo) {
+  if (!usuarioAtual) return;
+  conversaAtual = outroUsuarioId;
+  const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroUsuarioId).maybeSingle();
+  const chatTitulo = document.getElementById('chat-titulo');
+  chatTitulo.innerHTML = '';
+
+  const tituloAvatar = document.createElement('img');
+  tituloAvatar.src = outroUser?.foto || '../imagens/usuario.png';
+  tituloAvatar.style.cssText = 'width:35px;height:35px;border-radius:50%;margin-right:10px;vertical-align:middle;';
+
+  const tituloNomeNode = document.createTextNode((outroUser?.nome || 'Usuário') + ' - ' + carroInfo);
+  const tituloPerfilSpan = document.createElement('span');
+  tituloPerfilSpan.className = 'perfil-link';
+  tituloPerfilSpan.dataset.usuario = outroUsuarioId;
+  tituloPerfilSpan.style.marginLeft = '15px';
+  tituloPerfilSpan.textContent = 'Ver perfil';
+  tituloPerfilSpan.addEventListener('click', () => {
+    window.location.href = `../MG-CONTA/conta.html?id=${outroUsuarioId}`;
+  });
+
+  chatTitulo.appendChild(tituloAvatar);
+  chatTitulo.appendChild(tituloNomeNode);
+  chatTitulo.appendChild(tituloPerfilSpan);
+  document.getElementById('chat-container').style.display = 'flex';
+  document.getElementById('mensagem-texto').disabled = false;
+  document.getElementById('btn-enviar').disabled = false;
+  document.getElementById('label-upload-foto').style.display = 'flex';
+
+  await carregarMensagensConversa(outroUsuarioId);
+  await marcarMensagensComoLida(outroUsuarioId);
 }
 
 async function marcarMensagensComoLida(outroUsuarioId) {
-    if (!usuarioAtual) return;
-    // Marcação de leitura é best-effort: falha aqui não trava o fluxo, mas é registrada.
-    const { error: errLida } = await supabase.from('mensagens').update({ lida: true }).eq('destinatario_id', usuarioAtual.id).eq('remetente_id', outroUsuarioId).eq('lida', false);
-    if (errLida) console.error("Falha ao marcar mensagens como lidas:", errLida.message);
-    await carregarConversas();
+  if (!usuarioAtual) return;
+  const { error } = await supabase.from('mensagens')
+    .update({ lida: true })
+    .eq('destinatario_id', usuarioAtual.id)
+    .eq('remetente_id', outroUsuarioId)
+    .eq('lida', false);
+  if (error) console.error('Falha ao marcar mensagens como lidas:', error.message);
+
+  const conv = conversasCache.get(outroUsuarioId);
+  if (conv) conv.naoLidas = 0;
+  atualizarItemConversa(outroUsuarioId);
 }
 
-document.getElementById("btn-enviar").addEventListener('click', enviarMensagem);
+function iniciarRealtime() {
+  if (!usuarioAtual) return;
+
+  if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+
+  realtimeChannel = supabase
+    .channel(`mensagens-${usuarioAtual.id}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens' }, async (payload) => {
+      const msg = payload.new;
+      if (!msg || (msg.remetente_id !== usuarioAtual.id && msg.destinatario_id !== usuarioAtual.id)) return;
+
+      // Atualiza somente a conversa afetada.
+      await adicionarOuAtualizarConversa(msg);
+
+      // Se a conversa estiver aberta, adiciona somente a nova mensagem.
+      if (conversaAtual === getOutroId(msg)) {
+        renderizarMensagem(msg);
+        if (msg.destinatario_id === usuarioAtual.id && !msg.lida) {
+          await marcarMensagensComoLida(conversaAtual);
+        }
+      }
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'mensagens' }, (payload) => {
+      const msg = payload.new;
+      if (!msg || (msg.remetente_id !== usuarioAtual.id && msg.destinatario_id !== usuarioAtual.id)) return;
+      const outroId = getOutroId(msg);
+      const conv = conversasCache.get(outroId);
+      if (!conv) return;
+
+      // Atualiza apenas o contador de não lidas quando a mensagem muda para lida.
+      if (msg.destinatario_id === usuarioAtual.id && msg.lida) {
+        conv.naoLidas = Math.max(0, (conv.naoLidas || 0) - 1);
+        atualizarItemConversa(outroId);
+      }
+    })
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') console.log('Mensagens em tempo real conectadas.');
+      if (status === 'CHANNEL_ERROR') console.error('Não foi possível conectar ao Realtime do Supabase.');
+    });
+}
+
+document.getElementById('btn-enviar').addEventListener('click', enviarMensagem);
+
+async function enviarMensagem() {
+  const texto = document.getElementById('mensagem-texto').value.trim();
+  if (!texto || !conversaAtual || !usuarioAtual) return;
+
+  const { data: lastMsg } = await supabase.from('mensagens').select('carro_info')
+    .or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`)
+    .order('data_envio', { ascending: false }).limit(1).maybeSingle();
+  const carroInfo = lastMsg?.carro_info || 'Carro não especificado';
+
+  const ok = await executarOuAvisar(
+    supabase.from('mensagens').insert({
+      remetente_id: usuarioAtual.id,
+      destinatario_id: conversaAtual,
+      conteudo: texto,
+      carro_info: carroInfo,
+      lida: false
+    }),
+    'Não foi possível enviar a mensagem.'
+  );
+  if (ok === null) return;
+  document.getElementById('mensagem-texto').value = '';
+
+  // O INSERT será recebido pelo Realtime e renderizado uma única vez.
+  // Não recarregamos o chat nem a lista de conversas.
+}
 
 // ---- Upload de foto ----
-document.getElementById("input-foto-msg").addEventListener('change', async (e) => {
+document.getElementById('input-foto-msg').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file || !conversaAtual || !usuarioAtual) return;
-  if (file.size > 5 * 1024 * 1024) { window.mgToast?.("Foto máx. 5MB!", "info"); return; }
+  if (file.size > 5 * 1024 * 1024) { window.mgToast?.('Foto máx. 5MB!', 'info'); return; }
+
   const ext = file.name.split('.').pop();
   const caminho = `mensagens/${usuarioAtual.id}/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, file);
-  if (error) { window.mgToast?.("Erro ao enviar foto: " + error.message, "error"); return; }
-  const { data: urlData } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
-  // Melhoria 1: conversa nova -> maybeSingle().
-  const { data: lastMsg } = await supabase.from('mensagens').select('carro_info').or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`).limit(1).maybeSingle();
+  const { error } = await supabase.storage.from('FOTOS-ANUNCIOS').upload(caminho, file);
+  if (error) { window.mgToast?.('Erro ao enviar foto: ' + error.message, 'error'); return; }
+
+  const { data: urlData } = supabase.storage.from('FOTOS-ANUNCIOS').getPublicUrl(caminho);
+  const { data: lastMsg } = await supabase.from('mensagens').select('carro_info')
+    .or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`)
+    .order('data_envio', { ascending: false }).limit(1).maybeSingle();
   const carroInfo = lastMsg?.carro_info || 'Carro não especificado';
-  const ok = await executarOuAvisar(supabase.from('mensagens').insert({ remetente_id: usuarioAtual.id, destinatario_id: conversaAtual, conteudo: urlData.publicUrl, carro_info: carroInfo, lida: false, tipo: 'foto' }), "Não foi possível enviar a foto.");
+
+  const ok = await executarOuAvisar(
+    supabase.from('mensagens').insert({
+      remetente_id: usuarioAtual.id,
+      destinatario_id: conversaAtual,
+      conteudo: urlData.publicUrl,
+      carro_info: carroInfo,
+      lida: false,
+      tipo: 'foto'
+    }),
+    'Não foi possível enviar a foto.'
+  );
   if (ok === null) return;
   e.target.value = '';
-  await carregarMensagensConversa(conversaAtual);
+  // O Realtime adicionará a foto ao chat sem recarregar tudo.
 });
 
 // ---- Denúncia de mensagem/foto ----
@@ -331,36 +560,41 @@ let denunciaMsgId = null;
 let denunciaMsgTipo = null;
 
 function abrirDenunciaMensagem(msgId, tipo) {
-  if (!usuarioAtual) { window.mgToast?.("Faça login para denunciar.", "warning"); return; }
+  if (!usuarioAtual) { window.mgToast?.('Faça login para denunciar.', 'warning'); return; }
   denunciaMsgId = msgId;
   denunciaMsgTipo = tipo;
-  document.getElementById("denuncia-msg-motivo").value = "";
-  document.getElementById("denuncia-msg-desc").value = "";
-  document.getElementById("denuncia-msg-subtitulo").textContent = tipo === 'foto' ? "Denunciar foto enviada na conversa." : "Denunciar mensagem de texto.";
-  document.getElementById("modal-denuncia-msg").style.display = "flex";
+  document.getElementById('denuncia-msg-motivo').value = '';
+  document.getElementById('denuncia-msg-desc').value = '';
+  document.getElementById('denuncia-msg-subtitulo').textContent = tipo === 'foto' ? 'Denunciar foto enviada na conversa.' : 'Denunciar mensagem de texto.';
+  document.getElementById('modal-denuncia-msg').style.display = 'flex';
 }
 
-document.getElementById("btn-enviar-denuncia-msg").addEventListener("click", async () => {
-  const motivo = document.getElementById("denuncia-msg-motivo").value;
-  if (!motivo) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
-  // C6: tipo 'mensagem' viola CHECK(tipo = ANY (ARRAY['anuncio','perfil'])).
-  // Usamos tipo:'perfil' + alvo_id = ID do usuário da conversa.
-  // O ID da mensagem vai na descrição para contexto do moderador.
-  const descBase = document.getElementById("denuncia-msg-desc").value || '';
+document.getElementById('btn-enviar-denuncia-msg').addEventListener('click', async () => {
+  const motivo = document.getElementById('denuncia-msg-motivo').value;
+  if (!motivo) { window.mgToast?.('Selecione um motivo.', 'warning'); return; }
+  const descBase = document.getElementById('denuncia-msg-desc').value || '';
   const descComContexto = `[Denúncia de ${denunciaMsgTipo === 'foto' ? 'foto' : 'mensagem'} — msg_id:${denunciaMsgId}]` + (descBase ? ' ' + descBase : '');
-  const { error } = await supabase.from("denuncias").insert({
+  const { error } = await supabase.from('denuncias').insert({
     tipo: 'perfil',
     alvo_id: conversaAtual,
     denunciante_id: usuarioAtual.id,
     motivo,
     descricao: descComContexto
   });
-  if (error) { window.mgToast?.("Erro: " + error.message, "error"); return; }
-  document.getElementById("modal-denuncia-msg").style.display = "none";
-  window.mgToast?.("Denúncia enviada. Analisaremos em breve.", "success");
+  if (error) { window.mgToast?.('Erro: ' + error.message, 'error'); return; }
+  document.getElementById('modal-denuncia-msg').style.display = 'none';
+  window.mgToast?.('Denúncia enviada. Analisaremos em breve.', 'success');
 });
-document.getElementById("mensagem-texto").addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarMensagem(); } });
-setInterval(() => { if (conversaAtual) carregarMensagensConversa(conversaAtual); carregarConversas(); }, 5000);
+
+document.getElementById('mensagem-texto').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    enviarMensagem();
+  }
+});
+
+carregarConversas().then(() => iniciarRealtime());
+lucide.createIcons();
 
 const urlParams = new URLSearchParams(window.location.search);
 const usuarioId = urlParams.get('usuario');

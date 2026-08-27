@@ -2,136 +2,301 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
-  <link rel="shortcut icon" href="../imagens/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+<link rel="shortcut icon" href="../imagens/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Dev - MG Motors</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Ruda:wght@400..900&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Ruda",sans-serif;}
-body{background:#0d1117;color:#e6edf3;padding-top:80px;min-height:100vh;}
-header{background:#161b22;padding:16px 40px;position:fixed;top:0;left:0;width:100%;z-index:100;border-bottom:1px solid rgba(255,215,0,.15);display:flex;align-items:center;justify-content:space-between;}
-.dev-brand{display:flex;align-items:center;gap:12px;}
-.dev-brand h1{font-size:20px;color:#ffd700;font-weight:900;}
-.dev-brand span{background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.3);border-radius:6px;padding:2px 10px;font-size:11px;font-weight:800;letter-spacing:.08em;}
-.back-btn{color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;font-weight:700;transition:color .2s;}
-.back-btn:hover{color:#ffd700;}
-#acesso-negado{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;gap:16px;}
-#acesso-negado h2{font-size:28px;color:#e84040;}
-#acesso-negado p{color:rgba(255,255,255,.5);}
-#painel{display:none;}
-.tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.08);padding:0 40px;margin-bottom:0;background:#161b22;position:sticky;top:80px;z-index:50;}
-.tab{padding:14px 22px;background:none;border:none;color:rgba(255,255,255,.5);font-size:14px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:inherit;}
-.tab.ativo{color:#ffd700;border-bottom-color:#ffd700;}
-.tab:hover{color:rgba(255,255,255,.8);}
-.tab-content{display:none;padding:30px 40px 60px;}
-.tab-content.ativo{display:block;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:30px;}
-.stat-card{background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;text-align:center;}
-.stat-card .num{font-size:32px;font-weight:900;color:#ffd700;display:block;}
-.stat-card .lbl{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
-.card-dev{background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;margin-bottom:12px;}
-.card-dev-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
-.card-dev h3{font-size:15px;font-weight:900;color:#e6edf3;margin-bottom:4px;}
-.card-dev p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5;}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.04em;}
-.badge-pend{background:rgba(255,165,0,.15);color:#ffa500;border:1px solid rgba(255,165,0,.3);}
-.badge-ok{background:rgba(40,167,69,.15);color:#28a745;border:1px solid rgba(40,167,69,.3);}
-.badge-ban{background:rgba(232,64,64,.15);color:#e84040;border:1px solid rgba(232,64,64,.3);}
-.btn-dev{padding:8px 16px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;font-family:inherit;margin-left:6px;}
-.btn-aprovar{background:rgba(40,167,69,.15);color:#28a745;border:1px solid rgba(40,167,69,.3);}
-.btn-aprovar:hover{background:#28a745;color:#fff;}
-.btn-rejeitar{background:rgba(232,64,64,.15);color:#e84040;border:1px solid rgba(232,64,64,.3);}
-.btn-rejeitar:hover{background:#e84040;color:#fff;}
-.btn-banir{background:rgba(232,64,64,.1);color:#e84040;border:1px solid rgba(232,64,64,.25);}
-.btn-banir:hover{background:#e84040;color:#fff;}
-.btn-desbanir{background:rgba(40,167,69,.1);color:#28a745;border:1px solid rgba(40,167,69,.25);}
-.btn-desbanir:hover{background:#28a745;color:#fff;}
-.search-dev{background:#1c2128;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 16px;color:#e6edf3;font-size:14px;width:100%;margin-bottom:16px;font-family:inherit;}
-.search-dev:focus{outline:none;border-color:rgba(255,215,0,.4);}
-.empty-dev{text-align:center;padding:60px;color:rgba(255,255,255,.3);font-size:16px;}
-.user-foto{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;}
-.anuncio-img{width:80px;height:55px;object-fit:cover;border-radius:8px;flex-shrink:0;}
-.section-title{font-size:20px;font-weight:900;color:#ffd700;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
-.toast{position:fixed;bottom:30px;right:30px;background:#1c2128;border:1px solid rgba(255,215,0,.3);color:#ffd700;padding:14px 22px;border-radius:12px;font-weight:800;font-size:14px;z-index:9999;transform:translateY(100px);transition:transform .3s;pointer-events:none;}
-.toast.show{transform:translateY(0);}
-.motivo-input{background:#1c2128;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#e6edf3;font-size:12px;width:200px;font-family:inherit;}
-[data-lucide] { display:inline-block; vertical-align:middle; stroke-width:2; }
-</style>
-  <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-DEV/devpanel.html">
+<title>Painel Admin — MG Motors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../tema.js"></script>
+<link rel="canonical" href="https://mgmotors.vercel.app/MG-DEV/devpanel.html">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit',sans-serif; }
+:root {
+  --bg: #0a0a0f;
+  --surface: rgba(255,255,255,.04);
+  --surface-hover: rgba(255,255,255,.07);
+  --border: rgba(255,255,255,.08);
+  --purple: #8b5cf6;
+  --purple-dark: #7c3aed;
+  --purple-glow: rgba(139,92,246,.3);
+  --cyan: #22d3ee;
+  --cyan-glow: rgba(34,211,238,.25);
+  --green: #10b981;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --text: #f0f0ff;
+  --text-muted: rgba(240,240,255,.45);
+  --sidebar-w: 240px;
+}
+body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; overflow-x:hidden; }
+.sidebar {
+  width:var(--sidebar-w); min-height:100vh; position:fixed; top:0; left:0;
+  background:rgba(10,10,20,.85); backdrop-filter:blur(20px);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; z-index:100; padding:28px 0;
+}
+.sidebar-logo {
+  padding:0 24px 28px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:16px;
+}
+.sidebar-logo h1 { font-size:20px; font-weight:900; letter-spacing:-.02em; }
+.sidebar-logo h1 span { background:linear-gradient(135deg,var(--purple),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.sidebar-logo .badge { display:inline-block; background:linear-gradient(135deg,var(--purple-dark),#5b21b6); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; margin-top:4px; letter-spacing:.1em; }
+.sidebar-nav { flex:1; padding:0 12px; display:flex; flex-direction:column; gap:4px; }
+.nav-item {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 14px; border-radius:12px;
+  background:none; border:none; color:var(--text-muted);
+  font-family:inherit; font-size:14px; font-weight:600;
+  cursor:pointer; transition:all .2s; text-align:left; width:100%;
+}
+.nav-item:hover { background:var(--surface); color:var(--text); }
+.nav-item.ativo {
+  background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(34,211,238,.1));
+  color:var(--purple); border:1px solid rgba(139,92,246,.25);
+}
+.nav-item.ativo i { color:var(--purple); }
+.nav-item i { width:18px; height:18px; flex-shrink:0; }
+.sidebar-footer { padding:20px 24px 0; border-top:1px solid var(--border); margin-top:16px; }
+.sidebar-footer a { color:var(--text-muted); font-size:13px; text-decoration:none; display:flex; align-items:center; gap:8px; transition:color .2s; }
+.sidebar-footer a:hover { color:var(--cyan); }
+.main { margin-left:var(--sidebar-w); flex:1; padding:36px 40px 60px; min-height:100vh; }
+.page { display:none; }
+.page.ativo { display:block; }
+.page-header { margin-bottom:28px; }
+.page-header h2 { font-size:26px; font-weight:900; letter-spacing:-.02em; }
+.page-header p { color:var(--text-muted); font-size:14px; margin-top:4px; }
+#acesso-negado {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:100vh; text-align:center; gap:16px; flex:1;
+}
+#acesso-negado h2 { font-size:28px; color:var(--red); }
+#acesso-negado p { color:var(--text-muted); }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:16px; margin-bottom:32px; }
+.stat-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:22px 20px;
+  position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s;
+}
+.stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.4); }
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--card-accent, linear-gradient(90deg,var(--purple),var(--cyan)));
+}
+.stat-card .num { font-size:36px; font-weight:900; display:block; line-height:1; margin-bottom:6px; }
+.stat-card .lbl { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.1em; font-weight:700; }
+.stat-card.purple { --card-accent:linear-gradient(90deg,#8b5cf6,#a78bfa); }
+.stat-card.cyan   { --card-accent:linear-gradient(90deg,#22d3ee,#67e8f9); }
+.stat-card.orange { --card-accent:linear-gradient(90deg,#f59e0b,#fcd34d); }
+.stat-card.red    { --card-accent:linear-gradient(90deg,#ef4444,#f87171); }
+.stat-card.green  { --card-accent:linear-gradient(90deg,#10b981,#34d399); }
+.stat-card.purple .num { background:linear-gradient(135deg,#a78bfa,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.stat-card.cyan   .num { color:var(--cyan); }
+.stat-card.orange .num { color:var(--orange); }
+.stat-card.red    .num { color:var(--red); }
+.stat-card.green  .num { color:var(--green); }
+.section-title {
+  font-size:16px; font-weight:800; color:var(--text);
+  display:flex; align-items:center; gap:8px; margin-bottom:18px;
+  padding-bottom:12px; border-bottom:1px solid var(--border);
+}
+.section-title i { color:var(--purple); width:18px; height:18px; }
+.search-dev {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:11px 16px; color:var(--text);
+  font-size:14px; font-family:inherit; width:100%; margin-bottom:18px; outline:none;
+  transition:border-color .2s;
+}
+.search-dev:focus { border-color:rgba(139,92,246,.5); box-shadow:0 0 0 3px rgba(139,92,246,.1); }
+.card-dev {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:20px; margin-bottom:12px;
+  transition:border-color .2s, background .2s;
+}
+.card-dev:hover { background:var(--surface-hover); border-color:rgba(139,92,246,.2); }
+.card-dev-header { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+.card-dev h3 { font-size:15px; font-weight:800; color:var(--text); margin-bottom:4px; }
+.card-dev p { font-size:13px; color:var(--text-muted); line-height:1.5; }
+.badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:800; letter-spacing:.04em; }
+.badge-pend { background:rgba(245,158,11,.15); color:var(--orange); border:1px solid rgba(245,158,11,.3); }
+.badge-ok   { background:rgba(16,185,129,.15); color:var(--green); border:1px solid rgba(16,185,129,.3); }
+.badge-ban  { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
+.btn-dev {
+  padding:8px 16px; border:none; border-radius:10px;
+  font-size:12px; font-weight:800; cursor:pointer;
+  transition:all .2s; font-family:inherit; display:inline-flex; align-items:center; gap:6px;
+}
+.btn-aprovar  { background:rgba(16,185,129,.15); color:var(--green); border:1px solid rgba(16,185,129,.3); }
+.btn-aprovar:hover  { background:var(--green); color:#fff; box-shadow:0 4px 16px rgba(16,185,129,.4); }
+.btn-rejeitar { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
+.btn-rejeitar:hover { background:var(--red); color:#fff; box-shadow:0 4px 16px rgba(239,68,68,.4); }
+.btn-banir    { background:rgba(239,68,68,.1); color:var(--red); border:1px solid rgba(239,68,68,.25); }
+.btn-banir:hover    { background:var(--red); color:#fff; box-shadow:0 4px 16px rgba(239,68,68,.3); }
+.btn-desbanir { background:rgba(16,185,129,.1); color:var(--green); border:1px solid rgba(16,185,129,.25); }
+.btn-desbanir:hover { background:var(--green); color:#fff; box-shadow:0 4px 16px rgba(16,185,129,.3); }
+.btn-ver { background:rgba(139,92,246,.1); color:var(--purple); border:1px solid rgba(139,92,246,.25); text-decoration:none; }
+.btn-ver:hover { background:var(--purple); color:#fff; }
+.user-foto { width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--border); }
+.anuncio-img { width:80px; height:56px; object-fit:cover; border-radius:10px; flex-shrink:0; }
+.empty-dev { text-align:center; padding:60px; color:var(--text-muted); font-size:15px; }
+.toast {
+  position:fixed; bottom:28px; right:28px;
+  background:linear-gradient(135deg,rgba(139,92,246,.9),rgba(124,58,237,.9));
+  backdrop-filter:blur(12px); border:1px solid rgba(139,92,246,.4);
+  color:#fff; padding:14px 22px; border-radius:14px;
+  font-weight:700; font-size:14px; z-index:9999;
+  transform:translateY(100px) scale(.9); transition:all .3s; pointer-events:none;
+  box-shadow:0 8px 32px rgba(139,92,246,.4);
+}
+.toast.show { transform:translateY(0) scale(1); }
+.motivo-input {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:8px 12px; color:var(--text);
+  font-size:12px; width:180px; font-family:inherit;
+}
+.sidebar::after {
+  content:''; position:absolute; bottom:80px; left:50%;
+  transform:translateX(-50%);
+  width:120px; height:120px;
+  background:radial-gradient(circle,rgba(139,92,246,.15) 0%,transparent 70%);
+  border-radius:50%; pointer-events:none;
+  animation:pulse 4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:.4;transform:translateX(-50%) scale(1);} 50%{opacity:.8;transform:translateX(-50%) scale(1.1);} }
+[data-lucide] { display:inline-block; vertical-align:middle; stroke-width:2; }
+@media(max-width:768px){
+  .sidebar { width:100%; min-height:auto; position:relative; flex-direction:row; flex-wrap:wrap; padding:16px; }
+  .main { margin-left:0; padding:20px; }
+  .sidebar-nav { flex-direction:row; flex-wrap:wrap; padding:0; }
+  .sidebar-logo { padding-bottom:12px; margin-bottom:8px; border-bottom:none; }
+}
+</style>
 </head>
 <body>
-<header>
-  <div class="dev-brand">
-    <h1><i data-lucide="zap" style="width:20px;height:20px;color:#ffd700;"></i> MG Dev Panel</h1>
-    <span>RESTRITO</span>
-  </div>
-  <a href="../MG-CONFIGURACOES/configuracoes.html" class="back-btn"><i data-lucide="arrow-left" style="width:16px;height:16px;vertical-align:-2px;margin-right:4px;"></i> Voltar às configurações</a>
-</header>
-
-<div id="acesso-negado">
-  <span style="font-size:60px;"><i data-lucide="lock" style="width:60px;height:60px;color:#e84040;"></i></span>
+<div id="acesso-negado" style="display:flex;">
+  <i data-lucide="lock" style="width:64px;height:64px;color:#ef4444;"></i>
   <h2>Acesso Restrito</h2>
-  <p>Este painel é exclusivo para desenvolvedores autorizados.</p>
+  <p>Este painel é exclusivo para administradores autorizados.</p>
 </div>
 
-<div id="painel">
-  <div class="tabs">
-    <button class="tab ativo" data-tab="dashboard"><i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i> Dashboard</button>
-    <button class="tab" data-tab="anuncios"><i data-lucide="megaphone" style="width:15px;height:15px;"></i> Anúncios Pendentes</button>
-    <button class="tab" data-tab="denuncias"><i data-lucide="alert-triangle" style="width:15px;height:15px;"></i> Denúncias</button>
-    <button class="tab" data-tab="usuarios"><i data-lucide="users" style="width:15px;height:15px;"></i> Usuários</button>
-    <button class="tab" data-tab="banidos"><i data-lucide="ban" style="width:15px;height:15px;"></i> Banidos</button>
+<nav class="sidebar" id="sidebar" style="display:none;">
+  <div class="sidebar-logo">
+    <h1><span>MG</span> Admin</h1>
+    <span class="badge">RESTRITO</span>
   </div>
+  <div class="sidebar-nav">
+    <button class="nav-item ativo" data-page="dashboard">
+      <i data-lucide="layout-dashboard"></i> Dashboard
+    </button>
+    <button class="nav-item" data-page="anuncios">
+      <i data-lucide="megaphone"></i> Anúncios Pendentes
+    </button>
+    <button class="nav-item" data-page="denuncias">
+      <i data-lucide="alert-triangle"></i> Denúncias
+    </button>
+    <button class="nav-item" data-page="usuarios">
+      <i data-lucide="users"></i> Usuários
+    </button>
+    <button class="nav-item" data-page="banidos">
+      <i data-lucide="ban"></i> Banidos
+    </button>
+  </div>
+  <div class="sidebar-footer">
+    <a href="../MG-CONFIGURACOES/configuracoes.html">
+      <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Voltar
+    </a>
+  </div>
+</nav>
 
-  <div id="tab-dashboard" class="tab-content ativo">
-    <div class="section-title"><i data-lucide="bar-chart-2" style="width:18px;height:18px;"></i> Visão Geral</div>
+<main class="main" id="main" style="display:none;">
+
+  <div class="page ativo" id="page-dashboard">
+    <div class="page-header">
+      <h2>Dashboard</h2>
+      <p>Visão geral da plataforma em tempo real</p>
+    </div>
     <div class="stats-grid">
-      <div class="stat-card"><span class="num" id="stat-total-usuarios">-</span><div class="lbl">Usuários</div></div>
-      <div class="stat-card"><span class="num" id="stat-total-anuncios">-</span><div class="lbl">Anúncios Ativos</div></div>
-      <div class="stat-card"><span class="num" id="stat-pendentes">-</span><div class="lbl">Aguard. Aprovação</div></div>
-      <div class="stat-card"><span class="num" id="stat-denuncias">-</span><div class="lbl">Denúncias Abertas</div></div>
-      <div class="stat-card"><span class="num" id="stat-banidos">-</span><div class="lbl">Usuários Banidos</div></div>
+      <div class="stat-card purple"><span class="num" id="stat-total-usuarios">–</span><div class="lbl">Usuários</div></div>
+      <div class="stat-card cyan"><span class="num" id="stat-total-anuncios">–</span><div class="lbl">Anúncios Ativos</div></div>
+      <div class="stat-card orange"><span class="num" id="stat-pendentes">–</span><div class="lbl">Aguard. Aprovação</div></div>
+      <div class="stat-card red"><span class="num" id="stat-denuncias">–</span><div class="lbl">Denúncias Abertas</div></div>
+      <div class="stat-card green"><span class="num" id="stat-banidos">–</span><div class="lbl">Usuários Banidos</div></div>
     </div>
   </div>
 
-  <div id="tab-anuncios" class="tab-content">
-    <div class="section-title"><i data-lucide="megaphone" style="width:18px;height:18px;"></i> Anúncios Aguardando Aprovação</div>
+  <div class="page" id="page-anuncios">
+    <div class="page-header">
+      <h2>Anúncios Pendentes</h2>
+      <p>Aprove ou rejeite anúncios antes de publicação</p>
+    </div>
     <div id="lista-pendentes"><div class="empty-dev">Carregando...</div></div>
   </div>
 
-  <div id="tab-denuncias" class="tab-content">
-    <div class="section-title"><i data-lucide="alert-triangle" style="width:18px;height:18px;"></i> Denúncias Pendentes</div>
+  <div class="page" id="page-denuncias">
+    <div class="page-header">
+      <h2>Denúncias</h2>
+      <p>Gerencie denúncias de usuários, anúncios e mensagens</p>
+    </div>
     <div id="lista-denuncias"><div class="empty-dev">Carregando...</div></div>
   </div>
 
-  <div id="tab-usuarios" class="tab-content">
-    <div class="section-title"><i data-lucide="users" style="width:18px;height:18px;"></i> Gerenciar Usuários</div>
+  <div class="page" id="page-usuarios">
+    <div class="page-header">
+      <h2>Gerenciar Usuários</h2>
+      <p>Busque, ban ou desban usuários da plataforma</p>
+    </div>
     <input class="search-dev" type="text" id="busca-usuario" placeholder="Buscar por nome ou email...">
     <div id="lista-usuarios"><div class="empty-dev">Carregando...</div></div>
   </div>
 
-  <div id="tab-banidos" class="tab-content">
-    <div class="section-title"><i data-lucide="ban" style="width:18px;height:18px;"></i> Usuários Banidos</div>
+  <div class="page" id="page-banidos">
+    <div class="page-header">
+      <h2>Usuários Banidos</h2>
+      <p>Revise e gerencie os usuários suspensos</p>
+    </div>
     <div id="lista-banidos"><div class="empty-dev">Carregando...</div></div>
   </div>
-</div>
+
+</main>
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
-import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
-const supabase = createClient(supabaseUrl, supabaseKey);
-// A lista de e-mails admin NÃO fica mais aqui. A checagem real (e a
-// proteção real) está nas policies de RLS no Supabase, via função
-// is_admin(). Isso aqui é só pra decidir se mostra ou esconde a tela;
-// não é mais a barreira de segurança.
+<script>
+const _supaUrl = 'https://ilswwmjojfuvcgyymymb.supabase.co';
+const _supaKey = 'sb_publishable_0vy8zcMmKEd8oomSUQvJ4Q_SMpqFcxD';
+const { createClient } = supabase;
+const db = createClient(_supaUrl, _supaKey);
+
+function escapeHtml(v) {
+  if (!v) return '';
+  return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+const ADMIN_EMAILS = ['murilofrank157@gmail.com'];
+
 async function souAdmin() {
-  const { data, error } = await supabase.rpc("is_admin");
-  return !error && data === true;
+  try {
+    const { data: session } = await db.auth.getUser();
+    const email = session?.user?.email || '';
+    if (ADMIN_EMAILS.includes(email.toLowerCase())) return true;
+    try {
+      const { data: rpcData, error: rpcError } = await db.rpc('is_admin');
+      if (!rpcError && rpcData === true) return true;
+    } catch(e) {}
+    try {
+      const uid = session?.user?.id;
+      if (!uid) return false;
+      const { data: perfil } = await db
+        .from('usuarios').select('moderador').eq('id', uid).maybeSingle();
+      if (perfil?.moderador === true) return true;
+    } catch(e) {}
+    return false;
+  } catch(e) { return false; }
 }
 
 function toast(msg) {
@@ -141,39 +306,105 @@ function toast(msg) {
   setTimeout(() => t.classList.remove("show"), 3000);
 }
 
+function animateNum(el, to) {
+  const from = 0, duration = 900;
+  const start = performance.now();
+  const tick = (now) => {
+    const p = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 async function init() {
-  const { data } = await supabase.auth.getUser();
-  if (!data?.user || !(await souAdmin())) { document.getElementById("acesso-negado").style.display = "flex"; return; }
-  document.getElementById("acesso-negado").style.display = "none";
-  document.getElementById("painel").style.display = "block";
-  carregarDashboard();
-  carregarPendentes();
-  carregarDenuncias();
-  carregarUsuarios();
+  const el = document.getElementById('acesso-negado');
+  const pEl = el.querySelector('p');
+  const h2El = el.querySelector('h2');
+  try {
+    const { data: sess } = await db.auth.getUser();
+
+    if (!sess?.user) {
+      h2El.textContent = '🔑 Login do Admin';
+      pEl.innerHTML = `
+        <form id="form-login-dev" style="display:flex;flex-direction:column;gap:12px;min-width:280px;margin-top:8px;">
+          <input id="dev-email" type="email" value="murilofrank157@gmail.com"
+            placeholder="E-mail" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;" required>
+          <input id="dev-senha" type="password"
+            placeholder="Senha" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;" required>
+          <button type="submit" style="padding:12px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);border:none;border-radius:10px;color:#fff;font-weight:800;font-size:15px;cursor:pointer;">Entrar no Painel</button>
+          <p id="dev-login-erro" style="color:#ef4444;font-size:13px;display:none;"></p>
+        </form>`;
+      el.style.display = 'flex';
+
+      document.getElementById('form-login-dev').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        const email = document.getElementById('dev-email').value;
+        const senha = document.getElementById('dev-senha').value;
+        const erroEl = document.getElementById('dev-login-erro');
+        const btn = ev.target.querySelector('button');
+        btn.textContent = 'Entrando...'; btn.disabled = true;
+        const { data: loginData, error: loginErr } = await db.auth.signInWithPassword({ email, password: senha });
+        if (loginErr || !loginData?.user) {
+          erroEl.textContent = loginErr?.message || 'E-mail ou senha incorretos.';
+          erroEl.style.display = 'block';
+          btn.textContent = 'Entrar no Painel'; btn.disabled = false;
+          return;
+        }
+        window.location.reload();
+      });
+      return;
+    }
+
+    const email = sess.user.email || '';
+    const admin = await souAdmin();
+
+    if (!admin) {
+      h2El.textContent = 'Acesso Negado';
+      pEl.textContent = `O usuário "${email}" não tem permissão de administrador.`;
+      el.style.display = 'flex';
+      return;
+    }
+
+    el.style.display = 'none';
+    document.getElementById('sidebar').style.display = 'flex';
+    document.getElementById('main').style.display = 'block';
+    carregarDashboard();
+    carregarPendentes();
+    carregarDenuncias();
+    carregarUsuarios();
+
+  } catch(err) {
+    console.error('Devpanel init erro:', err);
+    h2El.textContent = 'Erro ao Carregar';
+    pEl.textContent = 'Erro: ' + err.message;
+    el.style.display = 'flex';
+  }
 }
 
 async function carregarDashboard() {
   const [u, a, p, d, b] = await Promise.all([
-    supabase.from("usuarios").select("id",{count:"exact",head:true}),
-    supabase.from("anuncios").select("id",{count:"exact",head:true}).eq("status","ativo"),
-    supabase.from("anuncios").select("id",{count:"exact",head:true}).eq("status","pendente"),
-    supabase.from("denuncias").select("id",{count:"exact",head:true}).eq("status","pendente"),
-    supabase.from("usuarios").select("id",{count:"exact",head:true}).eq("banido",true)
+    db.from("usuarios").select("id",{count:"exact",head:true}),
+    db.from("anuncios").select("id",{count:"exact",head:true}).eq("status","ativo"),
+    db.from("anuncios").select("id",{count:"exact",head:true}).eq("status","pendente"),
+    db.from("denuncias").select("id",{count:"exact",head:true}).eq("status","pendente"),
+    db.from("usuarios").select("id",{count:"exact",head:true}).eq("banido",true)
   ]);
-  document.getElementById("stat-total-usuarios").textContent = u.count || 0;
-  document.getElementById("stat-total-anuncios").textContent = a.count || 0;
-  document.getElementById("stat-pendentes").textContent = p.count || 0;
-  document.getElementById("stat-denuncias").textContent = d.count || 0;
-  document.getElementById("stat-banidos").textContent = b.count || 0;
+  animateNum(document.getElementById("stat-total-usuarios"), u.count || 0);
+  animateNum(document.getElementById("stat-total-anuncios"), a.count || 0);
+  animateNum(document.getElementById("stat-pendentes"), p.count || 0);
+  animateNum(document.getElementById("stat-denuncias"), d.count || 0);
+  animateNum(document.getElementById("stat-banidos"), b.count || 0);
 }
 
 async function carregarPendentes() {
-  const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("status","pendente").order("criado_em",{ascending:false});
+  const { data } = await db.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("status","pendente").order("criado_em",{ascending:false});
   const cont = document.getElementById("lista-pendentes");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum anúncio pendente</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum anúncio pendente ✓</div>'; return; }
   cont.innerHTML = "";
   for (const a of data) {
-    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
+    const { data: fotos } = await db.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
     const foto = fotos?.[0]?.url_foto || "";
     const d = document.createElement("div");
     d.className = "card-dev";
@@ -183,64 +414,80 @@ async function carregarPendentes() {
         <div style="flex:1;">
           <h3>${escapeHtml(a.marcas?.nome)} ${escapeHtml(a.modelos?.nome)} — ${a.ano_fabricacao}/${a.ano_modelo}</h3>
           <p>R$ ${Number(a.preco).toLocaleString("pt-BR")} · ${Number(a.quilometragem).toLocaleString()} km · ${escapeHtml(a.cidade) || "Cidade não informada"}</p>
-          <p style="margin-top:4px;font-size:12px;color:rgba(255,255,255,.35);">Publicado: ${new Date(a.criado_em).toLocaleString("pt-BR")}</p>
+          <p style="margin-top:4px;font-size:12px;color:var(--text-muted);">Publicado: ${new Date(a.criado_em).toLocaleString("pt-BR")}</p>
         </div>
-        <div>
-          <button class="btn-dev btn-aprovar" data-id="${a.id}">Aprovar</button>
-          <button class="btn-dev btn-rejeitar" data-id="${a.id}">Rejeitar</button>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn-dev btn-aprovar" data-id="${a.id}"><i data-lucide="check" style="width:13px;height:13px;"></i> Aprovar</button>
+          <button class="btn-dev btn-rejeitar" data-id="${a.id}"><i data-lucide="x" style="width:13px;height:13px;"></i> Rejeitar</button>
         </div>
       </div>
     `;
     d.querySelector(".btn-aprovar").onclick = async () => {
-      await supabase.from("anuncios").update({status:"ativo"}).eq("id",a.id);
-      toast("Anúncio aprovado"); d.remove(); carregarDashboard();
+      await db.from("anuncios").update({status:"ativo"}).eq("id",a.id);
+      toast("Anúncio aprovado!"); d.remove(); carregarDashboard();
     };
     d.querySelector(".btn-rejeitar").onclick = async () => {
       if (!confirm("Rejeitar este anúncio?")) return;
-      const { error } = await supabase.from("anuncios").update({status:"expirado", pausado:true}).eq("id",a.id);
+      const { error } = await db.from("anuncios").update({status:"expirado", pausado:true}).eq("id",a.id);
       if (error) { toast("Erro: " + error.message); return; }
       toast("Anúncio rejeitado"); d.remove(); carregarDashboard();
     };
     cont.appendChild(d);
   }
+  lucide.createIcons();
+}
+
+async function banirUsuario(uid, motivo) {
+  const { data: meData } = await db.auth.getUser();
+  const { error } = await db.from("usuarios").update({banido:true}).eq("id", uid);
+  if (error) { toast("Erro: " + error.message); return false; }
+  await db.from("anuncios").update({pausado:true}).eq("usuario_id", uid).eq("status","ativo");
+  await db.from("usuarios_banidos").upsert({usuario_id:uid, motivo, banido_por:meData?.user?.id, banido_em:new Date().toISOString()}, {onConflict:'usuario_id'});
+  return true;
+}
+
+async function desbanirUsuario(uid) {
+  const { error } = await db.from("usuarios").update({banido:false}).eq("id", uid);
+  if (error) { toast("Erro: " + error.message); return false; }
+  await db.from("anuncios").update({pausado:false}).eq("usuario_id", uid).eq("status","ativo");
+  await db.from("usuarios_banidos").delete().eq("usuario_id", uid);
+  return true;
 }
 
 async function carregarDenuncias() {
-  const { data } = await supabase.from("denuncias").select("*").eq("status","pendente").order("criado_em",{ascending:false});
+  const { data } = await db.from("denuncias").select("*").eq("status","pendente").order("criado_em",{ascending:false});
   const cont = document.getElementById("lista-denuncias");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhuma denúncia pendente</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhuma denúncia pendente ✓</div>'; return; }
   cont.innerHTML = "";
   for (const den of data) {
-    // Buscar info do denunciante (maybeSingle evita erro 406 se usuário foi deletado)
     let denuncianteInfo = '';
-    const { data: denunciante } = await supabase.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).maybeSingle();
+    const { data: denunciante } = await db.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).maybeSingle();
     if (denunciante) {
-      denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px;">
+      denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:10px;">
         <img src="${denunciante.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
-        <div><div style="font-size:12px;font-weight:800;color:#e6edf3;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:rgba(255,255,255,.4);">${escapeHtml(denunciante.email)}</div></div>
-        <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev" style="background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2);text-decoration:none;padding:4px 10px;font-size:11px;">Ver</a>
+        <div><div style="font-size:12px;font-weight:800;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(denunciante.email)}</div></div>
+        <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver</a>
       </div>`;
     }
-    // Buscar info do alvo
     let alvoInfo = '';
     if (den.tipo === 'perfil') {
-      const { data: alvo } = await supabase.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).maybeSingle();
+      const { data: alvo } = await db.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).maybeSingle();
       if (alvo) {
-        alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(232,64,64,.06);border-radius:8px;border:1px solid rgba(232,64,64,.15);">
+        alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(239,68,68,.06);border-radius:10px;border:1px solid rgba(239,68,68,.15);">
           <img src="${alvo.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
-          <div><div style="font-size:12px;font-weight:800;color:#e84040;">Usuário denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:rgba(255,255,255,.4);">${escapeHtml(alvo.email)}</div></div>
-          <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev" style="background:rgba(232,64,64,.1);color:#e84040;border:1px solid rgba(232,64,64,.2);text-decoration:none;padding:4px 10px;font-size:11px;">Ver perfil</a>
+          <div><div style="font-size:12px;font-weight:800;color:var(--red);">Denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(alvo.email)}</div></div>
+          <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver perfil</a>
         </div>`;
       }
     } else if (den.tipo === 'anuncio') {
-      const { data: anuncio } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", den.alvo_id).maybeSingle();
+      const { data: anuncio } = await db.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", den.alvo_id).maybeSingle();
       if (anuncio) {
-        const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", den.alvo_id).limit(1);
+        const { data: fotos } = await db.from("fotos_anuncio").select("url_foto").eq("anuncio_id", den.alvo_id).limit(1);
         const fotoAnuncio = fotos?.[0]?.url_foto || '';
-        alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(255,165,0,.06);border-radius:8px;border:1px solid rgba(255,165,0,.15);">
-          ${fotoAnuncio ? `<img src="${fotoAnuncio}" style="width:55px;height:38px;border-radius:6px;object-fit:cover;">` : ''}
-          <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:#ffa500;">Anúncio: ${escapeHtml(anuncio.marcas?.nome)} ${escapeHtml(anuncio.modelos?.nome)} (${anuncio.ano_fabricacao})</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.4);">R$ ${Number(anuncio.preco).toLocaleString('pt-BR')} · ${escapeHtml(anuncio.cidade)}</div></div>
+        alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.15);">
+          ${fotoAnuncio ? `<img src="${fotoAnuncio}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;">` : ''}
+          <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--orange);">Anúncio: ${escapeHtml(anuncio.marcas?.nome)} ${escapeHtml(anuncio.modelos?.nome)} (${anuncio.ano_fabricacao})</div>
+          <div style="font-size:11px;color:var(--text-muted);">R$ ${Number(anuncio.preco).toLocaleString('pt-BR')} · ${escapeHtml(anuncio.cidade)}</div></div>
         </div>`;
       }
     }
@@ -251,61 +498,60 @@ async function carregarDenuncias() {
         <div style="flex:1;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
             <span class="badge badge-pend">Pendente</span>
-            <span style="font-size:13px;color:rgba(255,255,255,.4);">${den.tipo === 'anuncio' ? 'Anúncio' : den.tipo === 'mensagem' ? 'Mensagem/Foto' : 'Perfil'}</span>
+            <span style="font-size:12px;color:var(--text-muted);">${den.tipo === 'anuncio' ? 'Anúncio' : den.tipo === 'mensagem' ? 'Mensagem' : 'Perfil'}</span>
           </div>
           <h3>${escapeHtml(den.motivo)}</h3>
-          ${den.descricao ? `<p style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;">${escapeHtml(den.descricao)}</p>` : ''}
-          <p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">${new Date(den.criado_em).toLocaleString("pt-BR")}</p>
-          ${alvoInfo}
-          ${denuncianteInfo}
+          ${den.descricao ? `<p style="font-size:12px;margin-top:4px;">${escapeHtml(den.descricao)}</p>` : ''}
+          <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">${new Date(den.criado_em).toLocaleString("pt-BR")}</p>
+          ${alvoInfo}${denuncianteInfo}
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          ${den.tipo === 'anuncio' ? `<button class="btn-dev btn-rejeitar" data-id="${den.alvo_id}" data-den="${den.id}">Banir anúncio</button>` : den.tipo === 'mensagem' ? `<small style="color:rgba(255,255,255,.5);font-size:11px;">Msg ID: ${den.alvo_id?.substring(0,8)}...</small>` : `<button class="btn-dev btn-banir" data-uid="${den.alvo_id}" data-den="${den.id}">Banir usuário</button><button class="btn-dev btn-desbanir" data-uid="${den.alvo_id}" data-den="${den.id}">Desbanir usuário</button>`}
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${den.tipo === 'anuncio' ? `<button class="btn-dev btn-rejeitar" data-id="${den.alvo_id}" data-den="${den.id}">Banir anúncio</button>`
+            : den.tipo === 'mensagem' ? `<small style="color:var(--text-muted);font-size:11px;">Msg: ${den.alvo_id?.substring(0,8)}...</small>`
+            : `<button class="btn-dev btn-banir" data-uid="${den.alvo_id}" data-den="${den.id}">Banir usuário</button><button class="btn-dev btn-desbanir" data-uid="${den.alvo_id}" data-den="${den.id}">Desbanir</button>`}
           <button class="btn-dev btn-aprovar" data-den="${den.id}" data-tipo="ignorar">Ignorar</button>
         </div>
       </div>
     `;
-    const ignorar = d.querySelector('[data-tipo="ignorar"]');
-    ignorar.onclick = async () => {
-      await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
+    d.querySelector('[data-tipo="ignorar"]').onclick = async () => {
+      await db.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
       toast("Denúncia ignorada"); d.remove(); carregarDashboard();
     };
     const banirAnuncio = d.querySelector('.btn-rejeitar');
     if (banirAnuncio) banirAnuncio.onclick = async () => {
       if (!confirm("Remover este anúncio por violação?")) return;
-      const { error } = await supabase.from("anuncios").update({status:"expirado", pausado:true}).eq("id",den.alvo_id);
+      const { error } = await db.from("anuncios").update({status:"expirado", pausado:true}).eq("id",den.alvo_id);
       if (error) { toast("Erro: " + error.message); return; }
-      await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
+      await db.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
       toast("Anúncio removido"); d.remove(); carregarDashboard();
     };
     const banirUser = d.querySelector('.btn-banir');
     if (banirUser) banirUser.onclick = async () => {
       const motivo = prompt("Motivo do banimento:");
       if (!motivo) return;
-      const { data: meData } = await supabase.auth.getUser();
-      await supabase.from("usuarios").update({banido:true}).eq("id",den.alvo_id);
-      await supabase.from("usuarios_banidos").upsert({usuario_id:den.alvo_id, motivo, banido_por:meData?.user?.id, banido_em:new Date().toISOString()}, {onConflict:'usuario_id'});
-      await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
-      toast("Usuário banido"); d.remove(); carregarDashboard();
+      const ok = await banirUsuario(den.alvo_id, motivo);
+      if (!ok) return;
+      await db.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
+      toast("Usuário banido e anúncios pausados"); d.remove(); carregarDashboard();
     };
     const desbanirUser = d.querySelector('.btn-desbanir');
     if (desbanirUser) desbanirUser.onclick = async () => {
-      await supabase.from("usuarios").update({banido:false}).eq("id",den.alvo_id);
-      await supabase.from("usuarios_banidos").delete().eq("usuario_id",den.alvo_id);
-      await supabase.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
-      toast("Usuário desbanido"); d.remove(); carregarDashboard();
+      const ok = await desbanirUsuario(den.alvo_id);
+      if (!ok) return;
+      await db.from("denuncias").update({status:"resolvido",resolvido_em:new Date().toISOString()}).eq("id",den.id);
+      toast("Usuário desbanido e anúncios reativados"); d.remove(); carregarDashboard();
     };
     cont.appendChild(d);
   }
+  lucide.createIcons();
 }
 
-// M2: Sanitiza chars especiais do PostgREST antes de montar filtro .or()
 function sanitizarBusca(str) {
-  return str.replace(/[(),\\*]/g, '').trim();
+  return str.replace(/[(),\*]/g, '').trim();
 }
 
 async function carregarUsuarios(busca = "") {
-  let query = supabase.from("usuarios").select("*").order("criado_em",{ascending:false}).limit(50);
+  let query = db.from("usuarios").select("*").order("criado_em",{ascending:false}).limit(50);
   if (busca) { const s = sanitizarBusca(busca); if (s) query = query.or(`nome.ilike.%${s}%,email.ilike.%${s}%`); }
   const { data } = await query;
   const cont = document.getElementById("lista-usuarios");
@@ -320,13 +566,13 @@ async function carregarUsuarios(busca = "") {
         <div style="flex:1;">
           <h3>${escapeHtml(u.nome) || "Sem nome"} ${u.banido ? '<span class="badge badge-ban" style="margin-left:8px;">Banido</span>' : ''}</h3>
           <p>${escapeHtml(u.email)} ${u.cidade ? `· ${escapeHtml(u.cidade)}` : ""}</p>
-          <p style="font-size:11px;color:rgba(255,255,255,.3);">Desde ${new Date(u.criado_em || Date.now()).toLocaleDateString("pt-BR")}</p>
+          <p style="font-size:11px;color:var(--text-muted);">Desde ${new Date(u.criado_em || Date.now()).toLocaleDateString("pt-BR")}</p>
         </div>
-        <div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
           ${u.banido
             ? `<button class="btn-dev btn-desbanir" data-uid="${u.id}">Desbanir</button>`
             : `<button class="btn-dev btn-banir" data-uid="${u.id}">Banir</button>`}
-          <a href="../MG-CONTA/conta.html?id=${u.id}" target="_blank" class="btn-dev" style="background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2);text-decoration:none;">Ver perfil</a>
+          <a href="../MG-CONTA/conta.html?id=${u.id}" target="_blank" class="btn-dev btn-ver">Ver perfil</a>
         </div>
       </div>
     `;
@@ -334,59 +580,58 @@ async function carregarUsuarios(busca = "") {
     if (btnBanir) btnBanir.onclick = async () => {
       const motivo = prompt("Motivo do banimento:");
       if (!motivo) return;
-      const { data: meData } = await supabase.auth.getUser();
-      const { error } = await supabase.from("usuarios").update({banido:true}).eq("id",u.id);
-      if (error) { toast("Erro: " + error.message); return; }
-      await supabase.from("usuarios_banidos").upsert({usuario_id:u.id, motivo, banido_por:meData?.user?.id, banido_em:new Date().toISOString()}, {onConflict:'usuario_id'});
-      toast("Usuário banido"); carregarUsuarios(busca);
+      const ok = await banirUsuario(u.id, motivo);
+      if (!ok) return;
+      toast("Usuário banido e anúncios pausados"); carregarUsuarios(busca); carregarDashboard();
     };
     const btnDesbanir = d.querySelector('.btn-desbanir');
     if (btnDesbanir) btnDesbanir.onclick = async () => {
-      const { error } = await supabase.from("usuarios").update({banido:false}).eq("id",u.id);
-      if (error) { toast("Erro: " + error.message); return; }
-      await supabase.from("usuarios_banidos").delete().eq("usuario_id",u.id);
-      toast("Usuário desbanido"); carregarUsuarios(busca);
+      const ok = await desbanirUsuario(u.id);
+      if (!ok) return;
+      toast("Usuário desbanido e anúncios reativados"); carregarUsuarios(busca); carregarDashboard();
     };
     cont.appendChild(d);
   }
+  lucide.createIcons();
 }
 
 async function carregarBanidos() {
-  const { data } = await supabase.from("usuarios").select("id,nome,email,foto,cidade,estado").eq("banido",true).order("nome");
+  const { data } = await db.from("usuarios").select("id,nome,email,foto,cidade,estado").eq("banido",true).order("nome");
   const cont = document.getElementById("lista-banidos");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum usuário banido</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum usuário banido ✓</div>'; return; }
   cont.innerHTML = "";
   for (const u of data) {
     const d = document.createElement("div");
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${u.foto||'../imagens/usuario.png'}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(232,64,64,.4);" onerror="this.src='../imagens/usuario.png'">
+        <img src="${u.foto||'../imagens/usuario.png'}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'">
         <div style="flex:1;">
-          <h3 style="color:#e84040;">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
-          <p style="font-size:12px;opacity:.6;">${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>
+          <h3 style="color:var(--red);">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
+          <p>${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>
         </div>
         <button class="btn-dev btn-desbanir" data-uid="${u.id}">Desbanir</button>
       </div>
     `;
     d.querySelector(".btn-desbanir").onclick = async () => {
-      const { error } = await supabase.from("usuarios").update({banido:false}).eq("id",u.id);
-      if (error) { toast("Erro: " + error.message); return; }
-      await supabase.from("usuarios_banidos").delete().eq("usuario_id",u.id);
+      const ok = await desbanirUsuario(u.id);
+      if (!ok) return;
       toast("Usuário desbanido com sucesso!"); d.remove();
-      document.getElementById("stat-banidos").textContent = Math.max(0, parseInt(document.getElementById("stat-banidos").textContent||0) - 1);
+      const statEl = document.getElementById("stat-banidos");
+      statEl.textContent = Math.max(0, parseInt(statEl.textContent||0) - 1);
     };
     cont.appendChild(d);
   }
+  lucide.createIcons();
 }
 
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("ativo"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("ativo"));
-    tab.classList.add("ativo");
-    document.getElementById("tab-" + tab.dataset.tab).classList.add("ativo");
-    if (tab.dataset.tab === "banidos") carregarBanidos();
+document.querySelectorAll(".nav-item").forEach(item => {
+  item.addEventListener("click", () => {
+    document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("ativo"));
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("ativo"));
+    item.classList.add("ativo");
+    document.getElementById("page-" + item.dataset.page).classList.add("ativo");
+    if (item.dataset.page === "banidos") carregarBanidos();
   });
 });
 
@@ -396,8 +641,14 @@ document.getElementById("busca-usuario").addEventListener("input", e => {
   buscaTimer = setTimeout(() => carregarUsuarios(e.target.value), 400);
 });
 
-init();
+init().catch(err => {
+  console.error("Devpanel init falhou:", err);
+  document.getElementById("acesso-negado").style.display = "flex";
+});
 lucide.createIcons();
 </script>
+<script>window.chtlConfig={chatbotId:"6944231868"}</script>
+<style>#chtl-chat-icon-container{left:auto!important;right:20px!important;width:auto!important;}</style>
+<script async data-id="6944231868" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 </body>
 </html>

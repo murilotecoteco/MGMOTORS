@@ -301,24 +301,90 @@ async function carregarMeusAnuncios() {
   if (!anuncios || anuncios.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
   cont.innerHTML = "";
   for (const a of anuncios) {
-    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).order("ordem").limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
-    const card = document.createElement("div"); card.className = "anuncio-card";
-    const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
-    // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
-    card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${a.id}">Excluir</button></div>`;
-    card.querySelector('img').alt = (a.marcas?.nome || '');
-    card.querySelector('.anuncio-info h3').textContent = `${a.marcas?.nome || ''} ${a.modelos?.nome || ''}`.trim();
-    card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`; });
-    cont.appendChild(card);
+    // BUG CORRIGIDO: se um único anúncio desse loop lançasse um erro (por
+    // exemplo, quilometragem nula chamando .toLocaleString() em null), a
+    // função inteira parava ali e o addEventListener dos botões "Excluir"
+    // (que rodava só DEPOIS do loop, uma vez só pra todos) nunca era
+    // executado — todos os botões da página ficavam sem clique nenhum.
+    // Agora: try/catch por item + valores numéricos com fallback + o
+    // listener de cada botão é preso na hora, dentro do próprio loop.
+    try {
+      const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).order("ordem").limit(1);
+      const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+      const card = document.createElement("div"); card.className = "anuncio-card";
+      const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
+      const km = Number(a.quilometragem || 0).toLocaleString();
+      // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
+      card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${a.id}">Excluir</button></div>`;
+      card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
+      card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
+      card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`; });
+
+      const btnExcluir = card.querySelector('.btn-excluir-anuncio');
+      btnExcluir.addEventListener("click", async e => {
+        e.stopPropagation(); if (!confirm("Excluir anúncio?")) return;
+        const anuncioId = a.id;
+        try {
+          // MESMA LÓGICA QUE JÁ FUNCIONA NO MG-DEV (botões "Rejeitar" e
+          // "Banir anúncio"): em vez de tentar apagar a linha de verdade
+          // (DELETE), que esbarra em FKs de mensagens/curtidas/denúncias e
+          // podia falhar "em silêncio" via RLS, marcamos status="expirado"
+          // + pausado=true. Isso já basta pra sumir de toda tela, porque:
+          //   - marketplace usa a RPC get_anuncios_marketplace, que só traz
+          //     linhas com status='ativo';
+          //   - esta própria lista (carregarMeusAnuncios) filtra
+          //     .eq("pausado", false).
+          // Sem DELETE de verdade não existe mais o cenário de "fotos somem
+          // mas o anúncio continua aparecendo (sem foto, dando erro)": o
+          // anúncio inteiro desaparece de uma vez, fotos incluídas.
+          // .select() no UPDATE detecta "0 linhas afetadas" (RLS filtrando
+          // silenciosamente) em vez de assumir sucesso só por não ter erro.
+          const { data: anAtualizado, error: erroAn } = await supabase
+            .from("anuncios")
+            .update({ status: "expirado", pausado: true })
+            .eq("id", anuncioId)
+            .select();
+          if (erroAn) { alert("Não foi possível excluir o anúncio.\n\nErro do banco: " + erroAn.message + (erroAn.details ? ("\nDetalhes: " + erroAn.details) : "") + (erroAn.hint ? ("\nDica: " + erroAn.hint) : "")); return; }
+          if (!anAtualizado || anAtualizado.length === 0) {
+            alert("O anúncio não foi excluído (sem permissão ou já removido).");
+            carregarMeusAnuncios();
+            return;
+          }
+          window.mgToast?.("Anúncio excluído!", "success");
+          carregarMeusAnuncios();
+
+          // Limpeza definitiva em segundo plano (best-effort, não bloqueia
+          // nem alerta o usuário): o anúncio já sumiu de toda tela acima,
+          // então se isso falhar não é mais um bug visível — só sobra lixo
+          // no banco pra limpar depois.
+          (async () => {
+            try {
+              const { data: fotosParaApagar } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
+              if (fotosParaApagar) for (const f of fotosParaApagar) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
+              await supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId);
+              await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId);
+              await supabase.from("mensagens").delete().eq("anuncio_id", anuncioId);
+              await supabase.from("anuncios").delete().eq("id", anuncioId);
+            } catch (e) {
+              console.warn("Limpeza em segundo plano do anúncio excluído falhou (sem impacto pro usuário, ele já está oculto):", e);
+            }
+          })();
+        } catch (excecao) {
+          // Antes, um erro "de verdade" (jogado, não retornado como {error})
+          // virava um "Uncaught (in promise)" silencioso no console — o
+          // alert() nunca era chamado. Agora qualquer exceção aparece aqui.
+          console.error("Erro ao excluir anúncio:", excecao);
+          alert("Erro inesperado ao excluir o anúncio:\n\n" + (excecao?.message || excecao));
+        }
+      });
+
+      cont.appendChild(card);
+    } catch (errItem) {
+      console.error("Erro ao renderizar anúncio", a?.id, errItem);
+    }
   }
-  cont.querySelectorAll(".btn-excluir-anuncio").forEach(btn => btn.addEventListener("click", async e => {
-    e.stopPropagation(); if (!confirm("Excluir anúncio?")) return;
-    const ok = await executarOuAvisar(supabase.from("anuncios").delete().eq("id",btn.dataset.id), "Não foi possível excluir o anúncio.");
-    if (ok === null) return;
-    carregarMeusAnuncios();
-  }));
 }
+
 
 async function carregarPausados() {
   const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("pausado",true);
@@ -338,8 +404,8 @@ async function carregarPausados() {
     const btnReativar = isRejeitado ? '' : `<button class="btn-reativar" data-id="${a.id}" style="width:100%;padding:8px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:800;margin-top:8px;">Reativar</button>`;
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
     card.innerHTML = `<img src="${foto}" alt="" style="filter:grayscale(.6)"><div class="anuncio-info" style="opacity:.8;"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p>${badgeRejeitado}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div>${btnReativar}</div>`;
-    card.querySelector('img').alt = (a.marcas?.nome || '');
-    card.querySelector('.anuncio-info h3').textContent = `${a.marcas?.nome || ''} ${a.modelos?.nome || ''}`.trim();
+    card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
+    card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
     cont.appendChild(card);
   }
   cont.querySelectorAll(".btn-reativar").forEach(btn => btn.addEventListener("click", async e => {
@@ -363,8 +429,8 @@ async function carregarAnunciosOutro() {
     const card = document.createElement("div"); card.className = "anuncio-card";
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
     card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
-    card.querySelector('img').alt = (a.marcas?.nome || '');
-    card.querySelector('.anuncio-info h3').textContent = `${a.marcas?.nome || ''} ${a.modelos?.nome || ''}`.trim();
+    card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
+    card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
     card.addEventListener("click", () => window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`);
     cont.appendChild(card);
   }
@@ -675,5 +741,10 @@ lucide.createIcons();
   </div>
 </div>
 
+<script>
+window.chtlConfig = { chatbotId: "6944231868" }
+</script>
+<style>#chtl-chat-icon-container{left:auto!important;right:20px!important;width:auto!important;}</style>
+<script async data-id="6944231868" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 </body>
 </html>

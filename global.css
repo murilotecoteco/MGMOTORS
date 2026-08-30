@@ -5,8 +5,13 @@
   --mg-focus: #93c5fd;
 }
 
-/* Impede scroll horizontal em qualquer pagina */
-html, body {
+/* Impede scroll horizontal em qualquer pagina.
+   Importante: isso fica só no body, nunca no html — ter overflow-x:hidden
+   nos dois ao mesmo tempo é um bug conhecido do Safari/iOS que quebra
+   "position: fixed" de widgets injetados via JS (ex.: o chat do Chatling),
+   fazendo eles desalinharem ou ficarem "grudados" no lado errado da tela.
+   Foi isso que fazia o balão do Chatling ficar na esquerda. */
+body {
   overflow-x: hidden;
   max-width: 100%;
 }
@@ -387,7 +392,8 @@ body > footer {
 #btn-topo {
   position: fixed;
   bottom: 28px;
-  left: 28px;
+  right: 90px;
+  left: auto;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -432,7 +438,7 @@ body > footer {
 @media (max-width: 560px) {
   #mg-toast-container { bottom: 16px; right: 16px; left: 16px; }
   .mg-toast { max-width: 100%; }
-  #btn-topo { bottom: 16px; left: 16px; }
+  #btn-topo { bottom: 16px; right: 76px; left: auto; }
 }
 
 /* ══════════════════════════════════════════════════

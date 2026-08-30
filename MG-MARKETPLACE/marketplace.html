@@ -833,6 +833,18 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         (len >= MAX_DESC ? ' limite' : len >= MAX_DESC * 0.85 ? ' quase' : '');
     });
 
+    function normalizarNome(str) {
+      if (!str) return str;
+      const t = str.trim().replace(/\s+/g, ' ').toLowerCase();
+      if (!t) return t;
+      return t.charAt(0).toUpperCase() + t.slice(1);
+    }
+
+    const campoMarcaTexto = document.getElementById('car-marca-texto');
+    const campoModeloTexto = document.getElementById('car-modelo-texto');
+    campoMarcaTexto.addEventListener('blur', function () { this.value = normalizarNome(this.value); });
+    campoModeloTexto.addEventListener('blur', function () { this.value = normalizarNome(this.value); });
+
     const TIPOS_OK  = ['image/jpeg', 'image/png', 'image/webp'];
     const MAX_BYTES = 5 * 1024 * 1024;
 
@@ -910,7 +922,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const modeloTextoVal = document.getElementById("car-modelo-texto").value.trim();
 
       const marcaId = (marcaSelVal && marcaSelVal !== "outro") ? marcaSelVal : null;
-      const marcaTexto = (marcaSelVal === "outro") ? marcaTextoVal : null;
+      const marcaTexto = (marcaSelVal === "outro") ? normalizarNome(marcaTextoVal) : null;
       if (marcaSelVal === "outro" && !marcaTexto) {
         window.mgToast?.('Digite o nome da marca.', 'warning');
         document.getElementById("car-marca-texto").focus(); restaurarBtn(); return;
@@ -921,7 +933,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       }
 
       const modeloId = (marcaId && modeloSelVal && modeloSelVal !== "outro") ? modeloSelVal : null;
-      const modeloTexto = (marcaSelVal === "outro" || modeloSelVal === "outro") ? modeloTextoVal : null;
+      const modeloTexto = (marcaSelVal === "outro" || modeloSelVal === "outro") ? normalizarNome(modeloTextoVal) : null;
       if ((marcaSelVal === "outro" || modeloSelVal === "outro") && !modeloTexto) {
         window.mgToast?.('Digite o nome do modelo.', 'warning');
         document.getElementById("car-modelo-texto").focus(); restaurarBtn(); return;

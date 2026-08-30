@@ -64,6 +64,16 @@
         <input type="text" id="barra_pesquisa" placeholder="Pesquisar por marca, modelo...">
       </div>
       <div class="filtro-marca">
+        <select id="filtro-tipo-veiculo">
+          <option value="">Todos os tipos</option>
+          <option value="carro">Carro</option>
+          <option value="moto">Moto</option>
+          <option value="caminhao">Caminhão</option>
+          <option value="trator">Trator</option>
+          <option value="embarcacao">Embarcação</option>
+        </select>
+      </div>
+      <div class="filtro-marca">
         <select id="filtro-marca">
           <option value="">Todas as marcas</option>
         </select>
@@ -76,6 +86,18 @@
           <option value="150000-300000">R$ 150k – 300k</option>
           <option value="300000-600000">R$ 300k – 600k</option>
           <option value="600000-">Acima de R$ 600k</option>
+        </select>
+      </div>
+      <div class="filtro-estado">
+        <select id="filtro-estado">
+          <option value="">Todos os estados</option>
+          <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+          <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+          <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+          <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+          <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+          <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+          <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
         </select>
       </div>
       <div class="filtro-localizacao">
@@ -143,12 +165,21 @@
       <span id="close-modal" class="close">&times;</span>
       <h2>Anunciar Veículo</h2>
       <form id="car-form">
+        <select id="select-tipo-veiculo" required>
+          <option value="carro">Carro</option>
+          <option value="moto">Moto</option>
+          <option value="caminhao">Caminhão</option>
+          <option value="trator">Trator</option>
+          <option value="embarcacao">Embarcação</option>
+        </select>
         <select id="select-marca" required>
           <option value="">Selecione a Marca</option>
         </select>
+        <input type="text" id="car-marca-texto" placeholder="Digite a marca" style="display:none;">
         <select id="select-modelo" required disabled>
           <option value="">Selecione o Modelo</option>
         </select>
+        <input type="text" id="car-modelo-texto" placeholder="Digite o modelo" style="display:none;">
         <input type="tel" id="car-whatsapp" placeholder="WhatsApp (ex: 44999999999)" required
           pattern="^\d{10,11}$" maxlength="11" inputmode="numeric"
           title="Informe DDD + número, ex: 44999999999 (10 ou 11 dígitos)">
@@ -253,6 +284,19 @@
     </div>
   </div>
 
+  <div id="modal-aprovacao" class="modal">
+    <div class="modal-content mg-aprovacao-content">
+      <div class="mg-aprovacao-icone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <h2>Anúncio enviado!</h2>
+      <p>Seu anúncio foi enviado para análise da nossa equipe e ficará visível no marketplace assim que for aprovado — normalmente em até <strong>24 horas</strong>.</p>
+      <button id="btn-fechar-aprovacao" class="btn-submit">Entendi</button>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-grid">
       <div class="footer-brand">
@@ -314,25 +358,100 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     let usuarioAtual = await carregarHeaderGlobal(supabase);
 
 
+    let todasMarcas = [];
+
     async function carregarMarcas() {
       const { data: marcas } = await supabase.from("marcas").select("*").order("nome");
-      const select = document.getElementById("select-marca");
-      const filtro = document.getElementById("filtro-marca");
-      marcas?.forEach(m => {
-        const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; select.appendChild(op);
-        const op2 = document.createElement("option"); op2.value = m.id; op2.textContent = m.nome; filtro.appendChild(op2);
-      });
+      todasMarcas = marcas || [];
+      preencherSelectMarca(document.getElementById("select-tipo-veiculo").value);
+      preencherFiltroMarca(document.getElementById("filtro-tipo-veiculo").value);
     }
     carregarMarcas();
+
+    // Reconstrói o <select> de marca do formulário de anúncio, mostrando só
+    // as marcas da categoria escolhida (carro/moto/caminhão/trator/embarcação).
+    function preencherSelectMarca(tipo) {
+      const select = document.getElementById("select-marca");
+      select.innerHTML = "<option value=''>Selecione a Marca</option>";
+      todasMarcas
+        .filter(m => (m.categoria || "carro") === tipo)
+        .forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; select.appendChild(op); });
+      // Não achou a marca na lista? Deixa escrever na mão em vez de travar o anúncio.
+      const opOutraMarca = document.createElement("option");
+      opOutraMarca.value = "outro"; opOutraMarca.textContent = "✏️ Não encontrei — escrever a marca";
+      select.appendChild(opOutraMarca);
+      // Marca mudou de baixo do usuário (troca de tipo) — reseta modelo também.
+      document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>";
+      document.getElementById("select-modelo").disabled = true;
+    }
+
+    // Reconstrói o <select> de marca do filtro de busca, mostrando só as
+    // marcas do tipo de veículo escolhido (ou todas, se "Todos os tipos").
+    function preencherFiltroMarca(tipo) {
+      const filtro = document.getElementById("filtro-marca");
+      const valorAtual = filtro.value;
+      filtro.innerHTML = "<option value=''>Todas as marcas</option>";
+      todasMarcas
+        .filter(m => !tipo || (m.categoria || "carro") === tipo)
+        .forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; filtro.appendChild(op); });
+      // Mantém a marca selecionada se ela ainda fizer parte da lista filtrada.
+      if ([...filtro.options].some(o => o.value === valorAtual)) filtro.value = valorAtual;
+    }
+
+    document.getElementById("select-tipo-veiculo").addEventListener("change", function () {
+      preencherSelectMarca(this.value);
+      // Volta pro estado padrão (select visível) já que a marca mudou de lista.
+      const marcaTexto = document.getElementById("car-marca-texto");
+      const modeloTexto = document.getElementById("car-modelo-texto");
+      document.getElementById("select-marca").style.display = ""; document.getElementById("select-marca").required = true;
+      marcaTexto.style.display = "none"; marcaTexto.required = false; marcaTexto.value = "";
+      document.getElementById("select-modelo").style.display = ""; document.getElementById("select-modelo").required = true;
+      modeloTexto.style.display = "none"; modeloTexto.required = false; modeloTexto.value = "";
+    });
+
+    document.getElementById("filtro-tipo-veiculo").addEventListener("change", function () {
+      preencherFiltroMarca(this.value);
+      aplicarFiltroOrdenacao();
+    });
 
     document.getElementById("select-marca").addEventListener("change", async function () {
       const marcaId = this.value;
       const sel = document.getElementById("select-modelo");
+      const marcaTexto = document.getElementById("car-marca-texto");
+      const modeloTexto = document.getElementById("car-modelo-texto");
+
+      if (marcaId === "outro") {
+        // Marca digitada na mão: sem marca_id, então o modelo também vira
+        // texto livre (não tem como listar modelos de uma marca que não
+        // está cadastrada).
+        this.style.display = "none"; this.required = false;
+        marcaTexto.style.display = ""; marcaTexto.required = true; marcaTexto.focus();
+        sel.style.display = "none"; sel.required = false; sel.disabled = true; sel.value = "";
+        modeloTexto.style.display = ""; modeloTexto.required = true;
+        return;
+      }
+      marcaTexto.style.display = "none"; marcaTexto.required = false; marcaTexto.value = "";
+      sel.style.display = ""; sel.required = true;
+      modeloTexto.style.display = "none"; modeloTexto.required = false; modeloTexto.value = "";
+
       sel.innerHTML = "<option value=''>Selecione o modelo</option>"; sel.disabled = true;
       if (!marcaId) return;
       const { data } = await supabase.from("modelos").select("*").eq("marca_id", marcaId).order("nome");
       data?.forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; sel.appendChild(op); });
+      const opOutroModelo = document.createElement("option");
+      opOutroModelo.value = "outro"; opOutroModelo.textContent = "✏️ Não encontrei — escrever o modelo";
+      sel.appendChild(opOutroModelo);
       sel.disabled = false;
+    });
+
+    document.getElementById("select-modelo").addEventListener("change", function () {
+      const modeloTexto = document.getElementById("car-modelo-texto");
+      if (this.value === "outro") {
+        this.style.display = "none"; this.required = false;
+        modeloTexto.style.display = ""; modeloTexto.required = true; modeloTexto.focus();
+      } else {
+        modeloTexto.style.display = "none"; modeloTexto.required = false; modeloTexto.value = "";
+      }
     });
 
     function calcDist(lat1, lng1, lat2, lng2) {
@@ -411,8 +530,12 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     function aplicarFiltroOrdenacao() {
       let filtrados = [...todosAnuncios];
+      const tipoFiltro = document.getElementById("filtro-tipo-veiculo").value;
+      if (tipoFiltro) filtrados = filtrados.filter(a => (a.tipo_veiculo || "carro") === tipoFiltro);
       const marcaFiltro = document.getElementById("filtro-marca").value;
       if (marcaFiltro) filtrados = filtrados.filter(a => a.marca_id === marcaFiltro);
+      const estadoFiltro = document.getElementById("filtro-estado").value;
+      if (estadoFiltro) filtrados = filtrados.filter(a => (a.estado || "").toUpperCase() === estadoFiltro);
       if (filtroTextoAtual) {
         const t = filtroTextoAtual.toLowerCase();
         filtrados = filtrados.filter(a => `${a.marcas?.nome || ""} ${a.modelos?.nome || ""}`.toLowerCase().includes(t));
@@ -620,15 +743,62 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     async function excluirAnuncio(anuncioId) {
       if (!confirm("Excluir este anúncio?")) return;
-      // A5: remover curtidas antes de excluir o anúncio (evita dados órfãos)
-      await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId);
-      const { data: fotos } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
-      if (fotos) for (const f of fotos) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
-      const okFotos = await executarOuAvisar(supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId), "Não foi possível excluir as fotos do anúncio.");
-      if (okFotos === null) return;
-      const okAn = await executarOuAvisar(supabase.from("anuncios").delete().eq("id", anuncioId), "Não foi possível excluir o anúncio.");
-      if (okAn === null) return;
-      window.mgToast?.("Anúncio excluído!", "success"); carregarAnuncios();
+      try {
+        // MESMA LÓGICA QUE JÁ FUNCIONA NO MG-DEV (botões "Rejeitar" e "Banir
+        // anúncio"): em vez de tentar apagar a linha de verdade (DELETE),
+        // que esbarra em FKs de mensagens/curtidas/denúncias e podia falhar
+        // "em silêncio" via RLS, marcamos status="expirado" + pausado=true.
+        // Isso já é suficiente pra sumir de TODAS as telas, porque:
+        //   - marketplace usa a RPC get_anuncios_marketplace, que só traz
+        //     linhas com status='ativo';
+        //   - "Meus anúncios" filtra .eq("pausado", false).
+        // Sem DELETE de verdade não existe mais o cenário de "fotos somem
+        // mas o anúncio continua aparecendo (sem foto, dando erro)": o
+        // anúncio inteiro desaparece de uma vez, fotos incluídas.
+        // .select() no UPDATE detecta "0 linhas afetadas" (RLS bloqueando
+        // silenciosamente, ex: não é o dono) em vez de assumir sucesso só
+        // por não ter dado erro.
+        const { data: anAtualizado, error: erroAn } = await supabase
+          .from("anuncios")
+          .update({ status: "expirado", pausado: true })
+          .eq("id", anuncioId)
+          .select();
+        if (erroAn) {
+          alert("Não foi possível excluir o anúncio.\n\nErro do banco: " + erroAn.message + (erroAn.details ? ("\nDetalhes: " + erroAn.details) : "") + (erroAn.hint ? ("\nDica: " + erroAn.hint) : ""));
+          return;
+        }
+        if (!anAtualizado || anAtualizado.length === 0) {
+          alert("O anúncio não foi excluído (sem permissão ou já removido).");
+          carregarAnuncios();
+          return;
+        }
+        window.mgToast?.("Anúncio excluído!", "success"); carregarAnuncios();
+
+        // Limpeza definitiva em segundo plano (best-effort, não bloqueia
+        // nem alerta o usuário): o anúncio já sumiu de toda tela acima, ou
+        // seja, se isso falhar não é mais um bug visível — só sobra lixo
+        // no banco pra limpar depois. Nunca mais deixa fotos órfãs "soltas"
+        // apontando pra um anúncio ainda visível, porque o anúncio já foi
+        // ocultado ANTES dessa limpeza rodar.
+        (async () => {
+          try {
+            const { data: fotos } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
+            if (fotos) for (const f of fotos) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
+            await supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId);
+            await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId);
+            await supabase.from("mensagens").delete().eq("anuncio_id", anuncioId);
+            await supabase.from("anuncios").delete().eq("id", anuncioId);
+          } catch (e) {
+            console.warn("Limpeza em segundo plano do anúncio excluído falhou (sem impacto pro usuário, ele já está oculto):", e);
+          }
+        })();
+      } catch (excecao) {
+        // Antes, um erro "de verdade" (jogado, não retornado como {error})
+        // virava um "Uncaught (in promise)" silencioso no console — nenhum
+        // alert aparecia. Agora qualquer exceção aparece aqui.
+        console.error("Erro ao excluir anúncio:", excecao);
+        alert("Erro inesperado ao excluir o anúncio:\n\n" + (excecao?.message || excecao));
+      }
     }
 
     async function abrirVisualizacao(anuncioId) {
@@ -636,7 +806,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const { data: a } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", anuncioId).maybeSingle();
       if (!a) return;
       const { data: fotos } = await supabase.from("fotos_anuncio").select("*").eq("anuncio_id", anuncioId).order("ordem");
-      document.getElementById("viz-titulo").textContent = `${a.marcas?.nome || "Marca"} ${a.modelos?.nome || ""}`;
+      // Marca/modelo digitados na mão (marca_texto/modelo_texto) não têm join
+      // (marca_id/modelo_id ficam nulos nesse caso) — cai pro texto digitado.
+      const marcaExibida = a.marca_texto || a.marcas?.nome || "Marca";
+      const modeloExibido = a.modelo_texto || a.modelos?.nome || "";
+      document.getElementById("viz-titulo").textContent = `${marcaExibida} ${modeloExibido}`;
       document.getElementById("viz-preco").textContent = Number(a.preco).toLocaleString("pt-BR");
       document.getElementById("viz-ano").textContent = a.ano_fabricacao;
       document.getElementById("viz-ano-modelo").textContent = a.ano_modelo;
@@ -707,6 +881,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     document.getElementById("filtro-marca").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
+    document.getElementById("filtro-estado").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("barra_pesquisa").addEventListener("input", e => { filtroTextoAtual = e.target.value; aplicarFiltroOrdenacao(); });
 
     // --- Validação WhatsApp em tempo real ---
@@ -809,8 +984,39 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         document.getElementById("car-estado").focus();
         return;
       }
+      // Marca/modelo: ou vem do select (marca_id/modelo_id), ou foi digitado
+      // na mão (marca_texto/modelo_texto) quando o usuário não achou na lista.
+      const marcaSelVal = document.getElementById("select-marca").value;
+      const modeloSelVal = document.getElementById("select-modelo").value;
+      const marcaTextoVal = document.getElementById("car-marca-texto").value.trim();
+      const modeloTextoVal = document.getElementById("car-modelo-texto").value.trim();
+
+      const marcaId = (marcaSelVal && marcaSelVal !== "outro") ? marcaSelVal : null;
+      const marcaTexto = (marcaSelVal === "outro") ? marcaTextoVal : null;
+      if (marcaSelVal === "outro" && !marcaTexto) {
+        window.mgToast?.('Digite o nome da marca.', 'warning');
+        document.getElementById("car-marca-texto").focus(); restaurarBtn(); return;
+      }
+      if (!marcaSelVal) {
+        window.mgToast?.('Selecione a marca ou escreva a sua.', 'warning');
+        document.getElementById("select-marca").focus(); restaurarBtn(); return;
+      }
+
+      const modeloId = (marcaId && modeloSelVal && modeloSelVal !== "outro") ? modeloSelVal : null;
+      const modeloTexto = (marcaSelVal === "outro" || modeloSelVal === "outro") ? modeloTextoVal : null;
+      if ((marcaSelVal === "outro" || modeloSelVal === "outro") && !modeloTexto) {
+        window.mgToast?.('Digite o nome do modelo.', 'warning');
+        document.getElementById("car-modelo-texto").focus(); restaurarBtn(); return;
+      }
+      if (marcaId && !modeloSelVal) {
+        window.mgToast?.('Selecione o modelo ou escreva o seu.', 'warning');
+        document.getElementById("select-modelo").focus(); restaurarBtn(); return;
+      }
+
       const { data: an, error } = await supabase.from("anuncios").insert({
-        usuario_id: usuarioAtual.id, marca_id: document.getElementById("select-marca").value, modelo_id: document.getElementById("select-modelo").value,
+        usuario_id: usuarioAtual.id, marca_id: marcaId, modelo_id: modeloId,
+        tipo_veiculo: document.getElementById("select-tipo-veiculo").value,
+        marca_texto: marcaTexto, modelo_texto: modeloTexto,
         titulo: "Anúncio de veículo", descricao: document.getElementById("car-descricao").value,
         preco: parseFloat(document.getElementById("car-preco").value), ano_fabricacao: parseInt(document.getElementById("car-ano").value),
         ano_modelo: parseInt(document.getElementById("car-ano-modelo").value), quilometragem: parseInt(document.getElementById("car-km").value),
@@ -818,7 +1024,12 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         status: "pendente", cidade: cidade || "Não informada", estado: estado,
         latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)
       }).select().single();
-      if (error) { window.mgToast?.('Erro ao publicar: ' + error.message, 'error'); restaurarBtn(); return; }
+      if (error) {
+        // O trigger trg_cooldown_anuncio (banco) bloqueia publicações muito
+        // seguidas e devolve esse erro customizado — mostramos de forma amigável.
+        const msg = /aguarde/i.test(error.message) ? error.message : ('Erro ao publicar: ' + error.message);
+        window.mgToast?.(msg, 'error'); restaurarBtn(); return;
+      }
       const ext = foto.name.split('.').pop();
       const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
       const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
@@ -836,11 +1047,17 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         const okExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");
         if (okExtra === null) continue;
       }
-      window.mgToast?.('Anúncio enviado! Aguarda aprovação dos moderadores em até 24h.', 'success', 'Anúncio publicado');
+      window.mgMostrarAprovacao?.();
       document.getElementById("modal-add-car").style.display = "none";
       document.getElementById("car-form").reset();
       if (counterEl) { counterEl.textContent = '0/500'; counterEl.className = 'char-counter'; }
-      document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>"; document.getElementById("select-modelo").disabled = true;
+      // Restaura marca/modelo pro estado padrão (select visível, campo de texto oculto,
+      // lista de marcas de volta pra categoria "carro" que é o tipo padrão do form).
+      preencherSelectMarca("carro");
+      document.getElementById("select-marca").style.display = ""; document.getElementById("select-marca").required = true;
+      document.getElementById("select-modelo").style.display = ""; document.getElementById("select-modelo").required = true;
+      document.getElementById("car-marca-texto").style.display = "none"; document.getElementById("car-marca-texto").required = false;
+      document.getElementById("car-modelo-texto").style.display = "none"; document.getElementById("car-modelo-texto").required = false;
       restaurarBtn();
       carregarAnuncios();
     });
@@ -850,13 +1067,24 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       if (e.target === document.getElementById("modal-add-car")) document.getElementById("modal-add-car").style.display = "none";
       if (e.target === document.getElementById("modal-visualizar")) document.getElementById("modal-visualizar").style.display = "none";
       if (e.target === document.getElementById("modal-denuncia")) document.getElementById("modal-denuncia").style.display = "none";
+      if (e.target === document.getElementById("modal-aprovacao")) document.getElementById("modal-aprovacao").style.display = "none";
+    });
+
+    // Popup de "anúncio enviado para aprovação" — chamado depois que o
+    // anúncio e as fotos foram salvos com sucesso.
+    window.mgMostrarAprovacao = function () {
+      document.getElementById("modal-aprovacao").style.display = "flex";
+    };
+    document.getElementById("btn-fechar-aprovacao").addEventListener("click", () => {
+      document.getElementById("modal-aprovacao").style.display = "none";
     });
 
     carregarAnuncios();
     lucide.createIcons();
   </script>
   <script>window.chtlConfig = { chatbotId: "6944231868" }</script>
-  <script async data-id="6944231868" id="chtl-script" type="text/javascript"
+  <style>#chtl-chat-icon-container{left:auto!important;right:20px!important;width:auto!important;}</style>
+<script async data-id="6944231868" id="chtl-script" type="text/javascript"
     src="https://chatling.ai/js/embed.js"></script>
 </body>
 

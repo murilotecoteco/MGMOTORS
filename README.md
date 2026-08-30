@@ -30,7 +30,7 @@
 
 <p align="center">
 
-<a href="https://mgmotors.vercel.app/MG-INICIO/inicio.html">
+<a href="https://mgmotors-zeta.vercel.app/MG-INICIO/inicio.html">
 <img src="https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge">
 </a>
 
@@ -392,7 +392,7 @@ Todo push para o branch `main` aciona automaticamente um novo deploy de produç�
 URL de produção:
 
 ```
-https://mgmotors.vercel.app
+https://mgmotors-zeta.vercel.app
 ```
 
 ---

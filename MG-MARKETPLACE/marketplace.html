@@ -3,19 +3,18 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="../imagens/logo-mg.png">
-  <link rel="shortcut icon" href="../imagens/logo-mg.png">
+  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+  <link rel="shortcut icon" href="../imagens/favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Marketplace - MG Motors | Compra e Venda de Veículos</title>
   <meta name="description" content="Encontre carros esportivos, seminovos e importados no marketplace da MG Motors. Filtros avançados, anúncios verificados e negociação segura.">
   <meta property="og:title" content="Marketplace - MG Motors | Compra e Venda de Veículos">
   <meta property="og:description" content="Encontre carros esportivos, seminovos e importados. Filtros avançados e negociação segura na MG Motors.">
-  <meta property="og:image" content="../imagens/logo-mg.png">
+  <meta property="og:image" content="../imagens/logo.webp">
   <meta property="og:type" content="website">
   <link rel="stylesheet" href="marketplace.css">
   <link rel="stylesheet" href="../global.css">
   <style>
-    /* Animação de entrada dos cards */
     @keyframes cardEntrada {
       from { opacity: 0; transform: translateY(22px) scale(0.97); }
       to   { opacity: 1; transform: translateY(0)   scale(1); }
@@ -24,7 +23,6 @@
     @media (prefers-reduced-motion: reduce) {
       .card { opacity: 1; animation: none; }
     }
-    /* Contador de chars */
     .textarea-wrap { position: relative; }
     .char-counter {
       position: absolute; bottom: 10px; right: 14px;
@@ -50,7 +48,6 @@
     </div>
   </div>
 
-  <!-- Breadcrumb -->
   <nav class="mg-breadcrumb" aria-label="Navegação estrutural">
     <a href="../MG-INICIO/inicio.html">Início</a>
     <span class="sep" aria-hidden="true">›</span>
@@ -130,7 +127,6 @@
 
     <div id="resultados-info" class="resultados-info"></div>
     <div id="lista-anuncios" class="grid-quadrado">
-      <!-- Skeleton loaders exibidos enquanto os anúncios carregam -->
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
@@ -145,7 +141,6 @@
       <div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div><div class="sk-line sk-preco"></div></div>
     </div>
 
-    <!-- Controles de paginação -->
     <div id="paginacao" class="paginacao" style="display:none;" aria-label="Paginação">
       <button id="btn-pag-anterior" class="btn-pag" aria-label="Página anterior" disabled>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
@@ -159,7 +154,6 @@
     </div>
   </main>
 
-  <!-- Modal Adicionar -->
   <div id="modal-add-car" class="modal">
     <div class="modal-content">
       <span id="close-modal" class="close">&times;</span>
@@ -227,7 +221,6 @@
     </div>
   </div>
 
-  <!-- Modal Visualizar -->
   <div id="modal-visualizar" class="modal">
     <div class="modal-content modal-visualizar">
       <span id="close-visualizar" class="close">&times;</span>
@@ -261,7 +254,6 @@
     </div>
   </div>
 
-  <!-- Modal Denúncia -->
   <div id="modal-denuncia" class="modal">
     <div class="modal-content" style="max-width:460px;">
       <span id="close-denuncia" class="close">&times;</span>
@@ -341,18 +333,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     let paginaAtual = 1;
     let anunciosFiltradosAtual = [];
 
-    // --- Helper de escrita com aviso ao usuário (Melhoria 2) ---
-    // Executa uma promise do Supabase (insert/update/delete) e, se falhar,
-    // mostra um alerta claro em vez de falhar silenciosamente.
-    // Retorna `null` em erro, ou `data` em sucesso.
     async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. Tente novamente.") {
       const { data, error } = await promise;
       if (error) {
         console.error(error);
         window.mgToast?.(mensagemErroPadrao + (error.message ? ` (${error.message})` : ""), "error");
-        return null;
+        return { ok: false, data: null };
       }
-      return data;
+      return { ok: true, data };
     }
 
     let usuarioAtual = await carregarHeaderGlobal(supabase);
@@ -368,25 +356,19 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     }
     carregarMarcas();
 
-    // Reconstrói o <select> de marca do formulário de anúncio, mostrando só
-    // as marcas da categoria escolhida (carro/moto/caminhão/trator/embarcação).
     function preencherSelectMarca(tipo) {
       const select = document.getElementById("select-marca");
       select.innerHTML = "<option value=''>Selecione a Marca</option>";
       todasMarcas
         .filter(m => (m.categoria || "carro") === tipo)
         .forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; select.appendChild(op); });
-      // Não achou a marca na lista? Deixa escrever na mão em vez de travar o anúncio.
       const opOutraMarca = document.createElement("option");
       opOutraMarca.value = "outro"; opOutraMarca.textContent = "✏️ Não encontrei — escrever a marca";
       select.appendChild(opOutraMarca);
-      // Marca mudou de baixo do usuário (troca de tipo) — reseta modelo também.
       document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>";
       document.getElementById("select-modelo").disabled = true;
     }
 
-    // Reconstrói o <select> de marca do filtro de busca, mostrando só as
-    // marcas do tipo de veículo escolhido (ou todas, se "Todos os tipos").
     function preencherFiltroMarca(tipo) {
       const filtro = document.getElementById("filtro-marca");
       const valorAtual = filtro.value;
@@ -394,13 +376,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       todasMarcas
         .filter(m => !tipo || (m.categoria || "carro") === tipo)
         .forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; filtro.appendChild(op); });
-      // Mantém a marca selecionada se ela ainda fizer parte da lista filtrada.
       if ([...filtro.options].some(o => o.value === valorAtual)) filtro.value = valorAtual;
     }
 
     document.getElementById("select-tipo-veiculo").addEventListener("change", function () {
       preencherSelectMarca(this.value);
-      // Volta pro estado padrão (select visível) já que a marca mudou de lista.
       const marcaTexto = document.getElementById("car-marca-texto");
       const modeloTexto = document.getElementById("car-modelo-texto");
       document.getElementById("select-marca").style.display = ""; document.getElementById("select-marca").required = true;
@@ -421,9 +401,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const modeloTexto = document.getElementById("car-modelo-texto");
 
       if (marcaId === "outro") {
-        // Marca digitada na mão: sem marca_id, então o modelo também vira
-        // texto livre (não tem como listar modelos de uma marca que não
-        // está cadastrada).
         this.style.display = "none"; this.required = false;
         marcaTexto.style.display = ""; marcaTexto.required = true; marcaTexto.focus();
         sel.style.display = "none"; sel.required = false; sel.disabled = true; sel.value = "";
@@ -486,9 +463,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
           const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
           const geo = await r.json();
           document.getElementById("car-cidade").value = geo.address?.city || geo.address?.town || geo.address?.village || "";
-          // Melhoria 3: o campo Estado agora é um <select>. Só selecionamos se a UF
-          // retornada pela geolocalização existir nas opções; caso contrário, mantemos vazio
-          // e o `required` do HTML + a validação no submit impedem envio inválido.
           const ufRaw = (geo.address?.state_code || geo.address?.ISO3166_2 || "").toUpperCase();
           const uf = ufRaw.split("-").pop();
           const selEstado = document.getElementById("car-estado");
@@ -503,22 +477,17 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     if (urlParams.get("ordenar") === "curtidas") { document.addEventListener("DOMContentLoaded", () => { const s = document.getElementById("ordenar"); if (s) s.value = "curtidas"; }); }
 
     async function carregarAnuncios() {
-      // C2: Uma única chamada RPC retorna fotos, vendedor e curtida por anúncio
-      // via JOINs + subqueries no banco — elimina o loop N+1 que gerava 100+ queries.
-      // A função SQL correspondente deve estar criada no Supabase (ver plano C2).
       const { data: anuncios, error } = await supabase.rpc(
         "get_anuncios_marketplace",
         { usuario_id_param: usuarioAtual?.id ?? null }
       );
       if (error) { console.error("RPC get_anuncios_marketplace error:", error); return; }
 
-      // Normaliza shape para compatibilidade com o restante do código (a.marcas?.nome etc.)
       for (const a of anuncios) {
         a.marcas  = { nome: a.marca_nome  ?? "" };
         a.modelos = { nome: a.modelo_nome ?? "" };
         a.foto_principal = a.foto_principal || "../imagens/sem-foto.png";
         a.vendedor_foto  = a.vendedor_foto  || "../imagens/usuario.png";
-        // a.usuario_curtiu já vem calculado pelo banco
       }
 
       todosAnuncios = anuncios;
@@ -560,7 +529,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const info = document.getElementById("resultados-info");
       if (info) info.textContent = `${filtrados.length} veículo${filtrados.length !== 1 ? "s" : ""} encontrado${filtrados.length !== 1 ? "s" : ""}`;
       anunciosFiltradosAtual = filtrados;
-      paginaAtual = 1; // volta à primeira página ao filtrar
+      paginaAtual = 1;
       exibirPagina();
     }
 
@@ -619,7 +588,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         card.className = "card"; card.dataset.id = anuncio.id;
         card.style.animationDelay = `${anuncios.indexOf(anuncio) * 55}ms`;
 
-        // Estrutura fixa do card (sem texto de usuário via innerHTML)
         card.innerHTML = `
       <div class="card-img-wrap">
         <img src="${anuncio.foto_principal}" alt="" onerror="this.src='../imagens/sem-foto.png'" loading="lazy">
@@ -637,7 +605,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         </div>
       </div>`;
 
-        // Preencher campos de texto de usuário via textContent (sem risco de XSS)
         const imgEl = card.querySelector('.card-img-wrap img');
         imgEl.alt = marcaNome;
         const h3 = card.querySelector('.info h3');
@@ -650,11 +617,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         card.querySelector('.perfil-link').addEventListener('click', e => { e.stopPropagation(); window.location.href = `../MG-CONTA/conta.html?id=${anuncio.usuario_id}`; });
         card.addEventListener('click', e => { if (!e.target.closest('.btn-curtir,.btn-excluir,.perfil-link,.btn-denunciar-card')) abrirVisualizacao(anuncio.id); });
 
-        // Fix: listener anexado diretamente ao botão de CADA card, usando
-        // anuncio.id (não mais querySelectorAll('.btn-curtir') global, que
-        // também capturava o #viz-btn-curtir do modal — sem data-id, isso
-        // gerava anuncio_id: null (erro 400) e acumulava listeners a cada
-        // re-render de exibirAnuncios).
         const btnCurtir = card.querySelector('.btn-curtir');
         btnCurtir.addEventListener('click', async e => { e.stopPropagation(); await toggleCurtida(anuncio.id, btnCurtir); });
         const btnExcluir = card.querySelector('.btn-excluir');
@@ -685,9 +647,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     document.getElementById("close-denuncia").onclick = () => document.getElementById("modal-denuncia").style.display = "none";
 
-    // Evita que dois cliques rápidos no mesmo card disparem duas chamadas
-    // concorrentes de curtir/descurtir (o que causava 409 - duplicate key -
-    // e deixava o botão "travado" sem reagir a novos cliques).
     const curtidasEmProcessamento = new Set();
 
     async function toggleCurtida(anuncioId, btn) {
@@ -707,9 +666,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         } else {
           const { error } = await supabase.from("curtidas_anuncio").insert({ anuncio_id: anuncioId, usuario_id: usuarioAtual.id });
           if (error) {
-            // 23505 = unique_violation: já existe uma curtida deste usuário pra
-            // esse anúncio no banco (ex: clique duplo, ou estado local desatualizado).
-            // Em vez de mostrar erro, apenas sincronizamos o botão pro estado real.
             if (error.code === "23505") {
               btn.classList.add('curtido');
               const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'currentColor');
@@ -723,7 +679,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
             const svg = btn.querySelector('.heart-icon'); if (svg) svg.setAttribute('fill', 'currentColor');
           }
         }
-        // Anúncio confirmadamente existe aqui, mas usamos maybeSingle() para evitar 406 em leitura concorrente.
         const { data: novo } = await supabase.from("anuncios").select("curtidas").eq("id", anuncioId).maybeSingle();
         const novoC = novo?.curtidas || 0;
         let badge = btn.closest('.card')?.querySelector('.card-curtidas-badge');
@@ -744,20 +699,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     async function excluirAnuncio(anuncioId) {
       if (!confirm("Excluir este anúncio?")) return;
       try {
-        // MESMA LÓGICA QUE JÁ FUNCIONA NO MG-DEV (botões "Rejeitar" e "Banir
-        // anúncio"): em vez de tentar apagar a linha de verdade (DELETE),
-        // que esbarra em FKs de mensagens/curtidas/denúncias e podia falhar
-        // "em silêncio" via RLS, marcamos status="expirado" + pausado=true.
-        // Isso já é suficiente pra sumir de TODAS as telas, porque:
-        //   - marketplace usa a RPC get_anuncios_marketplace, que só traz
-        //     linhas com status='ativo';
-        //   - "Meus anúncios" filtra .eq("pausado", false).
-        // Sem DELETE de verdade não existe mais o cenário de "fotos somem
-        // mas o anúncio continua aparecendo (sem foto, dando erro)": o
-        // anúncio inteiro desaparece de uma vez, fotos incluídas.
-        // .select() no UPDATE detecta "0 linhas afetadas" (RLS bloqueando
-        // silenciosamente, ex: não é o dono) em vez de assumir sucesso só
-        // por não ter dado erro.
         const { data: anAtualizado, error: erroAn } = await supabase
           .from("anuncios")
           .update({ status: "expirado", pausado: true })
@@ -774,12 +715,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         }
         window.mgToast?.("Anúncio excluído!", "success"); carregarAnuncios();
 
-        // Limpeza definitiva em segundo plano (best-effort, não bloqueia
-        // nem alerta o usuário): o anúncio já sumiu de toda tela acima, ou
-        // seja, se isso falhar não é mais um bug visível — só sobra lixo
-        // no banco pra limpar depois. Nunca mais deixa fotos órfãs "soltas"
-        // apontando pra um anúncio ainda visível, porque o anúncio já foi
-        // ocultado ANTES dessa limpeza rodar.
         (async () => {
           try {
             const { data: fotos } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
@@ -793,21 +728,15 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
           }
         })();
       } catch (excecao) {
-        // Antes, um erro "de verdade" (jogado, não retornado como {error})
-        // virava um "Uncaught (in promise)" silencioso no console — nenhum
-        // alert aparecia. Agora qualquer exceção aparece aqui.
         console.error("Erro ao excluir anúncio:", excecao);
         alert("Erro inesperado ao excluir o anúncio:\n\n" + (excecao?.message || excecao));
       }
     }
 
     async function abrirVisualizacao(anuncioId) {
-      // maybeSingle(): se o anúncio foi removido entre o listagem e o clique, evita erro 406.
       const { data: a } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", anuncioId).maybeSingle();
       if (!a) return;
       const { data: fotos } = await supabase.from("fotos_anuncio").select("*").eq("anuncio_id", anuncioId).order("ordem");
-      // Marca/modelo digitados na mão (marca_texto/modelo_texto) não têm join
-      // (marca_id/modelo_id ficam nulos nesse caso) — cai pro texto digitado.
       const marcaExibida = a.marca_texto || a.marcas?.nome || "Marca";
       const modeloExibido = a.modelo_texto || a.modelos?.nome || "";
       document.getElementById("viz-titulo").textContent = `${marcaExibida} ${modeloExibido}`;
@@ -839,7 +768,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const vizCurtir = document.getElementById("viz-btn-curtir");
       const podeCurtir = usuarioAtual && usuarioAtual.id !== a.usuario_id;
       if (usuarioAtual) {
-        // Melhoria 1: checagem de "já curtiu" -> maybeSingle().
         const { data: c } = await supabase.from("curtidas_anuncio").select("id").eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id).maybeSingle();
         if (c) { vizCurtir.classList.add("curtido"); vizCurtir.textContent = "Curtido"; } else { vizCurtir.classList.remove("curtido"); vizCurtir.textContent = "Curtir"; }
         vizCurtir.disabled = !podeCurtir;
@@ -884,19 +812,17 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     document.getElementById("filtro-estado").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("barra_pesquisa").addEventListener("input", e => { filtroTextoAtual = e.target.value; aplicarFiltroOrdenacao(); });
 
-    // --- Validação WhatsApp em tempo real ---
     const inputWa = document.getElementById('car-whatsapp');
     const erroWa  = document.getElementById('whatsapp-erro');
     const RE_WA   = /^\d{10,11}$/;
     inputWa.addEventListener('input', () => {
       const digits = inputWa.value.replace(/\D/g, '');
-      inputWa.value = digits.slice(0, 11); // aceita só dígitos
+      inputWa.value = digits.slice(0, 11);
       const ok = RE_WA.test(digits);
       erroWa.style.display  = ok || digits.length === 0 ? 'none' : 'block';
       inputWa.style.borderColor = ok || digits.length === 0 ? '' : '#e84040';
     });
 
-    // --- Contador de caracteres na descrição ---
     const descEl  = document.getElementById('car-descricao');
     const counterEl = document.getElementById('descricao-counter');
     const MAX_DESC = 500;
@@ -907,7 +833,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         (len >= MAX_DESC ? ' limite' : len >= MAX_DESC * 0.85 ? ' quase' : '');
     });
 
-    // --- Preview e validação de upload em tempo real ---
     const TIPOS_OK  = ['image/jpeg', 'image/png', 'image/webp'];
     const MAX_BYTES = 5 * 1024 * 1024;
 
@@ -950,24 +875,22 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     document.getElementById("car-form").addEventListener("submit", async e => {
       e.preventDefault();
       if (!usuarioAtual) { window.mgToast?.('Faça login para anunciar.', 'warning') || window.mgToast?.("Faça login!", "warning"); return; }
-      // B2: desabilitar botão durante submit para evitar duplo envio
       const btnPublicar = document.getElementById('btn-publicar');
       btnPublicar.disabled = true;
       btnPublicar.textContent = 'Publicando...';
       const restaurarBtn = () => { btnPublicar.disabled = false; btnPublicar.textContent = 'Publicar Anúncio'; };
 
-      // Validar WhatsApp
       const waInput  = document.getElementById("car-whatsapp");
       const waDigits = waInput.value.replace(/\D/g, '');
       if (!/^\d{10,11}$/.test(waDigits)) {
         document.getElementById('whatsapp-erro').style.display = 'block';
-        waInput.focus(); return;
+        waInput.focus(); restaurarBtn(); return;
       }
 
       const foto = document.getElementById("car-image").files[0];
-      if (!foto) { window.mgToast?.('Selecione uma foto principal.', 'warning'); return; }
-      if (!TIPOS_OK.includes(foto.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); return; }
-      if (foto.size > MAX_BYTES) { window.mgToast?.('Foto principal excede 5 MB.', 'error'); return; }
+      if (!foto) { window.mgToast?.('Selecione uma foto principal.', 'warning'); restaurarBtn(); return; }
+      if (!TIPOS_OK.includes(foto.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); restaurarBtn(); return; }
+      if (foto.size > MAX_BYTES) { window.mgToast?.('Foto principal excede 5 MB.', 'error'); restaurarBtn(); return; }
       let lat = null, lng = null;
       try {
         const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 3000 }));
@@ -975,17 +898,12 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       } catch (e) { }
       const cidade = document.getElementById("car-cidade").value.trim();
       const estado = document.getElementById("car-estado").value.trim().toUpperCase();
-      // Melhoria 3 + 4: o campo já é um <select> restrito às 27 UFs reais, então qualquer
-      // valor selecionado é válido. Mantemos a validação em JS como reforço defensivo
-      // (nenhum fallback tipo `estado || "NA"` deve existir aqui).
       const UFS_VALIDAS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
       if (!UFS_VALIDAS.includes(estado)) {
         window.mgToast?.('Selecione um Estado (UF) válido. A geolocalização pode não ter preenchido — escolha manualmente.', 'warning');
         document.getElementById("car-estado").focus();
-        return;
+        restaurarBtn(); return;
       }
-      // Marca/modelo: ou vem do select (marca_id/modelo_id), ou foi digitado
-      // na mão (marca_texto/modelo_texto) quando o usuário não achou na lista.
       const marcaSelVal = document.getElementById("select-marca").value;
       const modeloSelVal = document.getElementById("select-modelo").value;
       const marcaTextoVal = document.getElementById("car-marca-texto").value.trim();
@@ -1025,8 +943,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)
       }).select().single();
       if (error) {
-        // O trigger trg_cooldown_anuncio (banco) bloqueia publicações muito
-        // seguidas e devolve esse erro customizado — mostramos de forma amigável.
         const msg = /aguarde/i.test(error.message) ? error.message : ('Erro ao publicar: ' + error.message);
         window.mgToast?.(msg, 'error'); restaurarBtn(); return;
       }
@@ -1035,8 +951,8 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
       if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); restaurarBtn(); return; }
       const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
-      const okFoto = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
-      if (okFoto === null) { restaurarBtn(); return; }
+      const resFoto = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
+      if (!resFoto.ok) { restaurarBtn(); return; }
       const extras = document.getElementById("car-images-adicionais").files;
       for (let i = 0; i < Math.min(extras.length, 4); i++) {
         const f = extras[i]; if (f.size > 5 * 1024 * 1024) continue;
@@ -1044,15 +960,13 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         const { error: errUp2 } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(c2, f);
         if (errUp2) { console.error("Falha em foto adicional:", errUp2.message); continue; }
         const { data: u2 } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(c2);
-        const okExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");
-        if (okExtra === null) continue;
+        const resExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");
+        if (!resExtra.ok) continue;
       }
       window.mgMostrarAprovacao?.();
       document.getElementById("modal-add-car").style.display = "none";
       document.getElementById("car-form").reset();
       if (counterEl) { counterEl.textContent = '0/500'; counterEl.className = 'char-counter'; }
-      // Restaura marca/modelo pro estado padrão (select visível, campo de texto oculto,
-      // lista de marcas de volta pra categoria "carro" que é o tipo padrão do form).
       preencherSelectMarca("carro");
       document.getElementById("select-marca").style.display = ""; document.getElementById("select-marca").required = true;
       document.getElementById("select-modelo").style.display = ""; document.getElementById("select-modelo").required = true;
@@ -1062,7 +976,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       carregarAnuncios();
     });
 
-    // C1: addEventListener em vez de window.onclick (que sobrescreve handlers globais)
     window.addEventListener('click', (e) => {
       if (e.target === document.getElementById("modal-add-car")) document.getElementById("modal-add-car").style.display = "none";
       if (e.target === document.getElementById("modal-visualizar")) document.getElementById("modal-visualizar").style.display = "none";
@@ -1070,8 +983,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       if (e.target === document.getElementById("modal-aprovacao")) document.getElementById("modal-aprovacao").style.display = "none";
     });
 
-    // Popup de "anúncio enviado para aprovação" — chamado depois que o
-    // anúncio e as fotos foram salvos com sucesso.
     window.mgMostrarAprovacao = function () {
       document.getElementById("modal-aprovacao").style.display = "flex";
     };

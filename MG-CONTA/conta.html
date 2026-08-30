@@ -539,7 +539,7 @@ document.getElementById("excluirConta")?.addEventListener("click", async () => {
     }
 
     const res = await fetch(
-      "https://ilswwmjojfuvcgyymymb.supabase.co/functions/v1/delete-account",
+      `${supabaseUrl}/functions/v1/delete-account`,
       {
         method: "POST",
         headers: {

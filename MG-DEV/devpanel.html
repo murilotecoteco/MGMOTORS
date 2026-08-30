@@ -260,11 +260,10 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
 
 <div class="toast" id="toast"></div>
 
-<script>
-const _supaUrl = 'https://ilswwmjojfuvcgyymymb.supabase.co';
-const _supaKey = 'sb_publishable_0vy8zcMmKEd8oomSUQvJ4Q_SMpqFcxD';
+<script type="module">
 const { createClient } = supabase;
-const db = createClient(_supaUrl, _supaKey);
+const { supabaseUrl, supabaseKey } = await import("../mgConfig.js");
+const db = createClient(supabaseUrl, supabaseKey);
 
 function escapeHtml(v) {
   if (!v) return '';

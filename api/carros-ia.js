@@ -28,8 +28,9 @@
 // inteiro. Nao expoe nada que a policy de RLS "Todos veem anuncios ativos"
 // ja nao deixasse publico.
 
-const SUPABASE_URL = "https://ilswwmjojfuvcgyymymb.supabase.co";
-const SUPABASE_KEY = "sb_publishable_0vy8zcMmKEd8oomSUQvJ4Q_SMpqFcxD";
+// Valores vêm das variáveis de ambiente da Vercel, não do código.
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 function formatarPreco(preco) {
   const n = Number(preco) || 0;

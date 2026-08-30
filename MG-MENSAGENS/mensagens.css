@@ -251,15 +251,51 @@ header {
 /* Tema escuro */
 [data-tema="escuro"] body { background: #111111; color: #E5E5E5; }
 [data-tema="escuro"] header { background-color: #000000; }
-[data-tema="escuro"] .conversas-lista,
-[data-tema="escuro"] .chat-container { background: #171717; border-color: rgba(77,166,216,.15); }
-[data-tema="escuro"] .conversa-item { border-bottom-color: rgba(77,166,216,.1); }
-[data-tema="escuro"] .conversa-item:hover { background: #262626; }
-[data-tema="escuro"] .mensagem.recebida { background: #262626; color: #E5E5E5; }
-[data-tema="escuro"] .mensagem.enviada { background: #1D4ED8; }
-[data-tema="escuro"] .chat-input textarea { background: #111111; color: #E5E5E5; border-color: rgba(77,166,216,.2); }
-[data-tema="escuro"] footer { background: linear-gradient(135deg, #000000, #0A0A0A) !important; }
 
+/* Lista de conversas */
+[data-tema="escuro"] .conversas-lista {
+  background: #171717;
+  border-color: rgba(77,166,216,.15);
+  box-shadow: none;
+}
+[data-tema="escuro"] .conversa-item {
+  border-bottom-color: rgba(255,255,255,0.06);
+  color: var(--texto, #E5E5E5);
+}
+[data-tema="escuro"] .conversa-titulo { color: var(--azul, #2563EB); }
+[data-tema="escuro"] .conversa-preview { color: #A3A3A3; }
+[data-tema="escuro"] .conversa-data { color: #6b7280; }
+[data-tema="escuro"] .conversa-item:hover { background: #262626; }
+[data-tema="escuro"] .conversa-item.active {
+  background: rgba(37,99,235,0.12);
+  border-left-color: var(--azul, #2563EB);
+}
+[data-tema="escuro"] .nao-lida { background: rgba(37,99,235,0.08); }
+
+/* Chat */
+[data-tema="escuro"] .chat-container {
+  background: #171717;
+  border-color: rgba(77,166,216,.15);
+  box-shadow: none;
+}
+[data-tema="escuro"] .mensagem.recebida {
+  background: #262626;
+  color: #E5E5E5;
+}
+[data-tema="escuro"] .mensagem.enviada { background: #1D4ED8; }
+[data-tema="escuro"] .chat-input {
+  border-top-color: rgba(255,255,255,0.08);
+  background: #171717;
+}
+[data-tema="escuro"] .chat-input textarea {
+  background: #111111;
+  color: #E5E5E5;
+  border-color: rgba(77,166,216,.2);
+}
+[data-tema="escuro"] .empty-state { color: #A3A3A3; }
+[data-tema="escuro"] .page-title { color: var(--azul, #2563EB); }
+
+/* Upload foto */
 [data-tema="escuro"] .btn-upload-foto {
   background: #262626;
   border-color: rgba(77,166,216,.2);
@@ -268,6 +304,8 @@ header {
 [data-tema="escuro"] .btn-upload-foto:hover {
   background: #3B82F6;
 }
+
+[data-tema="escuro"] footer { background: linear-gradient(135deg, #000000, #0A0A0A) !important; }
 
 /* Footer padronizado */
 footer {

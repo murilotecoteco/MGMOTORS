@@ -936,6 +936,7 @@ header {
 }
 
 .filtro-preco select,
+.filtro-estado select,
 .filtro-localizacao .btn-loc {
   padding: 11px 18px;
   border: 1px solid rgba(20, 75, 113, .15);
@@ -1143,15 +1144,7 @@ header {
 [data-tema="escuro"] .barra-pesquisa input {
   color: var(--texto);
 }
-[data-tema="escuro"] .filtro-marca select,
-[data-tema="escuro"] .filtro-preco select,
-[data-tema="escuro"] .ordenar select,
-[data-tema="escuro"] .filtro-localizacao .btn-loc {
-  background: #111111;
-  color: var(--azul);
-  border-color: rgba(77,166,216,.2);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234da6d8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-}
+
 [data-tema="escuro"] .viz-detalhe,
 [data-tema="escuro"] .visualizar-descricao {
   background: #111111;
@@ -1291,6 +1284,7 @@ main {
 .barra-pesquisa,
 .filtro-marca select,
 .filtro-preco select,
+.filtro-estado select,
 .ordenar select,
 .filtro-localizacao .btn-loc,
 .adicionar button {
@@ -1338,9 +1332,20 @@ main {
 
 .filtro-marca select,
 .filtro-preco select,
-.ordenar select,
+.filtro-estado select,
+.ordenar select {
+  background-color: var(--cinza-claro);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232563EB' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  border-color: #e5e7eb;
+  color: var(--texto);
+}
+
 .filtro-localizacao .btn-loc {
   background-color: var(--cinza-claro);
+  background-image: none;
   border-color: #e5e7eb;
   color: var(--texto);
 }
@@ -1443,13 +1448,24 @@ footer {
 }
 
 [data-tema="escuro"] .barra-pesquisa,
-[data-tema="escuro"] .filtro-marca select,
-[data-tema="escuro"] .filtro-preco select,
-[data-tema="escuro"] .ordenar select,
 [data-tema="escuro"] .filtro-localizacao .btn-loc,
 [data-tema="escuro"] #btn-loc-limpar,
 [data-tema="escuro"] #raio-select {
   background-color: var(--cinza-claro);
+  background-image: none;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--texto);
+}
+
+[data-tema="escuro"] .filtro-marca select,
+[data-tema="escuro"] .filtro-preco select,
+[data-tema="escuro"] .filtro-estado select,
+[data-tema="escuro"] .ordenar select {
+  background-color: var(--cinza-claro);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23E5E5E5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
   border-color: rgba(255, 255, 255, 0.12);
   color: var(--texto);
 }
@@ -1472,4 +1488,103 @@ footer {
     padding-left: 14px;
     padding-right: 14px;
   }
+}
+/* ═══════════════════════════════════════════════════════
+   MODAL — anúncio enviado para aprovação
+   ═══════════════════════════════════════════════════════ */
+.mg-aprovacao-content {
+  max-width: 420px;
+  text-align: center;
+  padding: 40px 32px 32px;
+}
+
+.mg-aprovacao-icone {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, .35);
+  animation: mgAprovacaoPop .45s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.mg-aprovacao-icone svg {
+  width: 36px;
+  height: 36px;
+  color: #fff;
+}
+
+@keyframes mgAprovacaoPop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.mg-aprovacao-content h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--azul, #144b71);
+}
+
+.mg-aprovacao-content p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--texto-suave, #64748b);
+  margin-bottom: 26px;
+}
+
+.mg-aprovacao-content .btn-submit {
+  width: 100%;
+}
+
+[data-tema="escuro"] .btn-curtir:disabled {
+  background: #262626 !important;
+  color: #6b7280 !important;
+  border-color: transparent !important;
+}
+
+[data-tema="escuro"] .viz-detalhe:hover {
+  background: #262626;
+}
+
+[data-tema="escuro"] .btn-denunciar-anuncio,
+[data-tema="escuro"] .btn-denunciar-card {
+  background: rgba(220,38,38,0.12);
+  color: #fc8181;
+  border-color: rgba(220,38,38,0.3);
+}
+[data-tema="escuro"] .btn-denunciar-anuncio:hover,
+[data-tema="escuro"] .btn-denunciar-card:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+[data-tema="escuro"] .modal-content h2,
+[data-tema="escuro"] .info-container h2 { color: var(--texto); }
+
+[data-tema="escuro"] .modal input::placeholder,
+[data-tema="escuro"] .modal textarea::placeholder { color: #6b7280; }
+
+[data-tema="escuro"] .upload-label { color: var(--azul); }
+[data-tema="escuro"] .upload-hint { color: var(--texto-suave); }
+
+[data-tema="escuro"] .visualizar-preco {
+  color: #34d399;
+  background: rgba(4,120,87,0.2);
+}
+
+[data-tema="escuro"] .viz-label { color: var(--texto-suave); }
+[data-tema="escuro"] .viz-detalhe span:last-child { color: var(--texto); }
+
+[data-tema="escuro"] .loc-info {
+  background: #1a2a38;
+  border-color: rgba(77,166,216,.2);
+  color: var(--texto);
+}
+
+[data-tema="escuro"] .mg-aprovacao-content h2 {
+  color: var(--texto);
 }

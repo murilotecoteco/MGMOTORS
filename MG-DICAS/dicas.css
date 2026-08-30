@@ -416,6 +416,17 @@ footer {
 }
 [data-tema="escuro"] body { background: var(--fundo) !important; color: var(--texto) !important; }
 [data-tema="escuro"] header, [data-tema="escuro"] .hero, [data-tema="escuro"] footer { background-color: var(--preto-secundario) !important; }
+[data-tema="escuro"] footer { color: #E5E5E5; }
+[data-tema="escuro"] .footer-brand h2 { color: #ffffff; }
+[data-tema="escuro"] .footer-brand p { color: rgba(255,255,255,0.6); }
+[data-tema="escuro"] .footer-col h4 { color: #E5E5E5; }
+[data-tema="escuro"] .footer-col a { color: rgba(255,255,255,0.6); }
+[data-tema="escuro"] .footer-col a:visited { color: rgba(255,255,255,0.6); }
+[data-tema="escuro"] .footer-col a:hover { color: #ffffff; }
+[data-tema="escuro"] .footer-bottom { color: rgba(255,255,255,0.4); }
+[data-tema="escuro"] .hero { color: #E5E5E5; }
+[data-tema="escuro"] .hero h1 { color: #ffffff; }
+[data-tema="escuro"] .hero p { color: rgba(255, 255, 255, 0.7); }
 [data-tema="escuro"] .sumario { background-color: var(--branco); border-color: var(--cinza); }
 [data-tema="escuro"] .sumario a.ativo { color: var(--azul); }
 [data-tema="escuro"] .card, [data-tema="escuro"] .col-doc { background-color: var(--branco); border-color: var(--cinza); }

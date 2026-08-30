@@ -1,3 +1,33 @@
+// api/carros-ia.js
+//
+// Endpoint público, somente leitura, que lista os anúncios ativos do
+// marketplace em TEXTO PURO (sem JavaScript, sem CSS, sem layout),
+// incluindo titulo e descricao completos.
+//
+// Serve para ferramentas de IA/chatbot (ex.: Chatling) que só conseguem ler
+// o HTML/texto bruto de uma URL, sem executar JavaScript — a página normal
+// do marketplace carrega os carros via JS depois do load, então essas
+// ferramentas veem só "Carregando...". Este endpoint resolve isso porque o
+// servidor já monta o texto pronto antes de responder.
+//
+// URL depois de publicado: https://SEU-DOMINIO.vercel.app/api/carros-ia
+// Essa é a URL que você cola no painel do Chatling como "fonte de dados".
+//
+// SEGURANCA / VISIBILIDADE — mesmas regras do marketplace publico:
+//   - so inclui anuncios com status = 'ativo'  -> anuncio pendente de
+//     aprovacao (recem-criado, ainda nao revisado pelo admin) NUNCA aparece
+//     aqui, porque nasce com status = 'pendente' (trigger
+//     trg_proteger_status_anuncios forca isso pra quem nao e admin).
+//   - so inclui anuncios com pausado = false (ou nulo) -> quando um usuario
+//     e banido, os anuncios dele sao marcados como pausado = true, entao
+//     tambem somem daqui automaticamente, igual somem do marketplace.
+// Ou seja: nao precisei mexer no banco pra isso, essas regras ja existiam
+// (RLS + trigger), so estou reaproveitando os mesmos filtros na query.
+//
+// Usa a mesma chave publica (anon/publishable) que ja e usada no site
+// inteiro. Nao expoe nada que a policy de RLS "Todos veem anuncios ativos"
+// ja nao deixasse publico.
+
 const SUPABASE_URL = "https://ilswwmjojfuvcgyymymb.supabase.co";
 const SUPABASE_KEY = "sb_publishable_0vy8zcMmKEd8oomSUQvJ4Q_SMpqFcxD";
 

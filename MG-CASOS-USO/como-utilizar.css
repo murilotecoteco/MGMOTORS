@@ -341,3 +341,68 @@ footer {
   .footer-grid { grid-template-columns: 1fr; }
   .caso h2 { font-size: 18px; }
 }
+
+/* ===== TEMA ESCURO ===== */
+[data-tema="escuro"] {
+  --fundo: #111111;
+  --branco: #171717;
+  --cinza-claro: #262626;
+  --texto: #E5E5E5;
+  --texto-suave: #A3A3A3;
+}
+
+[data-tema="escuro"] body {
+  background-color: var(--fundo);
+  color: var(--texto);
+}
+
+[data-tema="escuro"] header {
+  background-color: #000000;
+}
+
+/* Conteúdo principal */
+[data-tema="escuro"] .casos-container h1 { color: var(--azul-medio); }
+[data-tema="escuro"] .subtitle { color: var(--texto-suave); }
+
+/* Tabela */
+[data-tema="escuro"] .table-wrapper {
+  background: #1a1a1a;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+[data-tema="escuro"] .table-wrapper h2 { color: var(--azul-medio); }
+[data-tema="escuro"] .table-wrapper td { border-bottom-color: rgba(255,255,255,0.06); color: var(--texto); }
+[data-tema="escuro"] .table-wrapper tbody tr:hover { background: #262626; }
+[data-tema="escuro"] .table-wrapper tbody tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+[data-tema="escuro"] .table-wrapper tbody tr:nth-child(even):hover { background: #262626; }
+
+/* Cards de casos */
+[data-tema="escuro"] .caso {
+  background: #1a1a1a;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+[data-tema="escuro"] .caso h2 { color: var(--azul-medio); }
+[data-tema="escuro"] .caso p { color: var(--texto); }
+[data-tema="escuro"] .caso ol li { color: var(--texto-suave); }
+[data-tema="escuro"] .caso strong { color: #93C5FD; }
+
+/* Fluxos alternativos */
+[data-tema="escuro"] .fluxo-alt {
+  background: rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.25);
+}
+[data-tema="escuro"] .fluxo-alt h3 { color: #93C5FD; }
+[data-tema="escuro"] .alt-item { border-bottom-color: rgba(37,99,235,0.15); }
+[data-tema="escuro"] .alt-item ol li { color: var(--texto-suave); }
+
+/* Footer */
+[data-tema="escuro"] footer {
+  background: linear-gradient(135deg, #000000, #0A0A0A) !important;
+  color: #E5E5E5;
+}
+[data-tema="escuro"] .footer-brand h2 { color: #ffffff; }
+[data-tema="escuro"] .footer-brand p { color: rgba(255,255,255,0.6); }
+[data-tema="escuro"] .footer-col h4 { color: #E5E5E5; }
+[data-tema="escuro"] .footer-col a { color: rgba(255,255,255,0.6); }
+[data-tema="escuro"] .footer-col a:visited { color: rgba(255,255,255,0.6); }
+[data-tema="escuro"] .footer-col a:hover { color: #ffffff; }
+[data-tema="escuro"] .footer-bottom { color: rgba(255,255,255,0.4); }

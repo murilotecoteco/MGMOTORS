@@ -1,0 +1,620 @@
+CREATE TABLE IF NOT EXISTS public.marcas (
+  id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome     TEXT UNIQUE NOT NULL,
+  categoria TEXT DEFAULT 'carro'
+);
+
+CREATE TABLE IF NOT EXISTS public.modelos (
+  id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  marca_id UUID NOT NULL REFERENCES public.marcas(id) ON DELETE CASCADE,
+  nome     TEXT NOT NULL,
+  UNIQUE(marca_id, nome)
+);
+
+CREATE TABLE IF NOT EXISTS public.usuarios (
+  id               UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  nome             TEXT,
+  email            TEXT,
+  foto             TEXT,
+  capa_foto        TEXT,
+  bio              TEXT,
+  cidade           TEXT,
+  estado           TEXT,
+  telefone         TEXT,
+  instagram        TEXT,
+  site             TEXT,
+  idade            INTEGER,
+  moderador        BOOLEAN DEFAULT FALSE,
+  banido           BOOLEAN DEFAULT FALSE,
+  nota_media       NUMERIC DEFAULT 0,
+  total_avaliacoes INTEGER DEFAULT 0,
+  seguidores       INTEGER DEFAULT 0,
+  seguindo         INTEGER DEFAULT 0,
+  criado_em        TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  atualizado_em    TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.anuncios (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id     UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  marca_id       UUID REFERENCES public.marcas(id),
+  modelo_id      UUID REFERENCES public.modelos(id),
+  modelo_texto   TEXT,
+  titulo         TEXT,
+  descricao      TEXT,
+  preco          NUMERIC NOT NULL DEFAULT 0,
+  ano_fabricacao INTEGER,
+  ano_modelo     INTEGER,
+  quilometragem  INTEGER DEFAULT 0,
+  cor            TEXT,
+  cidade         TEXT,
+  estado         TEXT,
+  cidade_display TEXT,
+  latitude       DOUBLE PRECISION,
+  longitude      DOUBLE PRECISION,
+  whatsapp       TEXT,
+  status         TEXT DEFAULT 'ativo',
+  pausado        BOOLEAN DEFAULT FALSE,
+  curtidas       INTEGER DEFAULT 0,
+  tipo_veiculo   TEXT DEFAULT 'carro',
+  criado_em      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.fotos_anuncio (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  anuncio_id UUID NOT NULL REFERENCES public.anuncios(id) ON DELETE CASCADE,
+  url_foto   TEXT NOT NULL,
+  caminho    TEXT,
+  ordem      INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS public.mensagens (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  remetente_id    UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  destinatario_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  conteudo        TEXT NOT NULL,
+  carro_info      TEXT,
+  tipo            TEXT DEFAULT 'texto',
+  lida            BOOLEAN DEFAULT FALSE,
+  data_envio      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.curtidas_anuncio (
+  anuncio_id UUID NOT NULL REFERENCES public.anuncios(id) ON DELETE CASCADE,
+  usuario_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  PRIMARY KEY (anuncio_id, usuario_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.seguidores (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  seguidor_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  seguido_id  UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  UNIQUE(seguidor_id, seguido_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.avaliacoes (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  avaliador_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  avaliado_id  UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  nota         INTEGER NOT NULL CHECK (nota BETWEEN 1 AND 5),
+  comentario   TEXT,
+  criado_em    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(avaliador_id, avaliado_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.denuncias (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  denunciante_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  alvo_id        UUID NOT NULL,
+  tipo           TEXT NOT NULL,
+  motivo         TEXT NOT NULL,
+  descricao      TEXT,
+  status         TEXT DEFAULT 'pendente',
+  criado_em      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  resolvido_em   TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS public.usuarios_banidos (
+  usuario_id UUID PRIMARY KEY REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  motivo     TEXT,
+  banido_por UUID,
+  banido_em  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.posts_usuario (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  imagem     TEXT NOT NULL,
+  legenda    TEXT,
+  curtidas   INTEGER DEFAULT 0,
+  criado_em  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.carrinho_itens (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE,
+  anuncio_id UUID NOT NULL REFERENCES public.anuncios(id) ON DELETE CASCADE,
+  criado_em  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(usuario_id, anuncio_id)
+);
+
+-- ─── ALTER: garantir colunas que podem faltar ─────────────────────────────────
+
+ALTER TABLE public.marcas   ADD COLUMN IF NOT EXISTS categoria TEXT DEFAULT 'carro';
+ALTER TABLE public.anuncios ADD COLUMN IF NOT EXISTS tipo_veiculo TEXT DEFAULT 'carro';
+ALTER TABLE public.anuncios ADD COLUMN IF NOT EXISTS modelo_texto TEXT;
+ALTER TABLE public.anuncios ADD COLUMN IF NOT EXISTS pausado BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.anuncios ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
+ALTER TABLE public.anuncios ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+ALTER TABLE public.anuncios ADD COLUMN IF NOT EXISTS cidade_display TEXT;
+ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS banido BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS moderador BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.mensagens ADD COLUMN IF NOT EXISTS tipo TEXT DEFAULT 'texto';
+
+-- Migrar categorias antigas → novas
+UPDATE public.marcas SET categoria = 'maquina_agricola' WHERE categoria IN ('trator','colheitadeira');
+UPDATE public.marcas SET categoria = 'barco' WHERE categoria = 'embarcacao' AND nome NOT IN ('Sea-Doo', 'Kawasaki Jet Ski', 'Yamaha WaveRunner');
+UPDATE public.marcas SET categoria = 'jetski' WHERE nome IN ('Sea-Doo', 'Kawasaki Jet Ski', 'Yamaha WaveRunner');
+UPDATE public.anuncios SET tipo_veiculo = 'maquina_agricola' WHERE tipo_veiculo IN ('trator','colheitadeira');
+UPDATE public.anuncios SET tipo_veiculo = 'barco' WHERE tipo_veiculo = 'embarcacao';
+
+-- ─── ÍNDICES ──────────────────────────────────────────────────────────────────
+
+CREATE INDEX IF NOT EXISTS idx_anuncios_status_criado ON public.anuncios(status, criado_em DESC);
+CREATE INDEX IF NOT EXISTS idx_anuncios_tipo_veiculo  ON public.anuncios(tipo_veiculo);
+CREATE INDEX IF NOT EXISTS idx_anuncios_pausado       ON public.anuncios(pausado);
+CREATE INDEX IF NOT EXISTS idx_usuarios_banido        ON public.usuarios(banido) WHERE banido = TRUE;
+CREATE INDEX IF NOT EXISTS idx_posts_usuario_criado   ON public.posts_usuario(usuario_id, criado_em DESC);
+CREATE INDEX IF NOT EXISTS idx_mensagens_remetente    ON public.mensagens(remetente_id);
+CREATE INDEX IF NOT EXISTS idx_mensagens_destinatario ON public.mensagens(destinatario_id);
+
+-- ─── TRIGGER: novo usuário ────────────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.usuarios (id, email, nome)
+  VALUES (
+    new.id,
+    new.email,
+    COALESCE(
+      new.raw_user_meta_data->>'nome',
+      new.raw_user_meta_data->>'full_name',
+      new.raw_user_meta_data->>'name',
+      split_part(new.email, '@', 1)
+    )
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- ─── FUNÇÃO: verificar admin ──────────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.usuarios
+    WHERE id = auth.uid() AND moderador = TRUE
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
+-- ─── RPC: marketplace ─────────────────────────────────────────────────────────
+
+DROP FUNCTION IF EXISTS public.get_anuncios_marketplace(uuid);
+
+CREATE FUNCTION public.get_anuncios_marketplace(
+  usuario_id_param uuid DEFAULT NULL
+)
+RETURNS TABLE (
+  id             uuid,
+  usuario_id     uuid,
+  marca_id       uuid,
+  modelo_id      uuid,
+  preco          numeric,
+  ano_fabricacao integer,
+  ano_modelo     integer,
+  quilometragem  integer,
+  cor            text,
+  cidade         text,
+  estado         text,
+  cidade_display text,
+  status         text,
+  curtidas       integer,
+  pausado        boolean,
+  latitude       double precision,
+  longitude      double precision,
+  criado_em      timestamptz,
+  marca_nome     text,
+  modelo_nome    text,
+  foto_principal text,
+  vendedor_foto  text,
+  usuario_curtiu boolean,
+  tipo_veiculo   text,
+  modelo_texto   text
+)
+LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    a.id,
+    a.usuario_id,
+    a.marca_id,
+    a.modelo_id,
+    a.preco,
+    a.ano_fabricacao,
+    a.ano_modelo,
+    a.quilometragem,
+    a.cor,
+    a.cidade,
+    a.estado::text,
+    a.cidade_display,
+    a.status::text,
+    a.curtidas,
+    a.pausado,
+    a.latitude,
+    a.longitude,
+    a.criado_em,
+    marc.nome AS marca_nome,
+    COALESCE(a.modelo_texto, mod.nome, '') AS modelo_nome,
+    (
+      SELECT fa.url_foto
+      FROM public.fotos_anuncio fa
+      WHERE fa.anuncio_id = a.id
+      ORDER BY fa.ordem ASC LIMIT 1
+    ) AS foto_principal,
+    u.foto AS vendedor_foto,
+    CASE
+      WHEN usuario_id_param IS NULL THEN FALSE
+      ELSE EXISTS(
+        SELECT 1 FROM public.curtidas_anuncio ca
+        WHERE ca.anuncio_id = a.id AND ca.usuario_id = usuario_id_param
+      )
+    END AS usuario_curtiu,
+    COALESCE(a.tipo_veiculo, 'carro') AS tipo_veiculo,
+    COALESCE(a.modelo_texto, mod.nome, '') AS modelo_texto
+  FROM public.anuncios a
+  LEFT JOIN public.marcas marc ON marc.id = a.marca_id
+  LEFT JOIN public.modelos mod  ON mod.id  = a.modelo_id
+  LEFT JOIN public.usuarios u   ON u.id    = a.usuario_id
+  WHERE a.status = 'ativo'
+    AND (a.pausado = FALSE OR a.pausado IS NULL)
+  ORDER BY a.criado_em DESC;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_anuncios_marketplace(uuid) TO anon, authenticated;
+
+-- ─── RLS ──────────────────────────────────────────────────────────────────────
+
+ALTER TABLE public.usuarios         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.anuncios         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.fotos_anuncio    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.mensagens        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.curtidas_anuncio ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.seguidores       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.avaliacoes       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.denuncias        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.posts_usuario    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.carrinho_itens   ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Todos veem usuarios"          ON public.usuarios;
+DROP POLICY IF EXISTS "Usuarios editam seu perfil"   ON public.usuarios;
+DROP POLICY IF EXISTS "Usuarios deletam sua conta"   ON public.usuarios;
+DROP POLICY IF EXISTS "Sistema cria usuarios"        ON public.usuarios;
+CREATE POLICY "Todos veem usuarios"        ON public.usuarios FOR SELECT USING (true);
+CREATE POLICY "Usuarios editam seu perfil" ON public.usuarios FOR UPDATE USING (auth.uid()=id) WITH CHECK (auth.uid()=id);
+CREATE POLICY "Usuarios deletam sua conta" ON public.usuarios FOR DELETE USING (auth.uid()=id);
+CREATE POLICY "Sistema cria usuarios"      ON public.usuarios FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Todos veem anuncios ativos"  ON public.anuncios;
+DROP POLICY IF EXISTS "Usuarios criam anuncios"     ON public.anuncios;
+DROP POLICY IF EXISTS "Usuarios atualizam anuncios" ON public.anuncios;
+DROP POLICY IF EXISTS "Usuarios deletam anuncios"   ON public.anuncios;
+DROP POLICY IF EXISTS "Admin ve todos anuncios"     ON public.anuncios;
+DROP POLICY IF EXISTS "Admin atualiza anuncios"     ON public.anuncios;
+CREATE POLICY "Todos veem anuncios ativos"  ON public.anuncios FOR SELECT USING ((status='ativo' AND (pausado IS NULL OR pausado=FALSE)) OR auth.uid()=usuario_id OR (SELECT moderador FROM public.usuarios WHERE id=auth.uid()) = TRUE);
+CREATE POLICY "Usuarios criam anuncios"     ON public.anuncios FOR INSERT WITH CHECK (auth.uid()=usuario_id);
+CREATE POLICY "Usuarios atualizam anuncios" ON public.anuncios FOR UPDATE USING (auth.uid()=usuario_id OR (SELECT moderador FROM public.usuarios WHERE id=auth.uid()) = TRUE);
+CREATE POLICY "Usuarios deletam anuncios"   ON public.anuncios FOR DELETE USING (auth.uid()=usuario_id OR (SELECT moderador FROM public.usuarios WHERE id=auth.uid()) = TRUE);
+
+
+DROP POLICY IF EXISTS "Todos veem fotos anuncio"         ON public.fotos_anuncio;
+DROP POLICY IF EXISTS "Usuarios gerenciam fotos anuncio" ON public.fotos_anuncio;
+CREATE POLICY "Todos veem fotos anuncio"         ON public.fotos_anuncio FOR SELECT USING (anuncio_id IN (SELECT id FROM public.anuncios WHERE status='ativo' OR usuario_id=auth.uid()));
+CREATE POLICY "Usuarios gerenciam fotos anuncio" ON public.fotos_anuncio FOR ALL   USING (anuncio_id IN (SELECT id FROM public.anuncios WHERE usuario_id=auth.uid()));
+
+DROP POLICY IF EXISTS "Usuarios veem suas mensagens" ON public.mensagens;
+DROP POLICY IF EXISTS "Usuarios enviam mensagens"    ON public.mensagens;
+DROP POLICY IF EXISTS "Usuarios atualizam mensagens" ON public.mensagens;
+CREATE POLICY "Usuarios veem suas mensagens" ON public.mensagens FOR SELECT USING (auth.uid()=remetente_id OR auth.uid()=destinatario_id);
+CREATE POLICY "Usuarios enviam mensagens"    ON public.mensagens FOR INSERT WITH CHECK (auth.uid()=remetente_id);
+CREATE POLICY "Usuarios atualizam mensagens" ON public.mensagens FOR UPDATE USING (auth.uid()=destinatario_id);
+
+DROP POLICY IF EXISTS "Curtidas visíveis"  ON public.curtidas_anuncio;
+DROP POLICY IF EXISTS "Usuarios curtir"    ON public.curtidas_anuncio;
+DROP POLICY IF EXISTS "Usuarios descurtir" ON public.curtidas_anuncio;
+CREATE POLICY "Curtidas visíveis"  ON public.curtidas_anuncio FOR SELECT USING (true);
+CREATE POLICY "Usuarios curtir"    ON public.curtidas_anuncio FOR INSERT WITH CHECK (auth.uid()=usuario_id);
+CREATE POLICY "Usuarios descurtir" ON public.curtidas_anuncio FOR DELETE USING (auth.uid()=usuario_id);
+
+DROP POLICY IF EXISTS "Seguidores visíveis" ON public.seguidores;
+DROP POLICY IF EXISTS "Usuarios seguir"     ON public.seguidores;
+DROP POLICY IF EXISTS "Usuarios desseguir"  ON public.seguidores;
+CREATE POLICY "Seguidores visíveis" ON public.seguidores FOR SELECT USING (true);
+CREATE POLICY "Usuarios seguir"     ON public.seguidores FOR INSERT WITH CHECK (auth.uid()=seguidor_id);
+CREATE POLICY "Usuarios desseguir"  ON public.seguidores FOR DELETE USING (auth.uid()=seguidor_id);
+
+DROP POLICY IF EXISTS "Avaliacoes visíveis" ON public.avaliacoes;
+DROP POLICY IF EXISTS "Usuarios avaliar"    ON public.avaliacoes;
+CREATE POLICY "Avaliacoes visíveis" ON public.avaliacoes FOR SELECT USING (true);
+CREATE POLICY "Usuarios avaliar"    ON public.avaliacoes FOR ALL   USING (auth.uid()=avaliador_id);
+
+DROP POLICY IF EXISTS "Denuncias criar"        ON public.denuncias;
+DROP POLICY IF EXISTS "Todos veem posts"       ON public.posts_usuario;
+DROP POLICY IF EXISTS "Usuarios criam posts"   ON public.posts_usuario;
+DROP POLICY IF EXISTS "Usuarios deletam posts" ON public.posts_usuario;
+CREATE POLICY "Denuncias criar"        ON public.denuncias     FOR INSERT WITH CHECK (auth.uid()=denunciante_id);
+CREATE POLICY "Todos veem posts"       ON public.posts_usuario FOR SELECT USING (true);
+CREATE POLICY "Usuarios criam posts"   ON public.posts_usuario FOR INSERT WITH CHECK (auth.uid()=usuario_id);
+CREATE POLICY "Usuarios deletam posts" ON public.posts_usuario FOR DELETE USING (auth.uid()=usuario_id);
+
+-- ─── GRANTS ───────────────────────────────────────────────────────────────────
+
+GRANT SELECT ON public.marcas           TO anon, authenticated;
+GRANT SELECT ON public.modelos          TO anon, authenticated;
+GRANT SELECT ON public.usuarios         TO anon;
+GRANT ALL    ON public.usuarios         TO authenticated;
+GRANT SELECT ON public.anuncios         TO anon;
+GRANT ALL    ON public.anuncios         TO authenticated;
+GRANT SELECT ON public.fotos_anuncio    TO anon;
+GRANT ALL    ON public.fotos_anuncio    TO authenticated;
+GRANT ALL    ON public.mensagens        TO authenticated;
+GRANT SELECT ON public.curtidas_anuncio TO anon, authenticated;
+GRANT ALL    ON public.curtidas_anuncio TO authenticated;
+GRANT SELECT ON public.seguidores       TO anon, authenticated;
+GRANT ALL    ON public.seguidores       TO authenticated;
+GRANT SELECT ON public.avaliacoes       TO anon, authenticated;
+GRANT ALL    ON public.avaliacoes       TO authenticated;
+GRANT ALL    ON public.denuncias        TO authenticated;
+GRANT SELECT ON public.posts_usuario    TO anon, authenticated;
+GRANT ALL    ON public.posts_usuario    TO authenticated;
+GRANT ALL    ON public.carrinho_itens   TO authenticated;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MARCAS
+-- Categorias: carro | moto | caminhao | maquina_agricola | barco | jetski | utilitario | onibus
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.marcas (nome, categoria) VALUES
+('Acura','carro'),('Agrale','carro'),('Alfa Romeo','carro'),('Aston Martin','carro'),('Audi','carro'),
+('Bentley','carro'),('BMW','carro'),('BYD','carro'),('Bugatti','carro'),('Buick','carro'),
+('Cadillac','carro'),('Caoa Chery','carro'),('CAOA Chery','carro'),('Changan','carro'),('Chevrolet','carro'),
+('Chrysler','carro'),('Citroën','carro'),('Dacia','carro'),('Daewoo','carro'),('Daihatsu','carro'),
+('Dodge','carro'),('DS Automobiles','carro'),('Ferrari','carro'),('Fiat','carro'),('Ford','carro'),
+('GWM','carro'),('Geely','carro'),('Genesis','carro'),('GMC','carro'),('Great Wall','carro'),
+('Honda','carro'),('Hyundai','carro'),('Infiniti','carro'),('Isuzu','carro'),('Jaguar','carro'),
+('JAC','carro'),('Jeep','carro'),('Jetour','carro'),('Kia','carro'),('Koenigsegg','carro'),
+('Lada','carro'),('Lamborghini','carro'),('Lancia','carro'),('Land Rover','carro'),('Lexus','carro'),
+('Lifan','carro'),('Lincoln','carro'),('Lotus','carro'),('Lucid','carro'),('Lynk & Co','carro'),
+('Maserati','carro'),('Maybach','carro'),('Mazda','carro'),('McLaren','carro'),('Mercedes-Benz','carro'),
+('MG','carro'),('Mini','carro'),('Mitsubishi','carro'),('Neta','carro'),('Nissan','carro'),
+('Omoda','carro'),('Pagani','carro'),('Peugeot','carro'),('Polestar','carro'),('Porsche','carro'),
+('RAM','carro'),('Renault','carro'),('Rivian','carro'),('Rolls-Royce','carro'),('Rover','carro'),
+('Saab','carro'),('Seat','carro'),('Skoda','carro'),('Smart','carro'),('Subaru','carro'),
+('Suzuki','carro'),('Tesla','carro'),('Toyota','carro'),('Volkswagen','carro'),('Volvo','carro'),
+('Voyah','carro'),('Xiaomi','carro'),('Zeekr','carro'),('Huawei Aito','carro'),('Haval','carro'),
+-- Motos
+('Honda Motos','moto'),('Yamaha','moto'),('Kawasaki','moto'),('Suzuki Motos','moto'),
+('BMW Motorrad','moto'),('Harley-Davidson','moto'),('Ducati','moto'),('KTM','moto'),
+('Royal Enfield','moto'),('Triumph','moto'),('Shineray','moto'),('Dafra','moto'),
+('Hero','moto'),('Benelli','moto'),('CF Moto','moto'),('Haojue','moto'),
+('Aprilia','moto'),('Husqvarna','moto'),('Indian Motorcycle','moto'),('MV Agusta','moto'),
+('Moto Guzzi','moto'),('Piaggio','moto'),('Vespa','moto'),('Zero Motorcycles','moto'),
+-- Caminhões
+('Mercedes-Benz Caminhoes','caminhao'),('Volvo Caminhoes','caminhao'),('Scania','caminhao'),
+('MAN','caminhao'),('Iveco','caminhao'),('Ford Caminhoes','caminhao'),('Volkswagen Caminhoes','caminhao'),
+('DAF','caminhao'),('Agrale Caminhoes','caminhao'),('Hino','caminhao'),
+('Kenworth','caminhao'),('Peterbilt','caminhao'),('Mack','caminhao'),('Freightliner','caminhao'),
+-- Máquinas Agrícolas (tratores + colheitadeiras)
+('John Deere','maquina_agricola'),('New Holland','maquina_agricola'),('Massey Ferguson','maquina_agricola'),
+('Valtra','maquina_agricola'),('Case IH','maquina_agricola'),('Fendt','maquina_agricola'),
+('Deutz-Fahr','maquina_agricola'),('Kubota','maquina_agricola'),('Landini','maquina_agricola'),
+('AGCO','maquina_agricola'),('Claas','maquina_agricola'),('Yanmar','maquina_agricola'),
+('McCormick','maquina_agricola'),('Belarus','maquina_agricola'),('Stara','maquina_agricola'),
+-- Barcos / Lanchas
+('Focker','barco'),('Intermarine','barco'),('Phantom','barco'),('Ferretti','barco'),
+('Azimut','barco'),('Schaefer Yachts','barco'),('Bayliner','barco'),('Yamaha Nautica','barco'),
+('Fibrafort','barco'),('Lancha Apache','barco'),('Beneteau','barco'),('Sea Ray','barco'),
+('Boston Whaler','barco'),('Riva','barco'),('Cobalt','barco'),('Mastercraft','barco'),
+('Sunseeker','barco'),('Grady-White','barco'),('Robalo','barco'),('Sessa Marine','barco'),
+-- Jet Ski
+('Sea-Doo','jetski'),('Kawasaki Jet Ski','jetski'),('Yamaha WaveRunner','jetski'),
+-- Utilitários (vans, furgões)
+('Mercedes-Benz Sprinter','utilitario'),('Fiat Ducato','utilitario'),('Ford Transit','utilitario'),
+('Volkswagen Transporter','utilitario'),('Renault Master','utilitario'),('Citroën Jumper','utilitario'),
+('Iveco Daily','utilitario'),('Peugeot Boxer','utilitario'),('Maxus','utilitario'),
+-- Ônibus
+('Marcopolo','onibus'),('Comil','onibus'),('Mascarello','onibus'),('Neobus','onibus'),
+('Caio','onibus'),('Busscar','onibus'),('Volare','onibus'),('Scania Onibus','onibus'),
+('Volvo Onibus','onibus'),('Mercedes-Benz Onibus','onibus'),('BYD Onibus','onibus')
+ON CONFLICT (nome) DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MODELOS – CARROS
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['ILX','MDX','NSX','RDX','RLX','TLX','TSX','Integra']) FROM public.marcas m WHERE m.nome='Acura' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Marruá','Marruá AM 200','Marruá AM 400','Supercampo']) FROM public.marcas m WHERE m.nome='Agrale' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['145','146','147','155','156','159','166','Brera','Giulia','Giulietta','GT','GTV','MiTo','Spider','Stelvio','Tonale','4C']) FROM public.marcas m WHERE m.nome='Alfa Romeo' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['DB11','DB9','DBS','DBX','Rapide','V8 Vantage','V12 Vanquish','Vanquish','Vantage','Virage']) FROM public.marcas m WHERE m.nome='Aston Martin' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['A1','A3','A4','A5','A6','A7','A8','e-tron','e-tron GT','Q2','Q3','Q4 e-tron','Q5','Q7','Q8','R8','RS3','RS4','RS5','RS6','RS7','RS e-tron GT','S3','S4','S5','S6','S7','S8','SQ5','SQ7','SQ8','TT','TTS']) FROM public.marcas m WHERE m.nome='Audi' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Arnage','Bentayga','Brooklands','Continental GT','Continental GTC','Flying Spur','Mulsanne']) FROM public.marcas m WHERE m.nome='Bentley' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['116i','118i','120i','125i','128ti','130i','218i','220i','228i','230i','235i','316i','318i','320i','325i','328i','330i','335i','340i','418i','420i','428i','430i','435i','440i','520i','523i','525i','528i','530i','535i','540i','545i','550i','620i','630i','640i','650i','730i','735i','740i','745i','750i','760i','840i','850i','i3','i4','i5','i7','i8','iX','iX1','iX3','M2','M3','M4','M5','M6','M8','X1','X2','X3','X4','X5','X6','X7','XM','Z3','Z4']) FROM public.marcas m WHERE m.nome='BMW' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Atto 3','Dolphin','Dolphin Mini','Han','King','Seal','Seagull','Song','Song Plus','Song Pro','Tang','Yuan','Yuan Plus','Shark']) FROM public.marcas m WHERE m.nome='BYD' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Chiron','Chiron Super Sport','Divo','Tourbillon','Veyron','W16 Mistral']) FROM public.marcas m WHERE m.nome='Bugatti' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cascada','Enclave','Encore','Encore GX','Envision','LaCrosse','Regal','Verano']) FROM public.marcas m WHERE m.nome='Buick' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['ATS','CT4','CT5','CT6','CTS','Escalade','Lyriq','SRX','STS','XT4','XT5','XT6','XTS']) FROM public.marcas m WHERE m.nome='Cadillac' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Arrizo 5','Arrizo 6','Arrizo 6 Pro','Tiggo 2','Tiggo 3','Tiggo 5x','Tiggo 7','Tiggo 7 Pro','Tiggo 8','Tiggo 8 Pro']) FROM public.marcas m WHERE m.nome='Caoa Chery' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Arrizo 5','Arrizo 6','Arrizo 6 Pro','Tiggo 2','Tiggo 3','Tiggo 5x','Tiggo 7','Tiggo 7 Pro','Tiggo 8','Tiggo 8 Pro']) FROM public.marcas m WHERE m.nome='CAOA Chery' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Alsvin','CS15','CS35 Plus','CS55 Plus','CS75 Plus','Eado','Uni-K','Uni-T','Uni-V','Hunter']) FROM public.marcas m WHERE m.nome='Changan' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Agile','Astro','Avalanche','Blazer','Blazer EV','Camaro','Captiva','Celta','Cobalt','Colorado','Corsa','Corvette','Cruze','Equinox','Equinox EV','Montana','Impala','Malibu','Meriva','Onix','Onix Plus','Optra','Orlando','Prisma','S10','Silverado','Sonic','Spin','Suburban','Tahoe','Tracker','TrailBlazer','Traverse','Trax','Vectra','Volt','Zafira']) FROM public.marcas m WHERE m.nome='Chevrolet' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['300','300C','Crossfire','Grand Voyager','Neon','Pacifica','PT Cruiser','Sebring','Town and Country','Voyager']) FROM public.marcas m WHERE m.nome='Chrysler' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Berlingo','C1','C2','C3','C3 Aircross','C4','C4 Cactus','C4 Picasso','C5','C5 Aircross','C5 X','C6','C8','Jumpy','Saxo','Xsara','Xsara Picasso']) FROM public.marcas m WHERE m.nome='Citroën' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Duster','Jogger','Logan','Sandero','Sandero Stepway','Spring']) FROM public.marcas m WHERE m.nome='Dacia' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cielo','Espero','Lanos','Leganza','Matiz','Nubira','Tacuma']) FROM public.marcas m WHERE m.nome='Daewoo' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cuore','Feroza','Rocky','Sirion','Terios','YRV']) FROM public.marcas m WHERE m.nome='Daihatsu' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Avenger','Caliber','Challenger','Charger','Dakota','Dart','Durango','Grand Caravan','Hornet','Journey','Neon','Nitro','RAM 1500','Viper']) FROM public.marcas m WHERE m.nome='Dodge' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['DS 3','DS 3 Crossback','DS 4','DS 5','DS 7','DS 7 Crossback','DS 9']) FROM public.marcas m WHERE m.nome='DS Automobiles' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['296 GTB','296 GTS','458 Italia','458 Spider','488 GTB','488 Pista','488 Spider','812 Superfast','California T','Enzo','F12berlinetta','F40','F430','F50','F8 Tributo','GTC4Lusso','LaFerrari','Portofino M','Purosangue','Roma','SF90 Stradale','SF90 Spider','Testarossa']) FROM public.marcas m WHERE m.nome='Ferrari' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['500','500L','500X','Argo','Bravo','Cronos','Doblò','Fastback','Fiorino','Freemont','Grand Siena','Idea','Linea','Marea','Mobi','Palio','Palio Weekend','Panda','Pulse','Punto','Scudo','Siena','Stilo','Strada','Toro','Tipo','Uno']) FROM public.marcas m WHERE m.nome='Fiat' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Bronco','Bronco Sport','EcoSport','Edge','Escort','Expedition','Explorer','F-150','F-150 Lightning','F-250','Fiesta','Focus','Fusion','Galaxy','Ka','Ka+','Kuga','Maverick','Mondeo','Mustang','Mustang Mach-E','Ranger','Territory','Transit']) FROM public.marcas m WHERE m.nome='Ford' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Coolray','Emgrand','GX3 Pro','Monjaro','Okavango','Tugella']) FROM public.marcas m WHERE m.nome='Geely' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['G70','G80','G90','GV60','GV70','GV80']) FROM public.marcas m WHERE m.nome='Genesis' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Acadia','Canyon','Envoy','Savana','Sierra','Terrain','Yukon']) FROM public.marcas m WHERE m.nome='GMC' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Hover H3','Hover H5','Hover H6','Steed','Wingle']) FROM public.marcas m WHERE m.nome='Great Wall' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Haval H6','Haval H6 GT','Haval Jolion','Ora 03','Tank 300','Tank 500','Poer']) FROM public.marcas m WHERE m.nome='GWM' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['H1','H2','H4','H6','H6 GT','H7','H9','Jolion']) FROM public.marcas m WHERE m.nome='Haval' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Accord','Brio','City','City Hatchback','Civic','CR-V','CR-Z','e','Fit','HR-V','Insight','Jazz','Legend','NSX','Odyssey','Pilot','Prelude','Prologue','Ridgeline','S2000','WR-V','ZR-V']) FROM public.marcas m WHERE m.nome='Honda' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['M5','M7','M9']) FROM public.marcas m WHERE m.nome='Huawei Aito' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Accent','Azera','Casper','Creta','Elantra','Equus','HB20','HB20S','HB20X','i10','i20','i30','i40','Ioniq','Ioniq 5','Ioniq 6','Kona','Kona EV','Palisade','Santa Fe','Sonata','Staria','Tucson','Veloster','Venue','Veracruz']) FROM public.marcas m WHERE m.nome='Hyundai' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['G35','G37','Q30','Q50','Q60','Q70','QX30','QX50','QX55','QX60','QX70','QX80']) FROM public.marcas m WHERE m.nome='Infiniti' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['D-Max','MU-X','Trooper']) FROM public.marcas m WHERE m.nome='Isuzu' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['e-J2','e-J7','iEV20','iEV40','JS4','JS6','S2','S3','S5','T6','T8']) FROM public.marcas m WHERE m.nome='JAC' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['E-Pace','F-Pace','F-Type','I-Pace','S-Type','X-Type','XE','XF','XJ','XK']) FROM public.marcas m WHERE m.nome='Jaguar' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cherokee','Commander','Compass','Gladiator','Grand Cherokee','Grand Cherokee L','Patriot','Renegade','Wagoneer','Wrangler']) FROM public.marcas m WHERE m.nome='Jeep' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Dashing','T2','X70','X90','X90 Plus']) FROM public.marcas m WHERE m.nome='Jetour' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cadenza','Carens','Carnival','Ceed','Cerato','EV6','EV9','Forte','Niro','Niro EV','Optima','Picanto','Rio','Seltos','Sorento','Soul','Sportage','Stinger','Stonic','Telluride','Venga']) FROM public.marcas m WHERE m.nome='Kia' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Agera','CCR','CCX','Gemera','Jesko','One:1','Regera']) FROM public.marcas m WHERE m.nome='Koenigsegg' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Granta','Kalina','Largus','Niva','Niva Legend','Priora','Vesta','XRAY']) FROM public.marcas m WHERE m.nome='Lada' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Aventador','Aventador SVJ','Countach','Diablo','Gallardo','Huracán','Huracán EVO','Murciélago','Reventón','Sián','Urus','Urus Performante','Veneno']) FROM public.marcas m WHERE m.nome='Lamborghini' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Delta','Lybra','Musa','Phedra','Thesis','Ypsilon']) FROM public.marcas m WHERE m.nome='Lancia' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Defender','Defender 90','Defender 110','Discovery','Discovery Sport','Freelander','Range Rover','Range Rover Evoque','Range Rover Sport','Range Rover Velar','Range Rover Sport SVR']) FROM public.marcas m WHERE m.nome='Land Rover' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['CT','ES','GS','GX','IS','LC','LFA','LS','LX','NX','RC','RX','RX 450h','RZ','TX','UX']) FROM public.marcas m WHERE m.nome='Lexus' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['320','520','620','720','Foison','MyWay','X50','X60','X70','X80']) FROM public.marcas m WHERE m.nome='Lifan' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Aviator','Corsair','MKC','MKT','MKX','MKZ','Nautilus','Navigator','Town Car']) FROM public.marcas m WHERE m.nome='Lincoln' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Eletre','Emeya','Emira','Evija','Evora','Exige']) FROM public.marcas m WHERE m.nome='Lotus' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Air','Air Dream Edition','Air Grand Touring','Air Pure','Air Sapphire','Gravity']) FROM public.marcas m WHERE m.nome='Lucid' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['01','02','03','05','06','09']) FROM public.marcas m WHERE m.nome='Lynk & Co' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Ghibli','GranCabrio','GranTurismo','Grecale','Levante','MC20','Quattroporte']) FROM public.marcas m WHERE m.nome='Maserati' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['57','62','GLS 600','S 580','S 680']) FROM public.marcas m WHERE m.nome='Maybach' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['2','3','6','BT-50','CX-3','CX-30','CX-5','CX-50','CX-60','CX-90','MX-5','MX-30','RX-7','RX-8']) FROM public.marcas m WHERE m.nome='Mazda' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['540C','570GT','570S','600LT','650S','675LT','720S','750S','765LT','Artura','F1','GT','MP4-12C','P1','Senna','Speedtail','W1']) FROM public.marcas m WHERE m.nome='McLaren' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['A 200','A 250','AMG A 45','AMG C 43','AMG C 63','AMG E 53','AMG E 63','AMG G 63','AMG GT','B 200','C 180','C 200','C 220d','C 250','C 300','CLA 200','CLA 250','CLK 500','CLS 350','CLS 400','E 180','E 200','E 250','E 300','E 350','EQA','EQB','EQC','EQE','EQS','G 350','G 500','G 63','GLA 200','GLA 250','GLB 200','GLC 200','GLC 300','GLE 300','GLE 350','GLE 450','GLS 450','GLS 580','ML 350','S 400','S 450','S 500','S 580','S 63','SL 400','SL 500','SLC 300','V-Class','Vito']) FROM public.marcas m WHERE m.nome='Mercedes-Benz' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cyberster','HS','MG3','MG4','MG5','MG6','RX5','ZS','ZS EV']) FROM public.marcas m WHERE m.nome='MG' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cabrio','Clubman','Convertible','Cooper','Cooper S','Countryman','Countryman SE','Paceman','John Cooper Works']) FROM public.marcas m WHERE m.nome='Mini' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['ASX','Colt','Eclipse','Eclipse Cross','Endeavor','Galant','L200','L200 Sport','L200 Triton','Lancer','Outlander','Outlander PHEV','Pajero','Pajero Full','Pajero Sport','Space Star']) FROM public.marcas m WHERE m.nome='Mitsubishi' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['AYA','GT','S','U','V','X']) FROM public.marcas m WHERE m.nome='Neta' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['350Z','370Z','400Z','Altima','Ariya','Armada','Frontier','GT-R','Juke','Kicks','Leaf','March','Maxima','Murano','Navara','Note','Pathfinder','Patrol','Pulsar','Qashqai','Rogue','Sentra','Tiida','Titan','Versa','X-Trail']) FROM public.marcas m WHERE m.nome='Nissan' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['5','5 EV','E5','C5']) FROM public.marcas m WHERE m.nome='Omoda' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Huayra','Huayra BC','Huayra Roadster','Utopia','Zonda']) FROM public.marcas m WHERE m.nome='Pagani' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['106','107','108','206','207','208','2008','3008','301','306','307','308','408','4008','5008','508','e-208','e-2008','e-308','e-3008','Partner','Rifter','Traveller']) FROM public.marcas m WHERE m.nome='Peugeot' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Polestar 1','Polestar 2','Polestar 3','Polestar 4']) FROM public.marcas m WHERE m.nome='Polestar' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['718 Boxster','718 Cayman','911','911 GT3','911 GT3 RS','911 Turbo','911 Turbo S','918 Spyder','Cayenne','Cayenne Coupe','Cayman','Macan','Macan EV','Panamera','Taycan','Taycan 4S','Taycan Turbo']) FROM public.marcas m WHERE m.nome='Porsche' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['700','1500','1500 TRX','2500','3500','Rampage','ProMaster']) FROM public.marcas m WHERE m.nome='RAM' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Alaskan','Arkana','Captur','Clio','Duster','Espace','Fluence','Kadjar','Kangoo','Koleos','Kwid','Laguna','Master','Megane','Oroch','Sandero','Scenic','Stepway','Symbol','Talisman','Twingo','Zoe']) FROM public.marcas m WHERE m.nome='Renault' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['R1S','R1T','R2']) FROM public.marcas m WHERE m.nome='Rivian' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cullinan','Dawn','Ghost','Ghost Black Badge','Phantom','Silver Shadow','Spectre','Wraith']) FROM public.marcas m WHERE m.nome='Rolls-Royce' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['200','25','400','45','75','Metro']) FROM public.marcas m WHERE m.nome='Rover' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['9-3','9-5','900','9000']) FROM public.marcas m WHERE m.nome='Saab' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Arona','Ateca','Ibiza','Leon','Mii','Tarraco','Toledo']) FROM public.marcas m WHERE m.nome='Seat' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Enyaq','Fabia','Kamiq','Karoq','Kodiaq','Octavia','Rapid','Scala','Superb','Yeti']) FROM public.marcas m WHERE m.nome='Skoda' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['#1','#3','Forfour','Fortwo']) FROM public.marcas m WHERE m.nome='Smart' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['BRZ','Crosstrek','Forester','Impreza','Legacy','Outback','Solterra','WRX','XV']) FROM public.marcas m WHERE m.nome='Subaru' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Alto','Baleno','Carry','Celerio','Grand Vitara','Ignis','Jimny','Jimny Sierra','S-Cross','Swift','SX4','Vitara']) FROM public.marcas m WHERE m.nome='Suzuki' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cybertruck','Model 3','Model S','Model X','Model Y','Roadster']) FROM public.marcas m WHERE m.nome='Tesla' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['4Runner','Alphard','Avalon','Aygo','bZ4X','C-HR','Camry','Carina','Celica','Corolla','Corolla Cross','Corolla GR','Corona','Crown','Etios','FJ Cruiser','GR86','GR Supra','Highlander','Hilux','Hilux SW4','Innova','Land Cruiser','Land Cruiser Prado','Matrix','Mirai','MR2','Prius','Prius Prime','RAV4','RAV4 Hybrid','Sequoia','Sienna','Supra','Tacoma','Tundra','Venza','Yaris','Yaris Cross']) FROM public.marcas m WHERE m.nome='Toyota' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Amarok','Arteon','Beetle','Bora','CC','Eos','Fox','Gol','Golf','Golf GTI','Golf R','ID.3','ID.4','ID.5','ID.6','ID.7','ID.Buzz','Jetta','Kombi','Nivus','Passat','Polo','Polo GTS','Polo Track','Saveiro','Sharan','Taos','T-Cross','T-Roc','Tiguan','Tiguan Allspace','Touareg','Touran','Up!','Virtus','Voyage']) FROM public.marcas m WHERE m.nome='Volkswagen' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['C30','C40','C40 Recharge','C70','EX30','EX40','EX90','S40','S60','S70','S80','S90','V40','V50','V60','V70','V90','XC40','XC40 Recharge','XC60','XC70','XC90']) FROM public.marcas m WHERE m.nome='Volvo' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Dream','Free','Passion']) FROM public.marcas m WHERE m.nome='Voyah' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['SU7','SU7 Ultra','YU7']) FROM public.marcas m WHERE m.nome='Xiaomi' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['001','007','009','X']) FROM public.marcas m WHERE m.nome='Zeekr' ON CONFLICT DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MODELOS – MOTOS
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['CG 160','CG 160 Fan','CG 160 Titan','CB 300R','CB 300F','CB 500F','CB 500X','CB 750 Hornet','CBR 600RR','CBR 1000RR','CBR 1000RR-R','Titan 160','Pop 110i','Biz 125','PCX 150','ADV 150','XRE 300','XRE 190','Africa Twin','Gold Wing','NC 750X','CMX 500 Rebel','CMX 1100 Rebel']) FROM public.marcas m WHERE m.nome='Honda Motos' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['YBR 125','YBR 150','Fazer 150','Fazer 250','MT-03','MT-07','MT-09','MT-10','R1','R3','R6','NMAX 160','XMAX 300','Crosser 150','Tenere 700','Lander 250','XT 660R','YS 150 Fazer','FZ25','VMAX']) FROM public.marcas m WHERE m.nome='Yamaha' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Ninja 300','Ninja 400','Ninja 650','Ninja ZX-6R','Ninja ZX-10R','Ninja ZX-14R','Ninja H2','Ninja H2R','Z400','Z650','Z900','Z H2','Versys 650','Versys 1000','W800','KLX 300','Vulcan S','Eliminator 500']) FROM public.marcas m WHERE m.nome='Kawasaki' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['GSX-R 600','GSX-R 750','GSX-R 1000','GSX-S 750','GSX-S 1000','Hayabusa','Burgman 400','V-Strom 650','V-Strom 1050','Bandit 650','GSX 8S']) FROM public.marcas m WHERE m.nome='Suzuki Motos' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['G 310 R','G 310 GS','F 750 GS','F 850 GS','F 900 R','F 900 XR','R 1250 GS','R 1250 GS Adventure','R 1250 R','S 1000 RR','S 1000 R','S 1000 XR','M 1000 RR','K 1600 GTL']) FROM public.marcas m WHERE m.nome='BMW Motorrad' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Sportster S','Iron 883','Forty-Eight','Street Bob','Fat Bob','Fat Boy','Road King','Road Glide','Street Glide','Electra Glide','Pan America 1250','Nightster','Low Rider S']) FROM public.marcas m WHERE m.nome='Harley-Davidson' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Monster','Monster SP','Scrambler 800','Scrambler 1100','Panigale V2','Panigale V4','Panigale V4 S','Multistrada V4','Multistrada V2','Diavel V4','Streetfighter V4','Hypermotard 950']) FROM public.marcas m WHERE m.nome='Ducati' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Duke 200','Duke 390','Duke 790','Duke 890','Duke 1290 Super Duke','Adventure 390','Adventure 790','Adventure 890','Adventure 1290','RC 390','EXC 250','EXC 450']) FROM public.marcas m WHERE m.nome='KTM' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Bullet 350','Classic 350','Classic 500','Himalayan','Meteor 350','Hunter 350','Guerrilla 450','Bear 650']) FROM public.marcas m WHERE m.nome='Royal Enfield' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Street Twin','Street Scrambler','Bonneville T100','Bonneville T120','Tiger 800','Tiger 900','Tiger 1200','Speed Triple 1200','Speed Twin 900','Rocket 3','Thruxton RS']) FROM public.marcas m WHERE m.nome='Triumph' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Phoenix 150','Phoenix 200','Work 150']) FROM public.marcas m WHERE m.nome='Shineray' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Speed 150','Kansas 150','Super 100','Next 300']) FROM public.marcas m WHERE m.nome='Dafra' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['SRV 150','SRV 200','CB-X 200']) FROM public.marcas m WHERE m.nome='Haojue' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['SR-X 250','NK 400','NK 650','MT 650','CL-X 700','V5 250','V7 300','ADV 150']) FROM public.marcas m WHERE m.nome='CF Moto' ON CONFLICT DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MODELOS – CAMINHÕES
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Actros','Atego','Axor','Accelo 1016','Accelo 815','Accelo 1316']) FROM public.marcas m WHERE m.nome='Mercedes-Benz Caminhoes' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['FH 460','FH 500','FH 540','FM 370','FM 460','FMX 440','VM 270','VM 330']) FROM public.marcas m WHERE m.nome='Volvo Caminhoes' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['R 360','R 410','R 450','R 500','R 560','R 580','G 360','G 410','G 450','P 310','P 360','S 730']) FROM public.marcas m WHERE m.nome='Scania' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['TGX 29.480','TGX 33.480','TGS 26.400','TGM 26.290','TGL 8.180']) FROM public.marcas m WHERE m.nome='MAN' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Tector 6.190','Tector 8.250','Daily 35S14','Daily 70C17','Stralis 380','Stralis 440','Hi-Way 480','S-Way 400']) FROM public.marcas m WHERE m.nome='Iveco' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Cargo 816','Cargo 1119','Cargo 1317','Cargo 1419','Cargo 1722','Cargo 2428','Cargo 2629','Cargo 3132']) FROM public.marcas m WHERE m.nome='Ford Caminhoes' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Delivery 9.170','Delivery 11.180','Constellation 17.230','Constellation 19.360','Meteor 25.460','Meteor 29.520']) FROM public.marcas m WHERE m.nome='Volkswagen Caminhoes' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['XF 480','XF 530','CF 380','CF 430','LF 210','LF 280']) FROM public.marcas m WHERE m.nome='DAF' ON CONFLICT DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MODELOS – MÁQUINAS AGRÍCOLAS
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['5075E','5090E','5100M','6110J','6120J','6130J','6145J','7200J','7215J','8R 250','8R 290','8R 340','9R 590','S660','S680','S690','S770','S780','S790','W540','W570','W650','CP690']) FROM public.marcas m WHERE m.nome='John Deere' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['T6.140','T6.165','T7.175','T7.195','T7.220','T8.410','TL 75','TL 85','TL 95','TT3840','TT4030','TT4840','CR6.90','CR7.90','CR8.90','CR9.90','CR10.90','TC5.30','TC5.50','TC5.80']) FROM public.marcas m WHERE m.nome='New Holland' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['4275','4283','4292','5709','5711','5713','6713','7719','7722','GC 1310','GC 1410','MF 200','MF 5650','MF 5690','MF 7340 S','MF 9895']) FROM public.marcas m WHERE m.nome='Massey Ferguson' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['A74','A94','A114','A134','BH145','BH165','T151','T174','T195','T234','BC4550','BC4570','BC5550','BC5570']) FROM public.marcas m WHERE m.nome='Valtra' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Farmall 75C','Farmall 95C','Farmall 110C','Maxxum 115','Maxxum 130','Puma 175','Puma 185','Puma 220','Magnum 340','Axial-Flow 6150','Axial-Flow 7150','Axial-Flow 7250','Axial-Flow 8250','Axial-Flow 9250']) FROM public.marcas m WHERE m.nome='Case IH' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['210 Vario','309 Vario','415 Vario','516 Vario','724 Vario','828 Vario','942 Vario','IDEAL 7','IDEAL 8','IDEAL 9']) FROM public.marcas m WHERE m.nome='Fendt' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['5085D','5105D','6140 TTV','Agrotron M620','Agrotron M650','5455 HTS','6095 HTS','7545 RTS']) FROM public.marcas m WHERE m.nome='Deutz-Fahr' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['B2150','L3800','L4700','M5-091','M7-151','MX5400','MX6000']) FROM public.marcas m WHERE m.nome='Kubota' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['LEXION 5300','LEXION 6700','LEXION 7700','LEXION 8900','TUCANO 310','TUCANO 450','TUCANO 580','TRION 650','JAGUAR 930','JAGUAR 960']) FROM public.marcas m WHERE m.nome='Claas' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Belarus 82.1','Belarus 892','Belarus 952.3','Belarus 1021','Belarus 1221']) FROM public.marcas m WHERE m.nome='Belarus' ON CONFLICT DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MODELOS – BARCOS
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['215','235','275','305','320 Sport']) FROM public.marcas m WHERE m.nome='Focker' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['34 Sport','38 HT','42 Sport','45 Fly']) FROM public.marcas m WHERE m.nome='Intermarine' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['290 HT','320 HT','365 HT','400']) FROM public.marcas m WHERE m.nome='Phantom' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['550','650','780','920']) FROM public.marcas m WHERE m.nome='Ferretti' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['S6','S7','S8','S10','Grande S10','Magellano 66']) FROM public.marcas m WHERE m.nome='Azimut' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['510 Fly','640 Fly','770 Fly']) FROM public.marcas m WHERE m.nome='Schaefer Yachts' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Element','Element XL','VR5','VR6','175 Bowrider']) FROM public.marcas m WHERE m.nome='Bayliner' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['AR195','AR240','FX Cruiser HO','FX SHO','VX Cruiser','VX Sport','GP1800R','EX Sport','EX Deluxe']) FROM public.marcas m WHERE m.nome='Yamaha Nautica' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Oceanis 30.1','Oceanis 40.1','Oceanis 46.1','Oceanis 51.1','Antares 30','Flyer 8','Flyer 9']) FROM public.marcas m WHERE m.nome='Beneteau' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['SX 210','SX 230','SX 280','SX 320','SX 350','Sundancer 350']) FROM public.marcas m WHERE m.nome='Sea Ray' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['220 Fisherman','240 WA','270 WA','330 Evolution','330 HT']) FROM public.marcas m WHERE m.nome='Boston Whaler' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['2600','2680','3000','3220','3400']) FROM public.marcas m WHERE m.nome='Mastercraft' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['220 SS','230 SS','250 SS','260 SS','270 SS','280 SS']) FROM public.marcas m WHERE m.nome='Cobalt' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['340','370','400','430']) FROM public.marcas m WHERE m.nome='Sunseeker' ON CONFLICT DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- MODELOS – JET SKI
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Spark','Spark Trixx','GTI 90','GTI 130','GTI SE','GTR 230','GTS 130','GTS 170','GTS 300','GTX 170','GTX 300','RXP-X 300','RXT-X 300','Fish Pro Trophy']) FROM public.marcas m WHERE m.nome='Sea-Doo' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['Ultra 310LX','Ultra 310X','Ultra 160','STX 160X','SX-R 1500']) FROM public.marcas m WHERE m.nome='Kawasaki Jet Ski' ON CONFLICT DO NOTHING;
+INSERT INTO public.modelos (marca_id, nome) SELECT m.id, unnest(ARRAY['FX Cruiser HO','FX SHO','VX Cruiser','VX Sport','GP1800R HO','EX Sport','EXR','SuperJet']) FROM public.marcas m WHERE m.nome='Yamaha WaveRunner' ON CONFLICT DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- ADMIN
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+UPDATE public.usuarios SET moderador = true WHERE email = 'murilofrank157@gmail.com';

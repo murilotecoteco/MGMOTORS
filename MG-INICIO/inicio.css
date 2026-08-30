@@ -602,14 +602,98 @@ footer {
 }
 [data-tema="escuro"] body { background: var(--fundo) !important; color: var(--texto) !important; }
 [data-tema="escuro"] header, [data-tema="escuro"] #hero, [data-tema="escuro"] footer { background-color: var(--preto-secundario) !important; }
-[data-tema="escuro"] .hero-busca { background: var(--branco); box-shadow: none; border: 1px solid var(--cinza); }
-[data-tema="escuro"] .busca-campo input { color: var(--texto); }
-[data-tema="escuro"] .veiculo-card, [data-tema="escuro"] .diferencial-card { background: var(--branco); border-color: var(--cinza); }
-[data-tema="escuro"] .veiculo-info h3, [data-tema="escuro"] .veiculo-preco, [data-tema="escuro"] .secao-header h2, [data-tema="escuro"] .secao-header-central h2 { color: var(--texto); }
-[data-tema="escuro"] .btn-secundario { border-color: var(--cinza); color: var(--texto); }
-[data-tema="escuro"] .btn-secundario:hover { background: var(--cinza); }
-[data-tema="escuro"] #categorias, [data-tema="escuro"] #destaque, [data-tema="escuro"] #avaliacoes { background-color: var(--preto); }
-[data-tema="escuro"] #como-funciona, [data-tema="escuro"] #diferenciais { background-color: var(--preto-secundario); }
+
+/* Hero — texto principal (--branco vira #171717 no dark, causando texto invisível) */
+[data-tema="escuro"] .hero-texto { color: #E5E5E5; }
+[data-tema="escuro"] .hero-texto h1 { color: #ffffff; }
+[data-tema="escuro"] .hero-sub { color: rgba(255,255,255,0.72); }
+
+/* Hero badge */
+[data-tema="escuro"] .hero-badge { background: rgba(37,99,235,0.2); color: #60a5fa; }
+
+/* Float cards (background era var(--branco)=#171717, cor era var(--preto)=#000 no dark) */
+[data-tema="escuro"] .hero-float-card { background: #1f2937; color: #E5E5E5; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+
+/* Stats */
+[data-tema="escuro"] .hero-stats { border-top-color: rgba(255,255,255,0.1); }
+[data-tema="escuro"] .hero-stat strong { color: #ffffff; }
+[data-tema="escuro"] .hero-stat span { color: rgba(255,255,255,0.5); }
+
+/* Hero busca */
+[data-tema="escuro"] .hero-busca { background: #1f2937; box-shadow: none; border: 1px solid #374151; }
+[data-tema="escuro"] .busca-campo label { color: #9ca3af; }
+/* Inputs e selects da busca ficam sobre fundo escuro — texto claro */
+[data-tema="escuro"] .busca-campo select,
+[data-tema="escuro"] .busca-campo input { color: #E5E5E5; background: transparent; }
+[data-tema="escuro"] .busca-campo input::placeholder { color: #6b7280; }
+[data-tema="escuro"] .busca-divisoria { background: #374151; }
+
+/* Seções — headers */
+[data-tema="escuro"] .secao-header h2,
+[data-tema="escuro"] .secao-header-central h2 { color: var(--texto); }
+[data-tema="escuro"] .secao-header p,
+[data-tema="escuro"] .secao-header-central p { color: var(--texto-suave); }
+
+/* Botões */
+[data-tema="escuro"] .btn-secundario { border-color: rgba(255,255,255,0.2); color: var(--texto); }
+[data-tema="escuro"] .btn-secundario:hover { background: rgba(255,255,255,0.08); border-color: var(--texto); }
+
+/* Categorias */
+[data-tema="escuro"] #categorias,
+[data-tema="escuro"] #destaque,
+[data-tema="escuro"] #avaliacoes { background-color: var(--preto); }
+[data-tema="escuro"] #como-funciona,
+[data-tema="escuro"] #diferenciais { background-color: var(--preto-secundario); }
 [data-tema="escuro"] .categoria-card { background: var(--branco); border-color: var(--cinza); color: var(--texto); }
-[data-tema="escuro"] .categoria-card:hover { border-color: var(--azul); }
+[data-tema="escuro"] .categoria-card:hover { border-color: var(--azul); background: #1f1f1f; }
 [data-tema="escuro"] .categoria-icone { color: var(--texto); }
+
+/* Como funciona */
+[data-tema="escuro"] .passo-card h3 { color: var(--texto); }
+[data-tema="escuro"] .passo-card p { color: var(--texto-suave); }
+[data-tema="escuro"] .passo-numero { color: var(--azul); }
+[data-tema="escuro"] .passo-linha { background: var(--cinza); }
+
+/* Veículos */
+[data-tema="escuro"] .veiculo-card { background: var(--branco); border-color: var(--cinza); }
+[data-tema="escuro"] .veiculo-info h3 { color: var(--texto); }
+[data-tema="escuro"] .veiculo-preco { color: var(--texto); }
+[data-tema="escuro"] .veiculo-specs { color: var(--texto-suave); }
+[data-tema="escuro"] .veiculo-specs .ponto { color: var(--cinza); }
+[data-tema="escuro"] .veiculo-favorito { background: var(--fundo); border-color: var(--cinza); color: var(--texto-suave); }
+[data-tema="escuro"] .veiculo-btn-detalhes { background: var(--cinza); color: var(--texto); border-color: transparent; }
+[data-tema="escuro"] .veiculo-btn-detalhes:hover { background: #333; border-color: var(--texto-suave); }
+
+/* Diferenciais */
+[data-tema="escuro"] .diferencial-card { background: var(--branco); border-color: var(--cinza); }
+[data-tema="escuro"] .diferencial-card h3 { color: var(--texto); }
+[data-tema="escuro"] .diferencial-card p { color: var(--texto-suave); }
+
+/* Avaliações */
+[data-tema="escuro"] .avaliacao-card { background: var(--branco); border-color: var(--cinza); }
+[data-tema="escuro"] .avaliacao-nome { color: var(--texto); }
+[data-tema="escuro"] .avaliacao-avatar { background: #333; color: var(--texto); }
+[data-tema="escuro"] .avaliacao-card p.avaliacao-texto { color: var(--texto-suave); }
+
+/* CTA final */
+[data-tema="escuro"] #cta-final { background-color: var(--preto-secundario) !important; }
+[data-tema="escuro"] .cta-conteudo h2 { color: #ffffff; }
+[data-tema="escuro"] .cta-conteudo p { color: rgba(255, 255, 255, 0.7); }
+[data-tema="escuro"] .btn-secundario {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #E5E5E5;
+}
+[data-tema="escuro"] .btn-secundario:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #E5E5E5;
+}
+
+/* Footer — texto invisível no modo escuro pois --branco vira #171717 */
+[data-tema="escuro"] footer { color: #E5E5E5; }
+[data-tema="escuro"] .footer-brand h2 { color: #ffffff; }
+[data-tema="escuro"] .footer-brand p { color: rgba(255, 255, 255, 0.6); }
+[data-tema="escuro"] .footer-col h4 { color: #E5E5E5; }
+[data-tema="escuro"] .footer-col a { color: rgba(255, 255, 255, 0.6); }
+[data-tema="escuro"] .footer-col a:visited { color: rgba(255, 255, 255, 0.6); }
+[data-tema="escuro"] .footer-col a:hover { color: #ffffff; }
+[data-tema="escuro"] .footer-bottom { color: rgba(255, 255, 255, 0.4); }

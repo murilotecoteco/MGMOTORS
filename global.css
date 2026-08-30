@@ -473,3 +473,17 @@ body > footer {
   color: var(--texto, #1f2937);
   font-weight: 700;
 }
+
+/* ══════════════════════════════════════════════════
+   TEMA ESCURO — overrides globais
+   ══════════════════════════════════════════════════ */
+[data-tema="escuro"] .mg-breadcrumb {
+  color: var(--texto-suave, #A3A3A3);
+}
+[data-tema="escuro"] .mg-breadcrumb .current {
+  color: var(--texto, #E5E5E5);
+}
+[data-tema="escuro"] .mg-breadcrumb a:hover {
+  color: #60a5fa;
+}
+

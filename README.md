@@ -274,6 +274,10 @@ MGMOTORS/
 │   ├── devpanel.html        # Painel admin (restrito)
 │   └── devpanel.css
 │
+├── api/                     # Funções serverless (Vercel)
+│   ├── config.js            # Entrega as credenciais do Supabase (env vars)
+│   └── carros-ia.js         # Listagem em texto puro para o chatbot de IA
+│
 ├── imagens/                 # Assets estáticos
 ├── global.css               # Estilos globais + header + toast
 ├── headerGlobal.js          # Header injetado dinamicamente em todas as páginas
@@ -367,19 +371,22 @@ http://localhost:3000/MG-INICIO/inicio.html
 
 # Variáveis de Ambiente
 
-As credenciais do Supabase são referenciadas diretamente no arquivo [`mgConfig.js`](./mgConfig.js) na raiz do projeto.
+As credenciais do Supabase **não ficam no código** — são variáveis de ambiente definidas na Vercel:
 
-```js
-// mgConfig.js
-const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co';
-const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANONIMA';
-```
+| Variável | Descrição |
+|----------|-----------|
+| `SUPABASE_URL` | URL do projeto Supabase |
+| `SUPABASE_KEY` | Chave pública (publishable/anon) |
 
-Para rodar localmente com seu próprio projeto Supabase:
+Como o front-end é estático, elas são entregues pelo endpoint serverless [`api/config.js`](./api/config.js) (`/api/config`), e o [`mgConfig.js`](./mgConfig.js) as obtém no carregamento — nenhuma página referencia credenciais diretamente.
+
+Para rodar com seu próprio projeto Supabase:
 
 1. Crie um projeto em [supabase.com](https://supabase.com)
 2. Execute o script [`supabase-rls-setup.sql`](./supabase-rls-setup.sql) no SQL Editor do Supabase para criar todas as tabelas, políticas de RLS e buckets de Storage
-3. Substitua a `SUPABASE_URL` e a `SUPABASE_ANON_KEY` em `mgConfig.js` com as credenciais do seu projeto
+3. Defina `SUPABASE_URL` e `SUPABASE_KEY` nas variáveis de ambiente (Vercel → Settings → Environment Variables)
+
+> A chave usada é pública por natureza (anon/publishable) — a segurança real está nas políticas de **RLS** do banco, que impedem qualquer acesso indevido mesmo com a chave em mãos.
 
 ---
 

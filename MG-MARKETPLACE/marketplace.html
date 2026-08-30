@@ -484,8 +484,8 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       if (error) { console.error("RPC get_anuncios_marketplace error:", error); return; }
 
       for (const a of anuncios) {
-        a.marcas  = { nome: a.marca_nome  ?? "" };
-        a.modelos = { nome: a.modelo_nome ?? "" };
+        a.marcas  = { nome: a.marca_nome  || a.marca_texto  || "" };
+        a.modelos = { nome: a.modelo_nome || a.modelo_texto || "" };
         a.foto_principal = a.foto_principal || "../imagens/sem-foto.png";
         a.vendedor_foto  = a.vendedor_foto  || "../imagens/usuario.png";
       }

@@ -277,7 +277,8 @@ async function carregarConversas() {
   }
 
   for (const [outroId, conv] of conversasCache) {
-    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroId).maybeSingle();
+    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto, banido').eq('id', outroId).maybeSingle();
+    if (outroUser?.banido) continue; // ocultar conversas de usuários banidos
     listaEl.appendChild(criarItemConversa(outroId, conv, outroUser));
   }
   ordenarListaConversas();
@@ -600,9 +601,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const usuarioId = urlParams.get('usuario');
 const carroId = urlParams.get('carro');
 if (usuarioId && carroId) setTimeout(() => abrirConversa(usuarioId, 'Carro do marketplace'), 1000);
-
-carregarConversas();
-lucide.createIcons();
 </script>
 <script>
 window.chtlConfig = {
@@ -610,6 +608,7 @@ window.chtlConfig = {
 }
 </script>
 
+<style>#chtl-chat-icon-container{left:auto!important;right:20px!important;width:auto!important;}</style>
 <script
   async
   data-id="6944231868"
@@ -617,7 +616,6 @@ window.chtlConfig = {
   type="text/javascript"
   src="https://chatling.ai/js/embed.js">
 </script>
-
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">

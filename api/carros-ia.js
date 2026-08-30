@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     const params = new URLSearchParams({
       select,
       status: "eq.ativo",
-
+      // pausado pode ser null (nunca pausado) ou false — cobre os dois casos
       or: "(pausado.eq.false,pausado.is.null)",
       order: "criado_em.desc",
       limit: "500",
@@ -84,7 +84,8 @@ export default async function handler(req, res) {
     }
 
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
-   
+    // cache curto: os dados mudam com anuncios novos/pausados, mas nao
+    // precisa ser 100% instantaneo para o treinamento do chatbot
     res.setHeader("Cache-Control", "public, max-age=300");
     res.status(200).send(texto);
   } catch (err) {

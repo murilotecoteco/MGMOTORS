@@ -17,6 +17,7 @@ export async function carregarHeaderGlobal(supabase) {
   headerContainer.innerHTML = `
     <div class="logo">
       <a href="../MG-INICIO/inicio.html" class="logo-link" aria-label="Ir para o inicio da MG Motors">
+        <img class="logo-img" src="../imagens/logo-mg.png" alt="Logo MG Motors">
         <span class="logo-text">MG Motors</span>
       </a>
     </div>

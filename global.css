@@ -70,6 +70,23 @@ body > footer {
   text-decoration: none;
 }
 
+#header-global .logo-img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  padding: 3px;
+  box-sizing: border-box;
+  display: block;
+}
+
+#header-global .logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 #header-global .logo-text {
   color: #fff;
   font-size: 24px;

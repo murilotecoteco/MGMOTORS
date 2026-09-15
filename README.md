@@ -44,6 +44,12 @@
 
 - Este projeto utiliza o plano gratuito do Supabase, que pausa o banco de dados automaticamente após um período de inatividade. Se o demo ao vivo parecer sem resposta, o banco pode precisar de alguns segundos para retomar, ou pode ser necessária a reativação manual pelo painel do Supabase.
 
+## Observações da versão atual
+
+- O repositório não inclui atualmente o schema SQL ou uma migration completa do Supabase.
+- A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor; a integração dessa função com a interface deve ser configurada e testada no ambiente Supabase.
+- As páginas `MG-LEGAL/termos.html` e `MG-LEGAL/privacidade.html` estão presentes no diretório, mas precisam conter os documentos legais antes de serem apresentadas como uma funcionalidade concluída.
+
 ---
 
 # Sumário
@@ -89,7 +95,7 @@ Este projeto foi construído para praticar e demonstrar:
 - Interface responsiva e acessível
 - Boas práticas de segurança no frontend (XSS, clickjacking, headers HTTP)
 - SEO com meta tags, Open Graph e canonical URLs
-- Deploy e CI/CD com Vercel
+- Deploy com Vercel
 
 ---
 
@@ -284,7 +290,9 @@ MGMOTORS/
 ├── mgConfig.js              # Configuração central do Supabase + escapeHtml()
 ├── tema.js                  # Tema escuro/claro aplicado antes do render
 ├── vercel.json              # Headers de segurança HTTP
-├── supabase-rls-setup.sql   # Setup completo do banco + políticas RLS
+├── supabase/                # Edge Functions do Supabase
+│   └── functions/
+│       └── delete-account/  # Exclusão de conta no ambiente server-side
 └── index.html               # Redirect para MG-INICIO
 ```
 
@@ -292,7 +300,9 @@ MGMOTORS/
 
 # Banco de Dados
 
-O schema completo com políticas de RLS está em [`supabase-rls-setup.sql`](./supabase-rls-setup.sql).
+O banco de dados é gerenciado pelo Supabase. A versão atual do repositório não inclui um arquivo SQL ou migration completo para reconstruir o schema e as policies RLS.
+
+Para executar o projeto, é necessário utilizar o projeto Supabase já configurado ou obter uma migration atualizada compatível com o ambiente em produção.
 
 ### Tabelas principais
 
@@ -326,7 +336,7 @@ O schema completo com políticas de RLS está em [`supabase-rls-setup.sql`](./su
   - `Referrer-Policy: strict-origin-when-cross-origin`
 - **Cache imutável** para assets de imagem (`Cache-Control: public, max-age=31536000, immutable`)
 - **Verificação de banimento** no login: usuários banidos são bloqueados imediatamente
-- **Dev Panel** restrito por verificação de email de desenvolvedor
+- **Dev Panel** possui verificação de email, RPC e campo de moderador no frontend; a autorização efetiva deve ser garantida pelas policies e funções do Supabase
 
 ---
 
@@ -383,7 +393,7 @@ Como o front-end é estático, elas são entregues pelo endpoint serverless [`ap
 Para rodar com seu próprio projeto Supabase:
 
 1. Crie um projeto em [supabase.com](https://supabase.com)
-2. Execute o script [`supabase-rls-setup.sql`](./supabase-rls-setup.sql) no SQL Editor do Supabase para criar todas as tabelas, políticas de RLS e buckets de Storage
+2. Configure ou utilize um projeto Supabase compatível com as tabelas, policies RLS, buckets e funções utilizadas pelo frontend. O schema/migration atualizado não está incluído nesta versão do repositório.
 3. Defina `SUPABASE_URL` e `SUPABASE_KEY` nas variáveis de ambiente (Vercel → Settings → Environment Variables)
 
 > A chave usada é pública por natureza (anon/publishable) — a segurança real está nas políticas de **RLS** do banco, que impedem qualquer acesso indevido mesmo com a chave em mãos.
@@ -394,7 +404,7 @@ Para rodar com seu próprio projeto Supabase:
 
 O projeto é hospedado no **Vercel** como site estático.
 
-Todo push para o branch `main` aciona automaticamente um novo deploy de produção.
+Quando o projeto Vercel está conectado ao repositório, pushes para o branch `main` podem acionar automaticamente novos deploys de produção. Essa configuração depende do ambiente externo da Vercel.
 
 URL de produção:
 

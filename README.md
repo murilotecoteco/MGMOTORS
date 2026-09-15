@@ -46,9 +46,9 @@
 
 ## Observações da versão atual
 
-- O repositório não inclui atualmente o schema SQL ou uma migration completa do Supabase.
+- O schema do banco de dados e as políticas RLS estão versionados em `supabase/migrations/20260915145500_remote_schema.sql`. A migration foi gerada a partir do schema remoto e deve ser validada em ambiente de teste antes de ser aplicada em produção.
 - A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor; a integração dessa função com a interface deve ser configurada e testada no ambiente Supabase.
-- As páginas `MG-LEGAL/termos.html` e `MG-LEGAL/privacidade.html` estão presentes no diretório, mas precisam conter os documentos legais antes de serem apresentadas como uma funcionalidade concluída.
+- As páginas `MG-LEGAL/termos.html` e `MG-LEGAL/privacidade.html` estão presentes no diretório, mas ainda estão vazias e precisam conter os documentos legais antes de serem apresentadas como uma funcionalidade concluída.
 
 ---
 
@@ -290,9 +290,12 @@ MGMOTORS/
 ├── mgConfig.js              # Configuração central do Supabase + escapeHtml()
 ├── tema.js                  # Tema escuro/claro aplicado antes do render
 ├── vercel.json              # Headers de segurança HTTP
-├── supabase/                # Edge Functions do Supabase
+├── supabase/
+│   ├── config.toml          # Configuração local do Supabase
+│   ├── migrations/          # Schema e políticas versionadas
+│   │   └── 20260915145500_remote_schema.sql
 │   └── functions/
-│       └── delete-account/  # Exclusão de conta no ambiente server-side
+│       └── delete-account/  # Exclusão de conta no servidor
 └── index.html               # Redirect para MG-INICIO
 ```
 
@@ -300,9 +303,16 @@ MGMOTORS/
 
 # Banco de Dados
 
-O banco de dados é gerenciado pelo Supabase. A versão atual do repositório não inclui um arquivo SQL ou migration completo para reconstruir o schema e as policies RLS.
+O banco de dados é gerenciado pelo Supabase. O schema e as políticas RLS são versionados em `supabase/migrations/`. A migration [20260915145500_remote_schema.sql](./supabase/migrations/20260915145500_remote_schema.sql) contém a estrutura atual capturada do projeto Supabase, incluindo tabelas, funções, triggers, relacionamentos e policies.
 
-Para executar o projeto, é necessário utilizar o projeto Supabase já configurado ou obter uma migration atualizada compatível com o ambiente em produção.
+### Configurar outro projeto
+
+1. Criar um projeto no Supabase.
+2. Instalar e configurar o Supabase CLI.
+3. Vincular o projeto com: `supabase link --project-ref SEU_PROJECT_REF`
+4. Aplicar as migrations com: `supabase db push`
+5. Configurar `SUPABASE_URL` e `SUPABASE_KEY`.
+6. Configurar e publicar as Edge Functions de `supabase/functions/`.
 
 ### Tabelas principais
 
@@ -317,8 +327,8 @@ Para executar o projeto, é necessário utilizar o projeto Supabase já configur
 | `denuncias` | Denúncias de anúncios, mensagens ou perfis: motivo, status, alvo, denunciante |
 | `avaliacoes` | Avaliações entre usuários: nota (1 a 5) e comentário |
 | `seguidores` | Relação seguidor para seguido |
-| `curtidas` | Curtidas de usuários em anúncios |
-| `posts` | Fotos do feed do perfil do usuário |
+| `curtidas_anuncio` | Curtidas de usuários em anúncios |
+| `posts_usuario` | Fotos do feed do perfil do usuário |
 | `usuarios_banidos` | Registro de banimentos com motivo e responsável |
 
 ---
@@ -336,7 +346,7 @@ Para executar o projeto, é necessário utilizar o projeto Supabase já configur
   - `Referrer-Policy: strict-origin-when-cross-origin`
 - **Cache imutável** para assets de imagem (`Cache-Control: public, max-age=31536000, immutable`)
 - **Verificação de banimento** no login: usuários banidos são bloqueados imediatamente
-- **Dev Panel** possui verificação de email, RPC e campo de moderador no frontend; a autorização efetiva deve ser garantida pelas policies e funções do Supabase
+- **Dev Panel**: possui verificação de email, chamadas de RPC e verificação de campo de moderador no frontend. A autorização definitiva e segura depende exclusivamente das policies RLS e funções do Supabase (como a função `is_admin()`), e não apenas da verificação feita no frontend.
 
 ---
 
@@ -393,7 +403,7 @@ Como o front-end é estático, elas são entregues pelo endpoint serverless [`ap
 Para rodar com seu próprio projeto Supabase:
 
 1. Crie um projeto em [supabase.com](https://supabase.com)
-2. Configure ou utilize um projeto Supabase compatível com as tabelas, policies RLS, buckets e funções utilizadas pelo frontend. O schema/migration atualizado não está incluído nesta versão do repositório.
+2. Aplique as migrations (incluindo o schema e RLS) utilizando o Supabase CLI com o comando: `supabase db push`
 3. Defina `SUPABASE_URL` e `SUPABASE_KEY` nas variáveis de ambiente (Vercel → Settings → Environment Variables)
 
 > A chave usada é pública por natureza (anon/publishable) — a segurança real está nas políticas de **RLS** do banco, que impedem qualquer acesso indevido mesmo com a chave em mãos.

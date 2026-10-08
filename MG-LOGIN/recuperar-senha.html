@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar senha - MG Motors</title>
+  <meta name="description" content="Solicite um link seguro para redefinir sua senha na MG Motors.">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <main class="auth-shell">
+    <form id="form-recuperar" class="auth-card">
+      <div class="auth-brand">
+        <span>MG Motors</span>
+        <small>Marketplace premium de veículos</small>
+      </div>
+
+      <div class="header-form">
+        <button type="button" id="back-arrow" aria-label="Voltar para o login">&larr;</button>
+        <h1>Recuperar senha</h1>
+      </div>
+
+      <p class="auth-subtitle">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
+
+      <label for="email-recuperar">E-mail</label>
+      <input type="email" id="email-recuperar" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+
+      <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+      <button type="submit" class="primary-action">Enviar link</button>
+      <p class="auth-switch"><a href="login.html">Voltar para o login</a></p>
+    </form>
+  </main>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+    import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const form = document.getElementById("form-recuperar");
+    const feedback = document.getElementById("form-feedback");
+    const botao = form.querySelector("button[type=submit]");
+
+    const mostrarFeedback = (mensagem, tipo = "erro") => {
+      feedback.textContent = mensagem;
+      feedback.dataset.tipo = tipo;
+    };
+
+    document.getElementById("back-arrow").addEventListener("click", () => {
+      window.location.href = "login.html";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      botao.disabled = true;
+      botao.textContent = "Enviando...";
+      mostrarFeedback("");
+
+      const email = document.getElementById("email-recuperar").value.trim();
+      const redirectTo = new URL("redefinir-senha.html", window.location.href).href;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+      if (error) {
+        mostrarFeedback("Não foi possível enviar o link. Tente novamente.");
+        botao.disabled = false;
+        botao.textContent = "Enviar link";
+        return;
+      }
+
+      mostrarFeedback("Se o e-mail estiver cadastrado, você receberá o link de redefinição.", "sucesso");
+      botao.textContent = "Link enviado";
+    });
+  </script>
+</body>
+</html>

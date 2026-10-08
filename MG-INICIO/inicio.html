@@ -278,8 +278,8 @@
     </div>
     <div class="footer-col">
       <h4>Legal</h4>
-      <a href="#">Termos de Uso</a>
-      <a href="#">Privacidade</a>
+      <a href="../MG-LEGAL/termos.html">Termos de Uso</a>
+      <a href="../MG-LEGAL/privacidade.html">Privacidade</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -301,7 +301,7 @@ let usuarioAtual = await carregarHeaderGlobal(supabase);
 async function carregarEstatisticas() {
   const [{ count: totalAnuncios }, { count: totalUsuarios }, { data: marcasData }] = await Promise.all([
     supabase.from("anuncios").select("id", { count: "exact", head: true }).eq("status", "ativo"),
-    supabase.from("usuarios").select("id", { count: "exact", head: true }),
+    supabase.from("usuarios_publicos").select("id", { count: "exact", head: true }),
     supabase.from("marcas").select("id")
   ]);
   animarNumero("stat-anuncios", totalAnuncios || 0);
@@ -400,7 +400,7 @@ async function carregarVeiculosDestaque() {
 
   for (const anuncio of anuncios) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", anuncio.id).order("ordem").limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
     const isFav = favoritos.includes(String(anuncio.id));
     
     const favIcon = isFav 
@@ -411,7 +411,7 @@ async function carregarVeiculosDestaque() {
     card.className = "veiculo-card reveal";
     card.innerHTML = `
       <div class="veiculo-img-wrap">
-        <img src="${foto}" alt="${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}" onerror="this.src='../imagens/sem-foto.png'" loading="lazy">
+        <img src="${foto}" alt="${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}" onerror="this.src='../imagens/image.webp'" loading="lazy">
         <button class="veiculo-favorito ${isFav ? "ativo" : ""}" data-id="${anuncio.id}">${favIcon}</button>
       </div>
       <div class="veiculo-info">

@@ -1,5 +1,7 @@
 // arquivo: headerGlobal.js
 
+import { consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
+
 /**
  * Injeta o header global, marca a pagina ativa e sincroniza a area de
  * login/perfil com a sessao atual do Supabase.
@@ -62,6 +64,14 @@ export async function carregarHeaderGlobal(supabase) {
   const headerNome = document.getElementById("header-nome");
   const headerFoto = document.getElementById("header-foto");
 
+  if (!supabase) {
+    headerNome.textContent = "Entrar";
+    headerNome.href = "../MG-LOGIN/login.html";
+    headerFoto.src = "../imagens/usuario.png";
+    mostrarBannerTermos();
+    return null;
+  }
+
   try {
     const { data, error: authError } = await supabase.auth.getUser();
 
@@ -75,7 +85,7 @@ export async function carregarHeaderGlobal(supabase) {
 
     const { data: perfil, error: dbError } = await supabase
       .from("usuarios")
-      .select("nome, foto, banido")
+      .select("nome, foto, banido, terms_accepted_at, privacy_accepted_at, terms_version, privacy_version")
       .eq("id", data.user.id)
       .maybeSingle();
 
@@ -96,6 +106,10 @@ export async function carregarHeaderGlobal(supabase) {
     headerFoto.src = perfil?.foto || "../imagens/usuario.png";
     headerFoto.alt = `Foto de perfil de ${perfil?.nome || data.user.email}`;
 
+    if (!consentimentoAtual(perfil)) {
+      mostrarBannerTermos({ supabase, usuario: data.user, perfil });
+    }
+
     return data.user;
   } catch (error) {
     console.error("Erro inesperado ao carregar header:", error);
@@ -111,8 +125,10 @@ export async function carregarHeaderGlobal(supabase) {
    BANNER DE TERMOS — exibido para usuários deslogados
    Aparece uma vez por dispositivo (salvo em localStorage).
    ═══════════════════════════════════════════════════════ */
-function mostrarBannerTermos() {
-  if (localStorage.getItem("mg_termos_aceitos")) return;
+function mostrarBannerTermos({ supabase = null, usuario = null, perfil = null } = {}) {
+  const autenticado = Boolean(supabase && usuario);
+  if (!autenticado && localStorage.getItem("mg_termos_aceitos")) return;
+  if (autenticado && consentimentoAtual(perfil)) return;
 
   /* Resolve o caminho das páginas legais relativamente à origem */
   const base = new URL("../MG-LEGAL/", window.location.href).href;
@@ -234,10 +250,10 @@ function mostrarBannerTermos() {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        Sua privacidade importa para nós
+        ${autenticado ? "Atualize seu aceite legal" : "Sua privacidade importa para nós"}
       </div>
       <p class="mg-banner-desc">
-        Ao usar a MG Motors, você concorda com nossos
+        ${autenticado ? "Para continuar usando todos os recursos, confirme seu aceite da versão atual dos nossos" : "Ao usar a MG Motors, você concorda com nossos"}
         <a href="${urlTermos}" target="_blank" rel="noopener">Termos de Uso</a>
         e nossa
         <a href="${urlPrivacidade}" target="_blank" rel="noopener">Política de Privacidade</a>.
@@ -245,7 +261,7 @@ function mostrarBannerTermos() {
       </p>
     </div>
     <div class="mg-banner-acoes">
-      <button id="mg-banner-rejeitar" type="button">Recusar</button>
+      <button id="mg-banner-rejeitar" type="button">${autenticado ? "Agora não" : "Recusar"}</button>
       <button id="mg-banner-aceitar" type="button">Aceitar e Continuar</button>
     </div>
   `;
@@ -256,8 +272,15 @@ function mostrarBannerTermos() {
     requestAnimationFrame(() => banner.classList.add("visivel"));
   });
 
-  const fechar = (aceito) => {
-    if (aceito) localStorage.setItem("mg_termos_aceitos", "1");
+  const fechar = async (aceito) => {
+    if (aceito && autenticado) {
+      const { error } = await registrarAceiteLegal(supabase);
+      if (error) {
+        window.mgToast?.("Não foi possível registrar seu aceite. Tente novamente.", "error");
+        return;
+      }
+    }
+    if (aceito && !autenticado) localStorage.setItem("mg_termos_aceitos", "1");
     banner.classList.remove("visivel");
     banner.classList.add("oculto");
     setTimeout(() => banner.remove(), 450);
@@ -266,8 +289,10 @@ function mostrarBannerTermos() {
   document.getElementById("mg-banner-aceitar").addEventListener("click", () => fechar(true));
   document.getElementById("mg-banner-rejeitar").addEventListener("click", () => {
     fechar(false);
-    /* Redireciona para a página de termos para o usuário ler antes de decidir */
-    setTimeout(() => window.location.href = urlTermos, 300);
+    if (!autenticado) {
+      /* Redireciona para a página de termos para o usuário ler antes de decidir */
+      setTimeout(() => window.location.href = urlTermos, 300);
+    }
   });
 }
 
@@ -378,4 +403,3 @@ window.mgToast = function(msg, tipo = 'info', titulo = '') {
   window.addEventListener('scroll', onScroll, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 })();
-

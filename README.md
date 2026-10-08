@@ -46,9 +46,9 @@
 
 ## Observações da versão atual
 
-- O schema do banco de dados e as políticas RLS estão versionados em `supabase/migrations/20260915145500_remote_schema.sql`. A migration foi gerada a partir do schema remoto e deve ser validada em ambiente de teste antes de ser aplicada em produção.
-- A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor; a integração dessa função com a interface deve ser configurada e testada no ambiente Supabase.
-- As páginas `MG-LEGAL/termos.html` e `MG-LEGAL/privacidade.html` estão presentes no diretório, mas ainda estão vazias e precisam conter os documentos legais antes de serem apresentadas como uma funcionalidade concluída.
+- O schema do banco de dados e as políticas RLS estão versionados em `supabase/migrations/`. A captura inicial está em `20260915145500_remote_schema.sql` e as alterações incrementais, como o consentimento legal, ficam em migrations posteriores. Valide tudo em ambiente de teste antes de aplicar em produção.
+- A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor; ela precisa ser publicada e validada no ambiente Supabase antes da demonstração.
+- O fluxo legal possui páginas públicas, aceite obrigatório no cadastro, versionamento `1.0` e registro no perfil por meio da função protegida `registrar_aceite_legal`. O fluxo ainda deve ser validado no projeto Supabase de demonstração.
 
 ---
 
@@ -114,6 +114,7 @@ Este projeto foi construído para praticar e demonstrar:
 - ✅ Sistema de seguir/seguidores entre usuários
 - ✅ Avaliação de usuários com estrelas e comentário
 - ✅ Autenticação completa: cadastro, login e recuperação de senha
+- ✅ Aceite legal obrigatório no cadastro, com versões e registro no Supabase
 - ✅ Configurações da conta: tema escuro/claro, tamanho de fonte, notificações e privacidade
 - ✅ Sistema de denúncias de anúncios, mensagens e perfis
 - ✅ Painel administrativo (Dev Panel) com moderação de anúncios, denúncias e usuários
@@ -145,10 +146,11 @@ Este projeto foi construído para praticar e demonstrar:
 | **Dicas** | `/MG-DICAS/dicas.html` | Guia completo de compra e venda segura: golpes comuns, documentação, inspeção mecânica e negociação |
 | **Central de Ajuda** | `/MG-AJUDA/ajuda.html` | FAQ com acordeão por categoria (anúncios, pagamentos, conta, segurança) |
 | **Contato** | `/MG-CONTATO/contato.html` | Página de contato com atendimento via WhatsApp e chatbot |
-| **Como Utilizar** | `/MG-CASOS-USO/como-utilizar.html` | Documentação dos casos de uso da plataforma (UC01–UC15) |
+| **Como Utilizar** | `/MG-CASOS-USO/como-utilizar.html` | Documentação dos casos de uso da plataforma (UC01–UC25) |
 | **Configurações** | `/MG-CONFIGURACOES/configuracoes.html` | Preferências de aparência, notificações, privacidade e conta |
 | **Login** | `/MG-LOGIN/login.html` | Autenticação com email e senha via Supabase Auth |
 | **Cadastro** | `/MG-LOGIN/register.html` | Criação de conta com nome, email e senha |
+| **Recuperação de senha** | `/MG-LOGIN/recuperar-senha.html` | Solicitação de link e redefinição segura de senha |
 | **Dev Panel** | `/MG-DEV/devpanel.html` | Painel restrito para desenvolvedores: métricas, moderação de anúncios, denúncias e gestão de usuários |
 
 ### Blog — Artigos sobre Marcas de Luxo
@@ -335,7 +337,7 @@ O banco de dados é gerenciado pelo Supabase. O schema e as políticas RLS são 
 
 # Segurança
 
-- **Row Level Security (RLS)** ativado em todas as tabelas — usuários só leem e alteram os próprios dados
+- **Row Level Security (RLS)** ativado em todas as tabelas — dados privados ficam restritos ao próprio usuário/admin e a interface pública usa a view `usuarios_publicos`
 - **Escape de HTML** (`escapeHtml()` em `mgConfig.js`) aplicado em toda interpolação de dados do usuário em `innerHTML`, prevenindo XSS
 - **Construção via DOM API** nas telas críticas (chat, perfil): dados do usuário são inseridos via `textContent` e `dataset`, nunca via `innerHTML` direto
 - **Validação de URLs** no campo "Site" do perfil: aceita apenas `http:` e `https:`, bloqueando `javascript:` e outros esquemas perigosos
@@ -352,40 +354,40 @@ O banco de dados é gerenciado pelo Supabase. O schema e as políticas RLS são 
 
 # Como Rodar Localmente
 
-Como o projeto é 100% HTML/CSS/JS estático, basta abrir os arquivos em um servidor local. Recomendamos a extensão **Live Server** do VS Code ou o `serve` do Node.js.
+As páginas públicas são HTML/CSS/JS estáticos, mas os recursos integrados dependem das funções serverless da Vercel e do Supabase. Para testar apenas o layout, o Live Server é suficiente; para autenticação, banco e `/api/config`, use a Vercel local ou o deploy de demonstração.
 
 ## Pré-requisitos
 
-- Node.js 18+ (opcional, para usar o `serve`)
+- Node.js 18+
 - Projeto no Supabase configurado
 
-## Com Node.js
+## Com Vercel local
 
 ```bash
-# Instale o serve globalmente (apenas uma vez)
-npm install -g serve
-
 # Clone o repositório
 git clone https://github.com/murilotecoteco/MGMOTORS.git
 cd MGMOTORS
 
-# Suba o servidor
-serve .
+# Instale a CLI, caso ainda não tenha
+npm install -g vercel
+
+# Configure SUPABASE_URL e SUPABASE_KEY no ambiente local e suba o projeto
+vercel dev
 ```
 
-O site ficará disponível em:
+O site ficará disponível em `http://localhost:3000`. Acesse:
 
 ```
 http://localhost:3000/MG-INICIO/inicio.html
 ```
 
-## Com VS Code Live Server
+## Com VS Code Live Server (somente layout)
 
 1. Instale a extensão **Live Server** (Ritwick Dey)
 2. Clique com o botão direito em `MG-INICIO/inicio.html`
 3. Selecione **"Open with Live Server"**
 
-> **Atenção:** As funcionalidades que dependem do Supabase (autenticação, anúncios, chat etc.) requerem conexão com a internet e as variáveis de ambiente configuradas, pois apontam para o projeto Supabase em produção.
+> **Atenção:** O Live Server não executa `api/config.js`. Portanto, autenticação, anúncios, chat e recuperação de senha devem ser testados com `vercel dev` ou no deploy da Vercel.
 
 ---
 

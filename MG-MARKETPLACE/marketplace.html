@@ -226,7 +226,7 @@
       <span id="close-visualizar" class="close">&times;</span>
       <div class="visualizar-container">
         <div class="galeria-container">
-          <div class="foto-principal"><img id="viz-foto-principal" src="../imagens/sem-foto.png" alt=""></div>
+          <div class="foto-principal"><img id="viz-foto-principal" src="../imagens/image.webp" alt=""></div>
           <div class="miniaturas" id="viz-miniaturas"></div>
         </div>
         <div class="info-container">
@@ -309,8 +309,8 @@
       </div>
       <div class="footer-col">
         <h4>Empresa</h4>
-        <a href="#">Termos de Uso</a>
-        <a href="#">Privacidade</a>
+        <a href="../MG-LEGAL/termos.html">Termos de Uso</a>
+        <a href="../MG-LEGAL/privacidade.html">Privacidade</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -486,7 +486,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
       for (const a of anuncios) {
         a.marcas  = { nome: a.marca_nome  || a.marca_texto  || "" };
         a.modelos = { nome: a.modelo_nome || a.modelo_texto || "" };
-        a.foto_principal = a.foto_principal || "../imagens/sem-foto.png";
+        a.foto_principal = a.foto_principal || "../imagens/image.webp";
         a.vendedor_foto  = a.vendedor_foto  || "../imagens/usuario.png";
       }
 
@@ -590,7 +590,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
         card.innerHTML = `
       <div class="card-img-wrap">
-        <img src="${anuncio.foto_principal}" alt="" onerror="this.src='../imagens/sem-foto.png'" loading="lazy">
+        <img src="${anuncio.foto_principal}" alt="" onerror="this.src='../imagens/image.webp'" loading="lazy">
         ${anuncio.curtidas > 0 ? `<div class="card-curtidas-badge">${Number(anuncio.curtidas)}</div>` : ''}
         ${cidade ? `<div class="card-loc-badge"></div>` : ''}
       </div>
@@ -759,11 +759,11 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         document.getElementById("viz-foto-principal").src = fotos[0].url_foto;
         const min = document.getElementById("viz-miniaturas"); min.innerHTML = "";
         fotos.forEach((f, i) => {
-          const m = document.createElement("img"); m.src = f.url_foto; m.loading = "lazy"; m.className = "miniatura" + (i === 0 ? " ativa" : ""); m.onerror = () => m.src = "../imagens/sem-foto.png";
+          const m = document.createElement("img"); m.src = f.url_foto; m.loading = "lazy"; m.className = "miniatura" + (i === 0 ? " ativa" : ""); m.onerror = () => m.src = "../imagens/image.webp";
           m.onclick = () => { document.getElementById("viz-foto-principal").src = f.url_foto; document.querySelectorAll("#viz-miniaturas .miniatura").forEach(x => x.classList.remove("ativa")); m.classList.add("ativa"); };
           min.appendChild(m);
         });
-      } else { document.getElementById("viz-foto-principal").src = "../imagens/sem-foto.png"; }
+      } else { document.getElementById("viz-foto-principal").src = "../imagens/image.webp"; }
       document.getElementById("viz-btn-mensagem").onclick = () => { window.location.href = `../MG-MENSAGENS/mensagens.html?usuario=${a.usuario_id}&carro=${anuncioId}`; };
       const vizCurtir = document.getElementById("viz-btn-curtir");
       const podeCurtir = usuarioAtual && usuarioAtual.id !== a.usuario_id;

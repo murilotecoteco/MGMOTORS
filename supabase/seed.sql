@@ -1,0 +1,3 @@
+-- Seed opcional para desenvolvimento local.
+-- O projeto não cria dados fictícios automaticamente; os dados de demonstração
+-- devem ser inseridos conscientemente no ambiente de teste.

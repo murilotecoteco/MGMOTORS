@@ -166,6 +166,50 @@ input:focus {
   color: var(--auth-success);
 }
 
+.consentimentos {
+  margin: 18px 0 0;
+  padding: 14px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+}
+
+.consentimentos legend {
+  padding: 0 6px;
+  color: #3f3f46;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.consentimentos p {
+  margin: 0 0 10px;
+  color: var(--auth-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.consentimento {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 9px 0 0;
+  color: #3f3f46;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.consentimento input {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 1px 0 0;
+}
+
+.consentimento a {
+  color: var(--auth-accent);
+  font-weight: 800;
+}
+
 button {
   font: inherit;
 }

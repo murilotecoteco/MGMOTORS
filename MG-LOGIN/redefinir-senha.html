@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova senha - MG Motors</title>
+  <meta name="description" content="Defina uma nova senha segura para sua conta MG Motors.">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <main class="auth-shell">
+    <form id="form-nova-senha" class="auth-card">
+      <div class="auth-brand">
+        <span>MG Motors</span>
+        <small>Marketplace premium de veículos</small>
+      </div>
+
+      <div class="header-form">
+        <button type="button" id="back-arrow" aria-label="Voltar para o login">&larr;</button>
+        <h1>Nova senha</h1>
+      </div>
+
+      <p class="auth-subtitle">Escolha uma senha com pelo menos 8 caracteres.</p>
+
+      <label for="senha-nova">Nova senha</label>
+      <input type="password" id="senha-nova" autocomplete="new-password" minlength="8" required>
+
+      <label for="senha-confirmacao">Confirmar nova senha</label>
+      <input type="password" id="senha-confirmacao" autocomplete="new-password" minlength="8" required>
+
+      <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+      <button type="submit" class="primary-action">Salvar nova senha</button>
+    </form>
+  </main>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+    import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const form = document.getElementById("form-nova-senha");
+    const feedback = document.getElementById("form-feedback");
+    const botao = form.querySelector("button[type=submit]");
+    let recuperacaoValida = false;
+
+    const mostrarFeedback = (mensagem, tipo = "erro") => {
+      feedback.textContent = mensagem;
+      feedback.dataset.tipo = tipo;
+    };
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" && session) recuperacaoValida = true;
+    });
+
+    const { data: { session } } = await supabase.auth.getSession();
+    recuperacaoValida = Boolean(session);
+
+    document.getElementById("back-arrow").addEventListener("click", () => {
+      window.location.href = "login.html";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const senha = document.getElementById("senha-nova").value;
+      const confirmacao = document.getElementById("senha-confirmacao").value;
+
+      if (!recuperacaoValida) {
+        mostrarFeedback("Este link de recuperação é inválido ou expirou. Solicite outro link.");
+        return;
+      }
+      if (senha.length < 8 || senha !== confirmacao) {
+        mostrarFeedback("As senhas precisam ter pelo menos 8 caracteres e ser iguais.");
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = "Salvando...";
+      const { error } = await supabase.auth.updateUser({ password: senha });
+
+      if (error) {
+        mostrarFeedback("Não foi possível atualizar a senha. Solicite um novo link.");
+        botao.disabled = false;
+        botao.textContent = "Salvar nova senha";
+        return;
+      }
+
+      mostrarFeedback("Senha atualizada com sucesso. Você já pode entrar.", "sucesso");
+      setTimeout(() => { window.location.href = "login.html"; }, 1200);
+    });
+  </script>
+</body>
+</html>

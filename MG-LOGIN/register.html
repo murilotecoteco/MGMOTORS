@@ -38,9 +38,22 @@
     <label for="senha-reg">Senha</label>
     <input type="password" id="senha-reg" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" minlength="8" required>
 
+    <fieldset class="consentimentos" aria-describedby="consentimentos-ajuda">
+      <legend>Documentos legais</legend>
+      <p id="consentimentos-ajuda">Leia os documentos antes de concluir o cadastro.</p>
+      <label class="consentimento" for="aceite-termos">
+        <input type="checkbox" id="aceite-termos" required>
+        <span>Li e aceito os <a href="../MG-LEGAL/termos.html" target="_blank" rel="noopener">Termos de Uso</a>.</span>
+      </label>
+      <label class="consentimento" for="aceite-privacidade">
+        <input type="checkbox" id="aceite-privacidade" required>
+        <span>Li e concordo com a <a href="../MG-LEGAL/privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+      </label>
+    </fieldset>
+
     <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
 
-    <button type="submit" class="primary-action">Criar conta</button>
+    <button type="submit" class="primary-action" disabled>Criar conta</button>
     <button type="button" id="botao-google-registro" class="google"><span>G</span> Registrar com Google</button>
 
     <p class="auth-switch">Ja tenho conta - <a href="login.html">Entrar</a></p>
@@ -50,8 +63,23 @@
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+import { CURRENT_PRIVACY_VERSION, CURRENT_TERMS_VERSION, registrarAceiteLegal } from "../legalConsent.js";
 const supa = createClient(supabaseUrl, supabaseKey);
 const feedback = document.getElementById("form-feedback");
+const aceiteTermos = document.getElementById("aceite-termos");
+const aceitePrivacidade = document.getElementById("aceite-privacidade");
+const botaoCadastro = document.querySelector('#form-registro button[type="submit"]');
+
+function aceitesCompletos() {
+  return aceiteTermos.checked && aceitePrivacidade.checked;
+}
+
+function atualizarEstadoCadastro() {
+  botaoCadastro.disabled = !aceitesCompletos();
+}
+
+aceiteTermos.addEventListener("change", atualizarEstadoCadastro);
+aceitePrivacidade.addEventListener("change", atualizarEstadoCadastro);
 
 function mostrarFeedback(mensagem, tipo = "erro") {
   feedback.textContent = mensagem;
@@ -72,6 +100,11 @@ supa.auth.onAuthStateChange(async (event, session) => {
     } catch (e) {
       console.warn("Perfil criado pelo trigger ou indisponivel no momento.", e);
     }
+    const aceiteOAuth = sessionStorage.getItem("mg_legal_oauth_pending") === "1";
+    if (aceitesCompletos() || aceiteOAuth) {
+      await registrarAceiteLegal(supa);
+      sessionStorage.removeItem("mg_legal_oauth_pending");
+    }
     window.location.href = "../MG-CONTA/conta.html";
   }
 });
@@ -87,6 +120,12 @@ document.getElementById("form-registro").addEventListener("submit", async e => {
   const email = document.getElementById("email-reg").value.trim();
   const senha = document.getElementById("senha-reg").value;
 
+  if (!aceitesCompletos()) {
+    mostrarFeedback("Você precisa aceitar os Termos de Uso e a Política de Privacidade.");
+    atualizarEstadoCadastro();
+    return;
+  }
+
   if (senha.length < 8) {
     mostrarFeedback("A senha deve ter pelo menos 8 caracteres.");
     return;
@@ -99,7 +138,17 @@ document.getElementById("form-registro").addEventListener("submit", async e => {
   const { data, error } = await supa.auth.signUp({
     email,
     password: senha,
-    options: { data: { nome, full_name: nome, name: nome } }
+    options: {
+      data: {
+        nome,
+        full_name: nome,
+        name: nome,
+        legal_terms_accepted: "true",
+        legal_privacy_accepted: "true",
+        terms_version: CURRENT_TERMS_VERSION,
+        privacy_version: CURRENT_PRIVACY_VERSION
+      }
+    }
   });
 
   if (error) {
@@ -116,6 +165,7 @@ document.getElementById("form-registro").addEventListener("submit", async e => {
         email,
         nome
       }, { onConflict: "id", ignoreDuplicates: true });
+      if (data.session) await registrarAceiteLegal(supa);
     } catch (e) {
       console.warn("Perfil criado pelo trigger ou indisponivel no momento.", e);
     }
@@ -128,7 +178,12 @@ document.getElementById("form-registro").addEventListener("submit", async e => {
 });
 
 document.getElementById("botao-google-registro").addEventListener("click", async () => {
-  const redirectTo = new URL("../MG-CONTA/conta.html", window.location.href).href;
+  if (!aceitesCompletos()) {
+    mostrarFeedback("Aceite os Termos de Uso e a Política de Privacidade antes de continuar.");
+    return;
+  }
+  sessionStorage.setItem("mg_legal_oauth_pending", "1");
+  const redirectTo = new URL("register.html?oauth=1", window.location.href).href;
   await supa.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo }

@@ -186,8 +186,8 @@
     </div>
     <div class="footer-col">
       <h4>Empresa</h4>
-      <a href="#">Termos de Uso</a>
-      <a href="#">Privacidade</a>
+      <a href="../MG-LEGAL/termos.html">Termos de Uso</a>
+      <a href="../MG-LEGAL/privacidade.html">Privacidade</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -243,7 +243,7 @@ async function carregarPerfil() {
   if (!perfilUsuarioId) return;
   // Melhoria 1: talvez o perfil ainda não exista na tabela `usuarios` (ex: conta recém-criada).
   // `.maybeSingle()` retorna data:null sem lançar erro 406 (PGRST116), evitando travar em "Carregando...".
-  const { data: perfil } = await supabase.from("usuarios").select("*").eq("id", perfilUsuarioId).maybeSingle();
+  const { data: perfil } = await supabase.from("usuarios_publicos").select("*").eq("id", perfilUsuarioId).maybeSingle();
   if (!perfil) {
     nomeExibido.textContent = "Usuário";
     return;
@@ -310,7 +310,7 @@ async function carregarMeusAnuncios() {
     // listener de cada botão é preso na hora, dentro do próprio loop.
     try {
       const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).order("ordem").limit(1);
-      const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+      const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
       const card = document.createElement("div"); card.className = "anuncio-card";
       const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
       const km = Number(a.quilometragem || 0).toLocaleString();
@@ -393,7 +393,7 @@ async function carregarPausados() {
   cont.innerHTML = "";
   for (const a of data) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
     const card = document.createElement("div"); card.className = "anuncio-card";
     // C4: Anúncios rejeitados pelo admin (status='expirado') NÃO têm botão Reativar
     // para impedir que o usuário reative conteúdo removido por moderação.
@@ -425,7 +425,7 @@ async function carregarAnunciosOutro() {
   cont.innerHTML = "";
   for (const a of data) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/sem-foto.png";
+    const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
     const card = document.createElement("div"); card.className = "anuncio-card";
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
     card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
@@ -628,12 +628,13 @@ async function abrirModalSeguidores(tipo) {
   lista.innerHTML = '<p style="text-align:center;color:#888;">Carregando...</p>';
   modal.style.display = 'flex';
   let users = [];
-  if (tipo === 'seguidores') {
-    const { data } = await supabase.from("seguidores").select("seguidor_id, usuarios!seguidor_id(id,nome,foto,cidade)").eq("seguido_id", perfilUsuarioId);
-    users = data?.map(r => r.usuarios) || [];
-  } else {
-    const { data } = await supabase.from("seguidores").select("seguido_id, usuarios!seguido_id(id,nome,foto,cidade)").eq("seguidor_id", perfilUsuarioId);
-    users = data?.map(r => r.usuarios) || [];
+  const coluna = tipo === 'seguidores' ? 'seguidor_id' : 'seguido_id';
+  const filtro = tipo === 'seguidores' ? 'seguido_id' : 'seguidor_id';
+  const { data: relacoes } = await supabase.from("seguidores").select(coluna).eq(filtro, perfilUsuarioId);
+  const ids = relacoes?.map(relacao => relacao[coluna]).filter(Boolean) || [];
+  if (ids.length > 0) {
+    const { data: perfisPublicos } = await supabase.from("usuarios_publicos").select("id,nome,foto,cidade").in("id", ids);
+    users = perfisPublicos || [];
   }
   if (!users.length) { lista.innerHTML = '<p style="text-align:center;color:#888;">Nenhum usuário aqui ainda.</p>'; return; }
   lista.innerHTML = users.map(u => `

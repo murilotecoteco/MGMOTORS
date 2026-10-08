@@ -6,6 +6,18 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+async function removerArquivos(bucket: any, prefix: string) {
+  const arquivos = await bucket.list(prefix, { limit: 1000 });
+  if (arquivos.error) throw arquivos.error;
+  const caminhos = (arquivos.data || [])
+    .filter((arquivo) => Boolean(arquivo.id))
+    .map((arquivo) => `${prefix}/${arquivo.name}`);
+  if (caminhos.length > 0) {
+    const removidos = await bucket.remove(caminhos);
+    if (removidos.error) throw removidos.error;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   // Preflight CORS
   if (req.method === "OPTIONS") {
@@ -43,7 +55,7 @@ Deno.serve(async (req: Request) => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    // 1. Buscar caminhos das fotos para remover do Storage
+    // 1. Buscar caminhos das fotos de perfil para remover do Storage
     const { data: perfil } = await admin
       .from("usuarios")
       .select("foto, capa_foto")
@@ -60,11 +72,29 @@ Deno.serve(async (req: Request) => {
       if (match) fotoCaminhos.push(match[1]);
     }
     if (fotoCaminhos.length > 0) {
-      await admin.storage.from("fotos-perfil").remove(fotoCaminhos);
+      const removidos = await admin.storage.from("fotos-perfil").remove(fotoCaminhos);
+      if (removidos.error) throw removidos.error;
     }
 
+    const bucketPerfil = admin.storage.from("fotos-perfil");
+    await removerArquivos(bucketPerfil, `perfil/${user.id}`);
+    await removerArquivos(bucketPerfil, `posts/${user.id}`);
+
+    const { data: anuncios, error: anunciosError } = await admin
+      .from("anuncios")
+      .select("id")
+      .eq("usuario_id", user.id);
+    if (anunciosError) throw anunciosError;
+
+    const bucketAnuncios = admin.storage.from("FOTOS-ANUNCIOS");
+    for (const anuncio of anuncios || []) {
+      await removerArquivos(bucketAnuncios, `anuncios/${anuncio.id}`);
+    }
+    await removerArquivos(bucketAnuncios, `mensagens/${user.id}`);
+
     // 2. Deletar linha do usuário (FKs ON DELETE CASCADE limpam o resto)
-    await admin.from("usuarios").delete().eq("id", user.id);
+    const { error: perfilError } = await admin.from("usuarios").delete().eq("id", user.id);
+    if (perfilError) throw perfilError;
 
     // 3. Deletar usuário do Auth — requer service_role
     const { error: delAuthErr } = await admin.auth.admin.deleteUser(user.id);

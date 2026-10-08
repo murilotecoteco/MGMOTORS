@@ -69,6 +69,7 @@ export async function carregarHeaderGlobal(supabase) {
       headerNome.textContent = "Entrar";
       headerNome.href = "../MG-LOGIN/login.html";
       headerFoto.src = "../imagens/usuario.png";
+      mostrarBannerTermos();
       return null;
     }
 
@@ -101,8 +102,173 @@ export async function carregarHeaderGlobal(supabase) {
     headerNome.textContent = "Entrar";
     headerNome.href = "../MG-LOGIN/login.html";
     headerFoto.src = "../imagens/usuario.png";
+    mostrarBannerTermos();
     return null;
   }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BANNER DE TERMOS — exibido para usuários deslogados
+   Aparece uma vez por dispositivo (salvo em localStorage).
+   ═══════════════════════════════════════════════════════ */
+function mostrarBannerTermos() {
+  if (localStorage.getItem("mg_termos_aceitos")) return;
+
+  /* Resolve o caminho das páginas legais relativamente à origem */
+  const base = new URL("../MG-LEGAL/", window.location.href).href;
+  const urlTermos      = base + "termos.html";
+  const urlPrivacidade = base + "privacidade.html";
+
+  /* ── Estilos injetados ── */
+  const style = document.createElement("style");
+  style.textContent = `
+    #mg-banner-termos {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 9990;
+      background: #0f172a;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.45);
+      padding: 20px clamp(20px, 5vw, 60px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      transform: translateY(110%);
+      transition: transform 0.42s cubic-bezier(0.16,1,0.3,1);
+    }
+    #mg-banner-termos.visivel {
+      transform: translateY(0);
+    }
+    #mg-banner-termos.oculto {
+      transform: translateY(110%);
+    }
+    .mg-banner-texto {
+      flex: 1 1 300px;
+      font-family: "Ruda", "Segoe UI", system-ui, sans-serif;
+    }
+    .mg-banner-titulo {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mg-banner-titulo svg {
+      flex-shrink: 0;
+      color: #2563eb;
+    }
+    .mg-banner-desc {
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.62);
+      line-height: 1.55;
+      font-weight: 500;
+    }
+    .mg-banner-desc a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.18s;
+    }
+    .mg-banner-desc a:hover { color: #93c5fd; text-decoration: underline; }
+    .mg-banner-acoes {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    #mg-banner-aceitar {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.18s;
+      white-space: nowrap;
+    }
+    #mg-banner-aceitar:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    #mg-banner-rejeitar {
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: color 0.18s, border-color 0.18s;
+      white-space: nowrap;
+    }
+    #mg-banner-rejeitar:hover {
+      color: rgba(255,255,255,0.75);
+      border-color: rgba(255,255,255,0.28);
+    }
+    @media (max-width: 600px) {
+      #mg-banner-termos { flex-direction: column; align-items: stretch; gap: 16px; }
+      .mg-banner-acoes { flex-direction: column; }
+      #mg-banner-aceitar, #mg-banner-rejeitar { width: 100%; text-align: center; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* ── HTML do banner ── */
+  const banner = document.createElement("div");
+  banner.id = "mg-banner-termos";
+  banner.setAttribute("role", "dialog");
+  banner.setAttribute("aria-modal", "false");
+  banner.setAttribute("aria-label", "Consentimento de Termos e Privacidade");
+  banner.innerHTML = `
+    <div class="mg-banner-texto">
+      <div class="mg-banner-titulo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Sua privacidade importa para nós
+      </div>
+      <p class="mg-banner-desc">
+        Ao usar a MG Motors, você concorda com nossos
+        <a href="${urlTermos}" target="_blank" rel="noopener">Termos de Uso</a>
+        e nossa
+        <a href="${urlPrivacidade}" target="_blank" rel="noopener">Política de Privacidade</a>.
+        Leia os documentos antes de continuar.
+      </p>
+    </div>
+    <div class="mg-banner-acoes">
+      <button id="mg-banner-rejeitar" type="button">Recusar</button>
+      <button id="mg-banner-aceitar" type="button">Aceitar e Continuar</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  /* Slide-in após um frame para a transição funcionar */
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => banner.classList.add("visivel"));
+  });
+
+  const fechar = (aceito) => {
+    if (aceito) localStorage.setItem("mg_termos_aceitos", "1");
+    banner.classList.remove("visivel");
+    banner.classList.add("oculto");
+    setTimeout(() => banner.remove(), 450);
+  };
+
+  document.getElementById("mg-banner-aceitar").addEventListener("click", () => fechar(true));
+  document.getElementById("mg-banner-rejeitar").addEventListener("click", () => {
+    fechar(false);
+    /* Redireciona para a página de termos para o usuário ler antes de decidir */
+    setTimeout(() => window.location.href = urlTermos, 300);
+  });
 }
 
 function ativarLinkAtual() {

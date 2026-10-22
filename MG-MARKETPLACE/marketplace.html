@@ -496,6 +496,16 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
     if (urlParams.get("ordenar") === "curtidas") { document.addEventListener("DOMContentLoaded", () => { const s = document.getElementById("ordenar"); if (s) s.value = "curtidas"; }); }
     const abrirAnuncioAoCarregar = urlParams.get("anunciar") === "1";
     const categoriaSolicitada = (urlParams.get("categoria") || "").trim().toLowerCase();
+    let marcaSolicitada = normalizarBusca(urlParams.get("marca") || "");
+    let modeloSolicitado = normalizarBusca(urlParams.get("modelo") || "");
+
+    function normalizarBusca(valor) {
+      return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+    }
 
     // O schema atual oferece tipo_veiculo, mas não uma coluna editorial
     // categoria. Mantemos somente equivalências semânticas reais e avisamos
@@ -531,6 +541,11 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       }
 
       todosAnuncios = anuncios;
+      if (modeloSolicitado) {
+        const campoBusca = document.getElementById("barra_pesquisa");
+        if (campoBusca) campoBusca.value = urlParams.get("modelo");
+        filtroTextoAtual = modeloSolicitado;
+      }
       if (urlParams.get("ordenar")) { const s = document.getElementById("ordenar"); if (s && urlParams.get("ordenar") === "curtidas") s.value = "curtidas"; }
       aplicarFiltroOrdenacao();
       const carroId = urlParams.get("carro");
@@ -550,6 +565,9 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       }
       const tipoFiltro = document.getElementById("filtro-tipo-veiculo").value;
       if (tipoFiltro) filtrados = filtrados.filter(a => (a.tipo_veiculo || "carro") === tipoFiltro);
+      if (marcaSolicitada) {
+        filtrados = filtrados.filter(a => normalizarBusca(a.marcas?.nome || a.marca_texto).includes(marcaSolicitada));
+      }
       const marcaFiltro = document.getElementById("filtro-marca").value;
       if (marcaFiltro) filtrados = filtrados.filter(a => a.marca_id === marcaFiltro);
       const estadoFiltro = document.getElementById("filtro-estado").value;
@@ -857,7 +875,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
     document.getElementById("close-visualizar").onclick = () => document.getElementById("modal-visualizar").style.display = "none";
     document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { window.mgToast?.("Faça login para anunciar!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; } document.getElementById("modal-add-car").style.display = "flex"; };
     document.getElementById("close-modal").onclick = () => document.getElementById("modal-add-car").style.display = "none";
-    document.getElementById("filtro-marca").addEventListener("change", () => aplicarFiltroOrdenacao());
+    document.getElementById("filtro-marca").addEventListener("change", () => { marcaSolicitada = ""; aplicarFiltroOrdenacao(); });
     document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-estado").addEventListener("change", () => aplicarFiltroOrdenacao());
@@ -865,6 +883,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
     document.getElementById("barra_pesquisa").addEventListener("input", e => {
       clearTimeout(buscaDebounce);
       buscaDebounce = setTimeout(() => {
+        modeloSolicitado = "";
         filtroTextoAtual = e.target.value;
         aplicarFiltroOrdenacao();
       }, 280);

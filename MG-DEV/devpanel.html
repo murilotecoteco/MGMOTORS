@@ -11,7 +11,7 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-DEV/devpanel.html">
+<link rel="canonical" href="https://mgmotorss.vercel.app/MG-DEV/devpanel.html">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Ruda',sans-serif; }
 :root {
@@ -148,6 +148,16 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
 .user-foto { width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--border); }
 .anuncio-img { width:80px; height:56px; object-fit:cover; border-radius:10px; flex-shrink:0; }
 .empty-dev { text-align:center; padding:60px; color:var(--text-muted); font-size:15px; }
+.toast {
+  position:fixed; right:24px; bottom:24px; z-index:3000;
+  max-width:min(420px, calc(100vw - 48px)); padding:13px 18px;
+  border-radius:10px; background:#1f2937; color:#fff; font-size:13px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35); opacity:0;
+  transform:translateY(12px); pointer-events:none; transition:.2s ease;
+}
+.toast.show { opacity:1; transform:translateY(0); }
+.toast.error { background:#991b1b; }
+.toast.success { background:#166534; }
 .motivo-input {
   background:var(--surface); border:1px solid var(--border);
   border-radius:8px; padding:8px 12px; color:var(--text);
@@ -270,31 +280,20 @@ function escapeHtml(v) {
   return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-const ADMIN_EMAILS = ['murilofrank157@gmail.com'];
-
 async function souAdmin() {
   try {
     const { data: session } = await db.auth.getUser();
-    const email = session?.user?.email || '';
-    if (ADMIN_EMAILS.includes(email.toLowerCase())) return true;
-    try {
-      const { data: rpcData, error: rpcError } = await db.rpc('is_admin');
-      if (!rpcError && rpcData === true) return true;
-    } catch(e) {}
-    try {
-      const uid = session?.user?.id;
-      if (!uid) return false;
-      const { data: perfil } = await db
-        .from('usuarios').select('moderador').eq('id', uid).maybeSingle();
-      if (perfil?.moderador === true) return true;
-    } catch(e) {}
-    return false;
+    if (!session?.user) return false;
+    const { data, error } = await db.rpc('is_admin');
+    return !error && data === true;
   } catch(e) { return false; }
 }
 
-function toast(msg) {
+function toast(msg, type = "info") {
   const t = document.getElementById("toast");
   t.textContent = msg;
+  t.classList.remove("error", "success", "info");
+  t.classList.add(type);
   t.classList.add("show");
   setTimeout(() => t.classList.remove("show"), 3000);
 }
@@ -322,7 +321,7 @@ async function init() {
       h2El.textContent = '🔑 Login do Admin';
       pEl.innerHTML = `
         <form id="form-login-dev" style="display:flex;flex-direction:column;gap:12px;min-width:280px;margin-top:8px;">
-          <input id="dev-email" type="email" value="murilofrank157@gmail.com"
+          <input id="dev-email" type="email"
             placeholder="E-mail" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;" required>
           <input id="dev-senha" type="password"
             placeholder="Senha" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;" required>
@@ -403,7 +402,7 @@ async function carregarPendentes() {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        ${foto ? `<img src="${foto}" class="anuncio-img">` : ""}
+        ${foto ? `<img src="${escapeHtml(foto)}" class="anuncio-img">` : ""}
         <div style="flex:1;">
           <h3>${escapeHtml(a.marcas?.nome)} ${escapeHtml(a.modelos?.nome)} — ${a.ano_fabricacao}/${a.ano_modelo}</h3>
           <p>R$ ${Number(a.preco).toLocaleString("pt-BR")} · ${Number(a.quilometragem).toLocaleString()} km · ${escapeHtml(a.cidade) || "Cidade não informada"}</p>
@@ -416,8 +415,9 @@ async function carregarPendentes() {
       </div>
     `;
     d.querySelector(".btn-aprovar").onclick = async () => {
-      await db.from("anuncios").update({status:"ativo"}).eq("id",a.id);
-      toast("Anúncio aprovado!"); d.remove(); carregarDashboard();
+      const { error } = await db.from("anuncios").update({status:"ativo"}).eq("id",a.id);
+      if (error) { toast("Erro: " + error.message, "error"); return; }
+      toast("Anúncio aprovado!", "success"); d.remove(); carregarDashboard();
     };
     d.querySelector(".btn-rejeitar").onclick = async () => {
       if (!confirm("Rejeitar este anúncio?")) return;
@@ -457,7 +457,7 @@ async function carregarDenuncias() {
     const { data: denunciante } = await db.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).maybeSingle();
     if (denunciante) {
       denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:10px;">
-        <img src="${denunciante.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(denunciante.foto || '../imagens/usuario.png')}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
         <div><div style="font-size:12px;font-weight:800;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(denunciante.email)}</div></div>
         <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver</a>
       </div>`;
@@ -467,7 +467,7 @@ async function carregarDenuncias() {
       const { data: alvo } = await db.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).maybeSingle();
       if (alvo) {
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(239,68,68,.06);border-radius:10px;border:1px solid rgba(239,68,68,.15);">
-          <img src="${alvo.foto || '../imagens/usuario.png'}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+          <img src="${escapeHtml(alvo.foto || '../imagens/usuario.png')}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
           <div><div style="font-size:12px;font-weight:800;color:var(--red);">Denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(alvo.email)}</div></div>
           <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver perfil</a>
         </div>`;
@@ -478,7 +478,7 @@ async function carregarDenuncias() {
         const { data: fotos } = await db.from("fotos_anuncio").select("url_foto").eq("anuncio_id", den.alvo_id).limit(1);
         const fotoAnuncio = fotos?.[0]?.url_foto || '';
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.15);">
-          ${fotoAnuncio ? `<img src="${fotoAnuncio}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;">` : ''}
+          ${fotoAnuncio ? `<img src="${escapeHtml(fotoAnuncio)}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;">` : ''}
           <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--orange);">Anúncio: ${escapeHtml(anuncio.marcas?.nome)} ${escapeHtml(anuncio.modelos?.nome)} (${anuncio.ano_fabricacao})</div>
           <div style="font-size:11px;color:var(--text-muted);">R$ ${Number(anuncio.preco).toLocaleString('pt-BR')} · ${escapeHtml(anuncio.cidade)}</div></div>
         </div>`;
@@ -555,7 +555,7 @@ async function carregarUsuarios(busca = "") {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${u.foto || '../imagens/usuario.png'}" class="user-foto" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(u.foto || '../imagens/usuario.png')}" class="user-foto" onerror="this.src='../imagens/usuario.png'">
         <div style="flex:1;">
           <h3>${escapeHtml(u.nome) || "Sem nome"} ${u.banido ? '<span class="badge badge-ban" style="margin-left:8px;">Banido</span>' : ''}</h3>
           <p>${escapeHtml(u.email)} ${u.cidade ? `· ${escapeHtml(u.cidade)}` : ""}</p>
@@ -598,7 +598,7 @@ async function carregarBanidos() {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${u.foto||'../imagens/usuario.png'}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(u.foto||'../imagens/usuario.png')}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'">
         <div style="flex:1;">
           <h3 style="color:var(--red);">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
           <p>${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>

@@ -69,6 +69,12 @@ body > footer {
 #header-global .icone-link {
   text-decoration: none;
 }
+#header-global .header-notificacoes { position: relative; font-size: 18px; text-decoration: none; }
+#header-global .header-notificacoes-badge {
+  position: absolute; top: -4px; right: -6px; min-width: 16px; height: 16px;
+  padding: 0 4px; border-radius: 999px; background: #dc2626; color: #fff;
+  font: 700 10px/16px system-ui, sans-serif; text-align: center;
+}
 
 #header-global .logo-img {
   height: 40px;

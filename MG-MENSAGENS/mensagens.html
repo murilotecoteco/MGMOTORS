@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="mensagens.css">
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-MENSAGENS/mensagens.html">
+<link rel="canonical" href="https://mgmotorss.vercel.app/MG-MENSAGENS/mensagens.html">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>.lucide-icon{width:20px;height:20px;stroke:currentColor;stroke-width:2;vertical-align:middle;display:inline-block;}</style>
 </head>
@@ -218,7 +218,7 @@ async function adicionarOuAtualizarConversa(msg) {
 
   let item = document.querySelector(`.conversa-item[data-user-id="${CSS.escape(outroId)}"]`);
   if (!item) {
-    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroId).maybeSingle();
+    const { data: outroUser } = await supabase.from('usuarios_publicos').select('nome, foto').eq('id', outroId).maybeSingle();
     item = criarItemConversa(outroId, conv, outroUser);
     const lista = document.getElementById('conversas-lista');
     const empty = lista.querySelector('.empty-state');
@@ -277,8 +277,7 @@ async function carregarConversas() {
   }
 
   for (const [outroId, conv] of conversasCache) {
-    const { data: outroUser } = await supabase.from('usuarios').select('nome, foto, banido').eq('id', outroId).maybeSingle();
-    if (outroUser?.banido) continue; // ocultar conversas de usuários banidos
+    const { data: outroUser } = await supabase.from('usuarios_publicos').select('nome, foto').eq('id', outroId).maybeSingle();
     listaEl.appendChild(criarItemConversa(outroId, conv, outroUser));
   }
   ordenarListaConversas();
@@ -410,7 +409,7 @@ async function carregarMensagensConversa(outroUsuarioId) {
 async function abrirConversa(outroUsuarioId, carroInfo) {
   if (!usuarioAtual) return;
   conversaAtual = outroUsuarioId;
-  const { data: outroUser } = await supabase.from('usuarios').select('nome, foto').eq('id', outroUsuarioId).maybeSingle();
+  const { data: outroUser } = await supabase.from('usuarios_publicos').select('nome, foto').eq('id', outroUsuarioId).maybeSingle();
   const chatTitulo = document.getElementById('chat-titulo');
   chatTitulo.innerHTML = '';
 

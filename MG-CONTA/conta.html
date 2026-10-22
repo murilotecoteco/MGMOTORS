@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="conta.css">
 <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-CONTA/conta.html">
+<link rel="canonical" href="https://mgmotorss.vercel.app/MG-CONTA/conta.html">
 <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -66,6 +66,7 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="dados">Meus Dados</button>
       <button class="tab-btn" data-tab="anuncios">Meus Anúncios</button>
+      <button class="tab-btn" data-tab="pausados">Pausados</button>
       <button class="tab-btn" data-tab="fotos"><i data-lucide="image" style="width:14px;height:14px;vertical-align:-1px;margin-right:4px;"></i> Fotos</button>
     </div>
     <div id="tab-dados" class="tab-content active">
@@ -315,7 +316,7 @@ async function carregarMeusAnuncios() {
       const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
       const km = Number(a.quilometragem || 0).toLocaleString();
       // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
-      card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${a.id}">Excluir</button></div>`;
+      card.innerHTML = `<img src="${escapeHtml(foto)}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${escapeHtml(a.id)}">Excluir</button></div>`;
       card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
       card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
       card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`; });
@@ -403,7 +404,8 @@ async function carregarPausados() {
       : `<span style="background:#e0e0e0;color:#666;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pausado</span>`;
     const btnReativar = isRejeitado ? '' : `<button class="btn-reativar" data-id="${a.id}" style="width:100%;padding:8px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:800;margin-top:8px;">Reativar</button>`;
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
-    card.innerHTML = `<img src="${foto}" alt="" style="filter:grayscale(.6)"><div class="anuncio-info" style="opacity:.8;"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p>${badgeRejeitado}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div>${btnReativar}</div>`;
+    const km = Number(a.quilometragem || 0).toLocaleString("pt-BR");
+    card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" style="filter:grayscale(.6)"><div class="anuncio-info" style="opacity:.8;"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p>${badgeRejeitado}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div>${btnReativar}</div>`;
     card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
     card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
     cont.appendChild(card);
@@ -428,7 +430,8 @@ async function carregarAnunciosOutro() {
     const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
     const card = document.createElement("div"); card.className = "anuncio-card";
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
-    card.innerHTML = `<img src="${foto}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${a.quilometragem.toLocaleString()} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
+    const km = Number(a.quilometragem || 0).toLocaleString("pt-BR");
+    card.innerHTML = `<img src="${escapeHtml(foto)}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
     card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
     card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
     card.addEventListener("click", () => window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`);
@@ -454,7 +457,7 @@ btnSeguir.addEventListener("click", async () => {
     btnSeguir.textContent="Seguindo"; btnSeguir.classList.add("seguindo");
   }
   // Perfil já foi carregado acima; maybeSingle() evita 406 em leitura concorrente.
-  const { data: p } = await supabase.from("usuarios").select("seguidores").eq("id",perfilUsuarioId).maybeSingle();
+  const { data: p } = await supabase.from("usuarios_publicos").select("seguidores").eq("id",perfilUsuarioId).maybeSingle();
   document.getElementById("seguidoresCount").textContent = p?.seguidores||0;
 });
 
@@ -639,7 +642,7 @@ async function abrirModalSeguidores(tipo) {
   if (!users.length) { lista.innerHTML = '<p style="text-align:center;color:#888;">Nenhum usuário aqui ainda.</p>'; return; }
   lista.innerHTML = users.map(u => `
     <a href="conta.html?id=${u.id}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1.5px solid rgba(20,75,113,.1);text-decoration:none;color:inherit;transition:background .2s;" onmouseover="this.style.background='rgba(20,75,113,.05)'" onmouseout="this.style.background=''">
-      <img src="${u.foto||'../imagens/usuario.png'}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+      <img src="${escapeHtml(u.foto||'../imagens/usuario.png')}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
       <div><div style="font-weight:800;font-size:14px;color:#144b71;">${escapeHtml(u.nome)||'Usuário'}</div>${u.cidade?`<div style="font-size:12px;color:#888;">${escapeHtml(u.cidade)}</div>`:''}</div>
     </a>
   `).join('');

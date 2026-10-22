@@ -1,0 +1,6 @@
+# Backups locais do banco podem conter dados pessoais e não devem ir para o GitHub.
+backups/
+
+# Arquivos temporários de renderização/testes locais.
+.tmp/
+*.log

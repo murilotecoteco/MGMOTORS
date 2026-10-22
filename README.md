@@ -30,7 +30,7 @@
 
 <p align="center">
 
-<a href="https://mgmotors-zeta.vercel.app/MG-INICIO/inicio.html">
+<a href="https://mgmotorss.vercel.app/MG-INICIO/inicio.html">
 <img src="https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge">
 </a>
 
@@ -421,7 +421,7 @@ Quando o projeto Vercel está conectado ao repositório, pushes para o branch `m
 URL de produção:
 
 ```
-https://mgmotors-zeta.vercel.app
+https://mgmotorss.vercel.app
 ```
 
 ---

@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="configuracoes.css">
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-CONFIGURACOES/configuracoes.html">
+<link rel="canonical" href="https://mgmotorss.vercel.app/MG-CONFIGURACOES/configuracoes.html">
 <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -242,7 +242,6 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         import { carregarHeaderGlobal } from "../headerGlobal.js";
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        const DEVS = ["murilofrank157@gmail.com", "guilhermefrankadami@gmail.com", "candidomurilo809@gmail.com"];
         let usuarioAtual = null;
         let preferencias = {};
         let isDirty = false; // true quando há alterações não salvas
@@ -259,7 +258,8 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
             if (!usuarioAtual) return;
             // Melhoria 1: maybeSingle() — perfil pode ainda não ter sido criado na tabela `usuarios`.
             const { data: perfil } = await supabase.from("usuarios").select("preferencias").eq("id", usuarioAtual.id).maybeSingle();
-            if (DEVS.includes(usuarioAtual.email)) document.getElementById("secao-dev").style.display = "block";
+            const { data: isAdmin } = await supabase.rpc("is_admin");
+            if (isAdmin === true) document.getElementById("secao-dev").style.display = "block";
             preferencias = perfil?.preferencias || {};
             aplicarPreferencias();
         }

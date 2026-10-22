@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="inicio.css" />
   <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-INICIO/inicio.html">
+<link rel="canonical" href="https://mgmotorss.vercel.app/MG-INICIO/inicio.html">
 </head>
 <body>
 
@@ -290,7 +290,7 @@
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
-import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
 import { carregarHeaderGlobal } from "../headerGlobal.js";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -411,7 +411,7 @@ async function carregarVeiculosDestaque() {
     card.className = "veiculo-card reveal";
     card.innerHTML = `
       <div class="veiculo-img-wrap">
-        <img src="${foto}" alt="${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}" onerror="this.src='../imagens/image.webp'" loading="lazy">
+        <img src="${escapeHtml(foto)}" alt="${escapeHtml(`${anuncio.marcas?.nome || ""} ${anuncio.modelos?.nome || ""}`)}" onerror="this.src='../imagens/image.webp'" loading="lazy">
         <button class="veiculo-favorito ${isFav ? "ativo" : ""}" data-id="${anuncio.id}">${favIcon}</button>
       </div>
       <div class="veiculo-info">

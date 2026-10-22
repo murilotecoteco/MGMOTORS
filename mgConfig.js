@@ -8,15 +8,24 @@
 // O top-level await faz toda página que importar este módulo aguardar a
 // configuração chegar antes de executar.
 
-let config;
+// Valores sintaticamente válidos para permitir que a interface carregue em
+// estado degradado quando o endpoint de configuração estiver indisponível.
+// As chamadas ao Supabase falharão de forma controlada, mas a página não
+// ficará em branco por causa de uma exceção no topo do módulo.
+let config = {
+  supabaseUrl: "https://config-indisponivel.invalid",
+  supabaseKey: "config-indisponivel"
+};
+export let configError = null;
 try {
   const res = await fetch("/api/config");
   if (!res.ok) throw new Error("/api/config respondeu " + res.status);
   config = await res.json();
 } catch (e) {
-  throw new Error(
+  configError = e;
+  console.error(
     "Não foi possível carregar a configuração do Supabase via /api/config. " +
-    "Verifique se as variáveis SUPABASE_URL e SUPABASE_KEY estão definidas na Vercel. (" + e.message + ")"
+    "A interface continuará em modo degradado.", e
   );
 }
 

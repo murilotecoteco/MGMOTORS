@@ -1,3 +1,12 @@
+-- Migration incremental: não cria o schema base.
+DO $$
+BEGIN
+  IF to_regclass('public.usuarios') IS NULL THEN
+    RAISE EXCEPTION 'Migration legal_consent abortada: public.usuarios não existe.';
+  END IF;
+END
+$$;
+
 ALTER TABLE public.usuarios
   ADD COLUMN IF NOT EXISTS terms_accepted_at timestamptz,
   ADD COLUMN IF NOT EXISTS privacy_accepted_at timestamptz,
@@ -29,6 +38,7 @@ REVOKE INSERT ON public.usuarios FROM anon;
 -- original para uso do próprio usuário e da administração.
 DROP POLICY IF EXISTS "Todos veem usuarios" ON public.usuarios;
 DROP POLICY IF EXISTS "usuarios select publico" ON public.usuarios;
+DROP POLICY IF EXISTS "usuarios select proprio ou admin" ON public.usuarios;
 
 CREATE POLICY "usuarios select proprio ou admin" ON public.usuarios
   FOR SELECT

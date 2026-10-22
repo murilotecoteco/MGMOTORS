@@ -1,6 +1,7 @@
 // arquivo: headerGlobal.js
 
 import { consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
+import { configError } from "./mgConfig.js";
 
 /**
  * Injeta o header global, marca a pagina ativa e sincroniza a area de
@@ -18,7 +19,7 @@ export async function carregarHeaderGlobal(supabase) {
 
   headerContainer.innerHTML = `
     <div class="logo">
-      <a href="../MG-INICIO/inicio.html" class="logo-link" aria-label="Ir para o inicio da MG Motors">
+      <a href="/MG-INICIO/inicio.html" class="logo-link" aria-label="Ir para o inicio da MG Motors">
         <img class="logo-img" src="../imagens/logo-mg.png" alt="Logo MG Motors">
         <span class="logo-text">MG Motors</span>
       </a>
@@ -31,29 +32,32 @@ export async function carregarHeaderGlobal(supabase) {
     </button>
 
     <nav class="nav" id="main-nav" aria-label="Navegacao principal">
-      <a href="../MG-MARKETPLACE/marketplace.html" class="nav-marketplace nav-link">Marketplace</a>
-      <a href="../MG-DICAS/dicas.html" class="nav-link">Dicas</a>
-      <a href="../MG-CASOS-USO/como-utilizar.html" class="nav-link">Como Utilizar</a>
-      <a href="../MG-CONTATO/contato.html" class="nav-link">Contato</a>
-      <a href="../MG-MENSAGENS/mensagens.html" class="nav-link">Mensagens</a>
+      <a href="/MG-MARKETPLACE/marketplace.html" class="nav-marketplace nav-link">Marketplace</a>
+      <a href="/MG-DICAS/dicas.html" class="nav-link">Dicas</a>
+      <a href="/MG-CASOS-USO/como-utilizar.html" class="nav-link">Como Utilizar</a>
+      <a href="/MG-CONTATO/contato.html" class="nav-link">Contato</a>
+      <a href="/MG-MENSAGENS/mensagens.html" class="nav-link">Mensagens</a>
     </nav>
 
     <div class="icones" aria-label="Acoes da conta">
-      <a id="header-nome" class="header-nome" href="../MG-LOGIN/login.html">Entrar</a>
+      <a id="header-nome" class="header-nome" href="/MG-LOGIN/login.html">Entrar</a>
       <img id="header-foto" class="icone-foto" src="../imagens/usuario.png" alt="Foto de perfil do usuario">
 
-      <a class="icone-link" href="../MG-CONFIGURACOES/configuracoes.html" aria-label="Configuracoes">
+      <a class="icone-link" href="/MG-CONFIGURACOES/configuracoes.html" aria-label="Configuracoes">
         <svg class="icone" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </a>
 
-      <a class="icone-link" href="../MG-CONTA/conta.html" aria-label="Minha conta">
+      <a class="icone-link" href="/MG-CONTA/conta.html" aria-label="Minha conta">
         <svg class="icone" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
+      </a>
+      <a id="header-notificacoes" class="icone-link header-notificacoes" href="/MG-MENSAGENS/mensagens.html" aria-label="Notificações e mensagens">
+        <span aria-hidden="true">🔔</span><span id="header-notificacoes-badge" class="header-notificacoes-badge" hidden>0</span>
       </a>
     </div>
   `;
@@ -61,12 +65,16 @@ export async function carregarHeaderGlobal(supabase) {
   ativarLinkAtual();
   configurarMenuMobile(headerContainer);
 
+  if (configError) {
+    window.mgToast?.("Serviço temporariamente indisponível. Tente novamente mais tarde.", "error");
+  }
+
   const headerNome = document.getElementById("header-nome");
   const headerFoto = document.getElementById("header-foto");
 
   if (!supabase) {
     headerNome.textContent = "Entrar";
-    headerNome.href = "../MG-LOGIN/login.html";
+    headerNome.href = "/MG-LOGIN/login.html";
     headerFoto.src = "../imagens/usuario.png";
     mostrarBannerTermos();
     return null;
@@ -77,7 +85,7 @@ export async function carregarHeaderGlobal(supabase) {
 
     if (authError || !data?.user) {
       headerNome.textContent = "Entrar";
-      headerNome.href = "../MG-LOGIN/login.html";
+      headerNome.href = "/MG-LOGIN/login.html";
       headerFoto.src = "../imagens/usuario.png";
       mostrarBannerTermos();
       return null;
@@ -96,15 +104,39 @@ export async function carregarHeaderGlobal(supabase) {
     if (perfil?.banido) {
       await supabase.auth.signOut();
       // Preserva a página atual para exibir mensagem contextual no login
-      const loginUrl = new URL("../MG-LOGIN/login.html", window.location.href).href;
+      const loginUrl = new URL("/MG-LOGIN/login.html", window.location.origin).href;
       window.location.replace(loginUrl + "?banido=1");
       return null;
     }
 
     headerNome.textContent = perfil?.nome || data.user.email;
-    headerNome.href = "../MG-CONTA/conta.html";
+    headerNome.href = "/MG-CONTA/conta.html";
     headerFoto.src = perfil?.foto || "../imagens/usuario.png";
     headerFoto.alt = `Foto de perfil de ${perfil?.nome || data.user.email}`;
+
+    const { count: notificacoesNaoLidas, error: notificacoesError } = await supabase
+      .from("notificacoes")
+      .select("id", { count: "exact", head: true })
+      .eq("usuario_id", data.user.id)
+      .eq("lida", false);
+    let totalNaoLidas = notificacoesNaoLidas;
+    // Compatibilidade durante a implantação da migration: mensagens antigas
+    // continuam aparecendo no badge enquanto a tabela de notificações não
+    // estiver disponível no ambiente atual.
+    if (notificacoesError) {
+      const { count } = await supabase.from("mensagens")
+        .select("id", { count: "exact", head: true })
+        .eq("destinatario_id", data.user.id)
+        .eq("lida", false);
+      totalNaoLidas = count;
+    }
+    if (totalNaoLidas != null) {
+      const badge = document.getElementById("header-notificacoes-badge");
+      if (badge && totalNaoLidas > 0) {
+        badge.textContent = totalNaoLidas > 99 ? "99+" : String(totalNaoLidas);
+        badge.hidden = false;
+      }
+    }
 
     if (!consentimentoAtual(perfil)) {
       mostrarBannerTermos({ supabase, usuario: data.user, perfil });
@@ -114,7 +146,7 @@ export async function carregarHeaderGlobal(supabase) {
   } catch (error) {
     console.error("Erro inesperado ao carregar header:", error);
     headerNome.textContent = "Entrar";
-    headerNome.href = "../MG-LOGIN/login.html";
+    headerNome.href = "/MG-LOGIN/login.html";
     headerFoto.src = "../imagens/usuario.png";
     mostrarBannerTermos();
     return null;
@@ -131,7 +163,7 @@ function mostrarBannerTermos({ supabase = null, usuario = null, perfil = null } 
   if (autenticado && consentimentoAtual(perfil)) return;
 
   /* Resolve o caminho das páginas legais relativamente à origem */
-  const base = new URL("../MG-LEGAL/", window.location.href).href;
+  const base = new URL("/MG-LEGAL/", window.location.origin).href;
   const urlTermos      = base + "termos.html";
   const urlPrivacidade = base + "privacidade.html";
 

@@ -34,7 +34,7 @@
     .char-counter.limite { color: #ef4444; }
   </style>
 <script src="../tema.js"></script>
-<link rel="canonical" href="https://mgmotors.vercel.app/MG-MARKETPLACE/marketplace.html">
+<link rel="canonical" href="https://mgmotorss.vercel.app/MG-MARKETPLACE/marketplace.html">
 <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -321,7 +321,7 @@
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
-import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
     import { carregarHeaderGlobal } from "../headerGlobal.js";
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -475,6 +475,27 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("ordenar") === "curtidas") { document.addEventListener("DOMContentLoaded", () => { const s = document.getElementById("ordenar"); if (s) s.value = "curtidas"; }); }
+    const abrirAnuncioAoCarregar = urlParams.get("anunciar") === "1";
+    const categoriaSolicitada = (urlParams.get("categoria") || "").trim().toLowerCase();
+
+    // O schema atual oferece tipo_veiculo, mas não uma coluna editorial
+    // categoria. Mantemos somente equivalências semânticas reais e avisamos
+    // quando a home solicitar uma categoria que o banco ainda não representa.
+    const categoriasPorTipoVeiculo = {
+      carros: ["carro"],
+      carro: ["carro"],
+      motos: ["moto"],
+      moto: ["moto"],
+      caminhoes: ["caminhao"],
+      caminhao: ["caminhao"],
+      utilitarios: ["utilitario"],
+      utilitario: ["utilitario"],
+      embarcacoes: ["embarcacao"],
+      embarcacao: ["embarcacao"],
+      maquinas: ["maquina_agricola"],
+      maquina_agricola: ["maquina_agricola"],
+      onibus: ["onibus"]
+    };
 
     async function carregarAnuncios() {
       const { data: anuncios, error } = await supabase.rpc(
@@ -499,6 +520,15 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
     function aplicarFiltroOrdenacao() {
       let filtrados = [...todosAnuncios];
+      if (categoriaSolicitada) {
+        const tipos = categoriasPorTipoVeiculo[categoriaSolicitada];
+        if (tipos) {
+          filtrados = filtrados.filter(a => tipos.includes(a.tipo_veiculo || "carro"));
+        } else if (!window.__mgCategoriaAvisada) {
+          window.__mgCategoriaAvisada = true;
+          window.mgToast?.(`A categoria “${categoriaSolicitada}” ainda não possui campo correspondente no cadastro de anúncios.`, "warning");
+        }
+      }
       const tipoFiltro = document.getElementById("filtro-tipo-veiculo").value;
       if (tipoFiltro) filtrados = filtrados.filter(a => (a.tipo_veiculo || "carro") === tipoFiltro);
       const marcaFiltro = document.getElementById("filtro-marca").value;
@@ -590,7 +620,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
         card.innerHTML = `
       <div class="card-img-wrap">
-        <img src="${anuncio.foto_principal}" alt="" onerror="this.src='../imagens/image.webp'" loading="lazy">
+        <img src="${escapeHtml(anuncio.foto_principal)}" alt="" onerror="this.src='../imagens/image.webp'" loading="lazy">
         ${anuncio.curtidas > 0 ? `<div class="card-curtidas-badge">${Number(anuncio.curtidas)}</div>` : ''}
         ${cidade ? `<div class="card-loc-badge"></div>` : ''}
       </div>
@@ -600,7 +630,7 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         <p class="info-preco">R$ ${Number(anuncio.preco).toLocaleString("pt-BR")}</p>
         <div class="card-actions">
           <button class="btn-curtir ${anuncio.usuario_curtiu ? 'curtido' : ''}" data-id="${anuncio.id}" ${!podeCurtir ? 'disabled' : ''} title="Curtir" aria-label="Curtir anúncio"><svg class="heart-icon" viewBox="0 0 24 24" fill="${anuncio.usuario_curtiu ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="curtidas-count">${anuncio.curtidas > 0 ? anuncio.curtidas : ''}</span></button>
-          <span class="perfil-link vendedor-link" data-usuario="${anuncio.usuario_id}" title="Ver perfil do vendedor"><img src="${anuncio.vendedor_foto || '../imagens/usuario.png'}" class="vendedor-mini-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy"></span>
+          <span class="perfil-link vendedor-link" data-usuario="${escapeHtml(anuncio.usuario_id)}" title="Ver perfil do vendedor"><img src="${escapeHtml(anuncio.vendedor_foto || '../imagens/usuario.png')}" class="vendedor-mini-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy"></span>
           ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-excluir" data-id="${anuncio.id}">Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}">Denunciar</button>`}
         </div>
       </div>`;
@@ -810,7 +840,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-estado").addEventListener("change", () => aplicarFiltroOrdenacao());
-    document.getElementById("barra_pesquisa").addEventListener("input", e => { filtroTextoAtual = e.target.value; aplicarFiltroOrdenacao(); });
+    let buscaDebounce;
+    document.getElementById("barra_pesquisa").addEventListener("input", e => {
+      clearTimeout(buscaDebounce);
+      buscaDebounce = setTimeout(() => {
+        filtroTextoAtual = e.target.value;
+        aplicarFiltroOrdenacao();
+      }, 280);
+    });
 
     const inputWa = document.getElementById('car-whatsapp');
     const erroWa  = document.getElementById('whatsapp-erro');
@@ -1003,6 +1040,10 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
     });
 
     carregarAnuncios();
+    if (abrirAnuncioAoCarregar) {
+      if (usuarioAtual) document.getElementById("modal-add-car").style.display = "flex";
+      else window.mgToast?.("Faça login para publicar um anúncio.", "warning");
+    }
     lucide.createIcons();
   </script>
   <script>window.chtlConfig = { chatbotId: "6944231868" }</script>

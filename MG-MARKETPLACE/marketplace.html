@@ -626,11 +626,12 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       </div>
       <div class="info">
         <h3></h3>
-        <p class="info-sub">${anuncio.ano_fabricacao}/${anuncio.ano_modelo} · ${Number(anuncio.quilometragem).toLocaleString()} km</p>
+        <p class="info-sub"><span>${anuncio.ano_fabricacao || '—'}/${anuncio.ano_modelo || '—'}</span><span class="meta-separador">•</span><span>${Number(anuncio.quilometragem || 0).toLocaleString('pt-BR')} km</span></p>
         <p class="info-preco">R$ ${Number(anuncio.preco).toLocaleString("pt-BR")}</p>
         <div class="card-actions">
           <button class="btn-curtir ${anuncio.usuario_curtiu ? 'curtido' : ''}" data-id="${anuncio.id}" ${!podeCurtir ? 'disabled' : ''} title="Curtir" aria-label="Curtir anúncio"><svg class="heart-icon" viewBox="0 0 24 24" fill="${anuncio.usuario_curtiu ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="curtidas-count">${anuncio.curtidas > 0 ? anuncio.curtidas : ''}</span></button>
           <span class="perfil-link vendedor-link" data-usuario="${escapeHtml(anuncio.usuario_id)}" title="Ver perfil do vendedor"><img src="${escapeHtml(anuncio.vendedor_foto || '../imagens/usuario.png')}" class="vendedor-mini-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy"></span>
+          <button class="btn-ver-detalhes" type="button">Ver detalhes</button>
           ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-excluir" data-id="${anuncio.id}">Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}">Denunciar</button>`}
         </div>
       </div>`;

@@ -1065,6 +1065,26 @@ header {
   #modal-visualizar .foto-principal { height: min(420px, 48vh); }
   #modal-visualizar .info-container { padding: 26px 22px 24px; }
 }
+
+/* Prevalece sobre regras legadas do tema */
+.card-curtidas-badge::before, .card-loc-badge::before { content: none !important; }
+.card-curtidas-badge, .card-loc-badge { display: inline-flex; align-items: center; gap: 5px; }
+.card-curtidas-badge .icon-inline { fill: currentColor; }
+
+/* Ícones Lucide dos cards e do detalhe */
+.icon-inline { width: 16px; height: 16px; flex: 0 0 auto; stroke-width: 2.2; vertical-align: middle; }
+.card-curtidas-badge, .card-loc-badge { display: inline-flex; align-items: center; gap: 5px; }
+.card-curtidas-badge::before, .card-loc-badge::before { content: none; }
+.card-curtidas-badge .icon-inline { width: 13px; height: 13px; color: #ff8d8d; fill: currentColor; }
+.card-loc-badge .icon-inline { width: 13px; height: 13px; color: #bfe9ff; }
+.heart-icon { width: 16px; height: 16px; stroke-width: 2.2; }
+.btn-curtir.curtido .heart-icon { fill: currentColor; }
+.btn-excluir, .btn-denunciar-card { display: inline-flex; align-items: center; gap: 5px; }
+#modal-visualizar .visualizar-acoes .icon-inline { width: 17px; height: 17px; }
+#modal-visualizar .btn-whatsapp .icon-inline { color: #fff; }
+#modal-visualizar .btn-gps-link,
+#modal-visualizar .perfil-link,
+#modal-visualizar .btn-denunciar-anuncio { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
 @media (max-width: 480px) {
   #modal-visualizar .modal-visualizar { border-radius: 15px; }
   #modal-visualizar .info-container h2 { font-size: 29px; margin-bottom: 20px; }

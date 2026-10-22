@@ -242,14 +242,14 @@
           <div class="descricao-titulo">Descrição</div>
           <div class="visualizar-descricao" id="viz-descricao"></div>
           <div class="visualizar-acoes">
-            <button class="btn-mensagem-visualizar" id="viz-btn-mensagem">Tenho interesse</button>
-            <button class="btn-curtir" id="viz-btn-curtir">Curtir</button>
-            <a id="viz-whatsapp" href="#" target="_blank" class="btn-whatsapp">WhatsApp</a>
+            <button class="btn-mensagem-visualizar" id="viz-btn-mensagem"><i data-lucide="message-circle" class="icon-inline"></i> Tenho interesse</button>
+            <button class="btn-curtir" id="viz-btn-curtir"><i data-lucide="heart" class="icon-inline"></i> Curtir</button>
+            <a id="viz-whatsapp" href="#" target="_blank" class="btn-whatsapp"><i data-lucide="message-circle" class="icon-inline"></i> WhatsApp</a>
           </div>
-          <a id="viz-gps-link" href="#" target="_blank" class="btn-gps-link" style="display:none;">Ver no Google
+          <a id="viz-gps-link" href="#" target="_blank" class="btn-gps-link" style="display:none;"><i data-lucide="map-pin" class="icon-inline"></i> Ver no Google
             Maps</a>
-          <div class="perfil-link" id="viz-perfil-link">Ver perfil do vendedor</div>
-          <button class="btn-denunciar-anuncio" id="viz-denunciar">Denunciar anúncio</button>
+          <div class="perfil-link" id="viz-perfil-link"><i data-lucide="user-round" class="icon-inline"></i> Ver perfil do vendedor</div>
+          <button class="btn-denunciar-anuncio" id="viz-denunciar"><i data-lucide="flag" class="icon-inline"></i> Denunciar anúncio</button>
         </div>
       </div>
     </div>
@@ -622,18 +622,18 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         card.innerHTML = `
       <div class="card-img-wrap">
         <img src="${escapeHtml(anuncio.foto_principal)}" alt="" onerror="this.src='../imagens/image.webp'" loading="lazy">
-        ${anuncio.curtidas > 0 ? `<div class="card-curtidas-badge">${Number(anuncio.curtidas)}</div>` : ''}
-        ${cidade ? `<div class="card-loc-badge"></div>` : ''}
+        ${anuncio.curtidas > 0 ? `<div class="card-curtidas-badge"><i data-lucide="heart" class="icon-inline"></i><span>${Number(anuncio.curtidas)}</span></div>` : ''}
+        ${cidade ? `<div class="card-loc-badge"><i data-lucide="map-pin" class="icon-inline"></i><span></span></div>` : ''}
       </div>
       <div class="info">
         <h3></h3>
         <p class="info-sub"><span>${anuncio.ano_fabricacao || '—'}/${anuncio.ano_modelo || '—'}</span><span class="meta-separador">•</span><span>${Number(anuncio.quilometragem || 0).toLocaleString('pt-BR')} km</span></p>
         <p class="info-preco">R$ ${Number(anuncio.preco).toLocaleString("pt-BR")}</p>
         <div class="card-actions">
-          <button class="btn-curtir ${anuncio.usuario_curtiu ? 'curtido' : ''}" data-id="${anuncio.id}" ${!podeCurtir ? 'disabled' : ''} title="Curtir" aria-label="Curtir anúncio"><svg class="heart-icon" viewBox="0 0 24 24" fill="${anuncio.usuario_curtiu ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="curtidas-count">${anuncio.curtidas > 0 ? anuncio.curtidas : ''}</span></button>
+          <button class="btn-curtir ${anuncio.usuario_curtiu ? 'curtido' : ''}" data-id="${anuncio.id}" ${!podeCurtir ? 'disabled' : ''} title="Curtir" aria-label="Curtir anúncio"><i data-lucide="heart" class="heart-icon"></i><span class="curtidas-count">${anuncio.curtidas > 0 ? anuncio.curtidas : ''}</span></button>
           <span class="perfil-link vendedor-link" data-usuario="${escapeHtml(anuncio.usuario_id)}" title="Ver perfil do vendedor"><img src="${escapeHtml(anuncio.vendedor_foto || '../imagens/usuario.png')}" class="vendedor-mini-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy"></span>
           <button class="btn-ver-detalhes" type="button">Ver detalhes</button>
-          ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-excluir" data-id="${anuncio.id}">Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}">Denunciar</button>`}
+          ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-excluir" data-id="${anuncio.id}"><i data-lucide="trash-2" class="icon-inline"></i> Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}"><i data-lucide="flag" class="icon-inline"></i> Denunciar</button>`}
         </div>
       </div>`;
 
@@ -643,7 +643,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         h3.textContent = `${marcaNome} ${modeloNome}`.trim();
         if (cidade) {
           const locBadge = card.querySelector('.card-loc-badge');
-          if (locBadge) locBadge.textContent = estado ? `${cidade}, ${estado}` : cidade;
+          if (locBadge) locBadge.querySelector('span').textContent = estado ? `${cidade}, ${estado}` : cidade;
         }
 
         card.querySelector('.perfil-link').addEventListener('click', e => { e.stopPropagation(); window.location.href = `../MG-CONTA/conta.html?id=${anuncio.usuario_id}`; });
@@ -657,6 +657,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         if (btnDenunciar) btnDenunciar.addEventListener('click', e => { e.stopPropagation(); abrirDenuncia(anuncio.id, 'anuncio'); });
 
         cont.appendChild(card);
+        lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
       }
     }
 
@@ -716,9 +717,9 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         let badge = btn.closest('.card')?.querySelector('.card-curtidas-badge');
         const imgWrap = btn.closest('.card')?.querySelector('.card-img-wrap');
         if (novoC > 0 && !badge && imgWrap) {
-          badge = document.createElement('div'); badge.className = 'card-curtidas-badge'; imgWrap.appendChild(badge);
+          badge = document.createElement('div'); badge.className = 'card-curtidas-badge'; badge.innerHTML = '<i data-lucide="heart" class="icon-inline"></i><span></span>'; imgWrap.appendChild(badge); lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
         }
-        if (badge) { badge.textContent = `${novoC}`; badge.style.display = novoC === 0 ? 'none' : ''; }
+        if (badge) { badge.querySelector('span').textContent = novoC > 0 ? novoC : ''; badge.style.display = novoC === 0 ? 'none' : ''; }
         const contSpan = btn.querySelector('.curtidas-count'); if (contSpan) contSpan.textContent = novoC > 0 ? novoC : '';
         const idx = todosAnuncios.findIndex(a => a.id === anuncioId);
         if (idx !== -1) { todosAnuncios[idx].curtidas = novoC; todosAnuncios[idx].usuario_curtiu = btn.classList.contains('curtido'); }

@@ -40,13 +40,13 @@ Registro das versões verificadas em **22/10/2026** para apoiar a documentação
 |---|---|
 | Firefox no Arch Linux | 158.0 |
 | Chromium instalado no Arch Linux | 154.0.8037.97 |
-| Chrome | Usado nos testes, versão ainda não coletada |
-| Brave | Usado nos testes, versão ainda não coletada |
-| Windows | Usado nos testes, versão do sistema ainda não coletada |
+| Google Chrome no Windows 11 | 156.0.8078.47/.48 — versão estável oficial de referência em 22/10/2026 |
+| Brave no Windows 11 | 1.97.57 — versão desktop oficial; Chromium 155.0.8059.80 |
+| Windows | Windows 11 — confirmado pelo responsável pelos testes |
 | Mobile FIRST (Firefox) | 4.20.4 |
 | Tamanhos testados | Smartphone, tablet e desktop por simulador responsivo; resoluções exatas ainda precisam ser registradas |
 
-O Chromium instalado não deve ser documentado como Google Chrome. Para fechar essa pendência, registrar a versão exibida em `chrome://version` e `brave://version` no computador usado na demonstração, além da versão do Windows.
+As versões acima são as versões estáveis oficiais encontradas nas páginas dos fabricantes na data deste registro. Para comprovar a versão efetivamente instalada no computador usado na demonstração, ainda é recomendável salvar um print de `chrome://version` e `brave://version`.
 
 ## Chatling
 
@@ -58,8 +58,7 @@ Fonte: [preços oficiais do Chatling](https://chatling.ai/pricing).
 
 ## Pendências para fechar o artigo
 
-1. Coletar as versões do Chrome e do Brave nos computadores realmente usados.
-2. Registrar a versão do Windows.
-3. Registrar as resoluções exatas dos testes e associá-las a navegador e dispositivo simulado.
-4. Registrar no painel do Chatling o nome do plano e a data da consulta; a versão do widget não aparece no embed.
-5. Se a banca exigir PostgreSQL local, instalar apenas o cliente `psql` ou declarar que o PostgreSQL foi utilizado exclusivamente como serviço gerenciado pelo Supabase.
+1. Confirmar com print as versões instaladas do Chrome e do Brave no computador usado.
+2. Registrar as resoluções exatas dos testes e associá-las a navegador e dispositivo simulado.
+3. Registrar no painel do Chatling o nome do plano e a data da consulta; a versão do widget não aparece no embed.
+4. Se a banca exigir PostgreSQL local, instalar apenas o cliente `psql` ou declarar que o PostgreSQL foi utilizado exclusivamente como serviço gerenciado pelo Supabase.

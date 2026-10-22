@@ -272,7 +272,7 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
 
 <script type="module">
 const { createClient } = supabase;
-const { supabaseUrl, supabaseKey } = await import("../mgConfig.js");
+const { supabaseUrl, supabaseKey, safeImageUrl } = await import("../mgConfig.js");
 const db = createClient(supabaseUrl, supabaseKey);
 
 function escapeHtml(v) {
@@ -402,7 +402,7 @@ async function carregarPendentes() {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        ${foto ? `<img src="${escapeHtml(foto)}" class="anuncio-img">` : ""}
+        ${foto ? `<img src="${escapeHtml(safeImageUrl(foto))}" class="anuncio-img">` : ""}
         <div style="flex:1;">
           <h3>${escapeHtml(a.marcas?.nome)} ${escapeHtml(a.modelos?.nome)} — ${a.ano_fabricacao}/${a.ano_modelo}</h3>
           <p>R$ ${Number(a.preco).toLocaleString("pt-BR")} · ${Number(a.quilometragem).toLocaleString()} km · ${escapeHtml(a.cidade) || "Cidade não informada"}</p>
@@ -457,7 +457,7 @@ async function carregarDenuncias() {
     const { data: denunciante } = await db.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).maybeSingle();
     if (denunciante) {
       denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:10px;">
-        <img src="${escapeHtml(denunciante.foto || '../imagens/usuario.png')}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+      <img src="${escapeHtml(safeImageUrl(denunciante.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
         <div><div style="font-size:12px;font-weight:800;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(denunciante.email)}</div></div>
         <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver</a>
       </div>`;
@@ -467,7 +467,7 @@ async function carregarDenuncias() {
       const { data: alvo } = await db.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).maybeSingle();
       if (alvo) {
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(239,68,68,.06);border-radius:10px;border:1px solid rgba(239,68,68,.15);">
-          <img src="${escapeHtml(alvo.foto || '../imagens/usuario.png')}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+          <img src="${escapeHtml(safeImageUrl(alvo.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
           <div><div style="font-size:12px;font-weight:800;color:var(--red);">Denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(alvo.email)}</div></div>
           <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver perfil</a>
         </div>`;
@@ -478,7 +478,7 @@ async function carregarDenuncias() {
         const { data: fotos } = await db.from("fotos_anuncio").select("url_foto").eq("anuncio_id", den.alvo_id).limit(1);
         const fotoAnuncio = fotos?.[0]?.url_foto || '';
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.15);">
-          ${fotoAnuncio ? `<img src="${escapeHtml(fotoAnuncio)}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;">` : ''}
+          ${fotoAnuncio ? `<img src="${escapeHtml(safeImageUrl(fotoAnuncio))}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;">` : ''}
           <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--orange);">Anúncio: ${escapeHtml(anuncio.marcas?.nome)} ${escapeHtml(anuncio.modelos?.nome)} (${anuncio.ano_fabricacao})</div>
           <div style="font-size:11px;color:var(--text-muted);">R$ ${Number(anuncio.preco).toLocaleString('pt-BR')} · ${escapeHtml(anuncio.cidade)}</div></div>
         </div>`;
@@ -555,7 +555,7 @@ async function carregarUsuarios(busca = "") {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${escapeHtml(u.foto || '../imagens/usuario.png')}" class="user-foto" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" class="user-foto" onerror="this.src='../imagens/usuario.png'">
         <div style="flex:1;">
           <h3>${escapeHtml(u.nome) || "Sem nome"} ${u.banido ? '<span class="badge badge-ban" style="margin-left:8px;">Banido</span>' : ''}</h3>
           <p>${escapeHtml(u.email)} ${u.cidade ? `· ${escapeHtml(u.cidade)}` : ""}</p>
@@ -598,7 +598,7 @@ async function carregarBanidos() {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${escapeHtml(u.foto||'../imagens/usuario.png')}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'">
         <div style="flex:1;">
           <h3 style="color:var(--red);">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
           <p>${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>

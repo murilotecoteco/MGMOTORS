@@ -148,19 +148,19 @@
   </div>
 </div>
 
-<!-- Modal Seguidores/Seguindo --><div id="modal-seguidores" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;">
+<!-- Modal Seguidores/Seguindo --><div id="modal-seguidores" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;" role="dialog" aria-modal="true" aria-labelledby="modal-seg-titulo">
   <div style="background:var(--branco,#fff);padding:28px;border-radius:20px;width:420px;max-width:96%;position:relative;max-height:80vh;overflow-y:auto;">
-    <span onclick="document.getElementById('modal-seguidores').style.display='none'" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#888;">×</span>
+    <span onclick="mgModal.close('modal-seguidores')" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#888;" aria-label="Fechar">×</span>
     <h2 id="modal-seg-titulo" style="color:#144b71;margin-bottom:16px;font-size:18px;font-weight:900;"></h2>
     <div id="modal-seg-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
 </div>
 
 <!-- Modal denúncia -->
-<div id="modal-denuncia" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;">
+<div id="modal-denuncia" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;" role="dialog" aria-modal="true" aria-labelledby="modal-denuncia-conta-titulo">
   <div style="background:white;padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;">
-    <span onclick="document.getElementById('modal-denuncia').style.display='none'" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:#888;">×</span>
-    <h2 style="color:#144b71;margin-bottom:16px;"><i data-lucide="flag" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i> Denunciar Perfil</h2>
+    <span onclick="mgModal.close('modal-denuncia')" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:#888;" aria-label="Fechar">×</span>
+    <h2 id="modal-denuncia-conta-titulo" style="color:#144b71;margin-bottom:16px;"><i data-lucide="flag" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i> Denunciar Perfil</h2>
     <select id="denuncia-motivo" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;">
       <option value="">Selecione o motivo</option>
       <option value="Comportamento abusivo">Comportamento abusivo</option>
@@ -206,9 +206,60 @@
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
-import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
+import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.js";
 import { carregarHeaderGlobal } from "../headerGlobal.js";
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ── mgModal: sistema de modais acessíveis (P1.9) ────────────────────────────
+const mgModal = (() => {
+  const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  let origemFoco = null;
+  let trapFn = null;
+  let escFn = null;
+
+  function getFocaveis(modal) {
+    return [...modal.querySelectorAll(FOCAVEIS)].filter(el => !el.closest('[style*="display:none"]') && !el.closest('[hidden]'));
+  }
+
+  function open(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    origemFoco = document.activeElement;
+    modal.style.display = 'flex';
+    const focaveis = getFocaveis(modal);
+    if (focaveis.length) focaveis[0].focus();
+
+    trapFn = (e) => {
+      if (e.key !== 'Tab') return;
+      const f = getFocaveis(modal);
+      if (!f.length) { e.preventDefault(); return; }
+      const primeiro = f[0], ultimo = f[f.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+      } else {
+        if (document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
+      }
+    };
+    escFn = (e) => { if (e.key === 'Escape') close(id); };
+    modal.addEventListener('keydown', trapFn);
+    document.addEventListener('keydown', escFn);
+  }
+
+  function close(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.style.display = 'none';
+    if (trapFn) modal.removeEventListener('keydown', trapFn);
+    if (escFn) document.removeEventListener('keydown', escFn);
+    trapFn = null; escFn = null;
+    if (origemFoco && typeof origemFoco.focus === 'function') origemFoco.focus();
+    origemFoco = null;
+  }
+
+  return { open, close };
+})();
+window.mgModal = mgModal;
+// ────────────────────────────────────────────────────────────────────────────
 
 let perfilUsuarioId = null;
 let notaEscolhida = 0;
@@ -257,8 +308,8 @@ async function carregarPerfil() {
     return;
   }
   nomeExibido.textContent = perfil.nome || "Usuário";
-  fotoPerfil.src = perfil.foto || "https://via.placeholder.com/150";
-  capaFoto.src = perfil.capa_foto || "https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop";
+  fotoPerfil.src = safeImageUrl(perfil.foto, "https://via.placeholder.com/150");
+  capaFoto.src = safeImageUrl(perfil.capa_foto, "https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop");
   bioExibido.textContent = perfil.bio || "Sem biografia";
   document.getElementById("seguidoresCount").textContent = Math.max(0, Number(perfil.seguidores) || 0);
   document.getElementById("seguindoCount").textContent = Math.max(0, Number(perfil.seguindo) || 0);
@@ -318,7 +369,7 @@ async function carregarMeusAnuncios() {
     // listener de cada botão é preso na hora, dentro do próprio loop.
     try {
       const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).order("ordem").limit(1);
-      const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
+      const foto = safeImageUrl(fotos?.[0]?.url_foto);
       const card = document.createElement("div"); card.className = "anuncio-card";
       const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
       const km = Number(a.quilometragem || 0).toLocaleString();
@@ -401,7 +452,7 @@ async function carregarPausados() {
   cont.innerHTML = "";
   for (const a of data) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
+    const foto = safeImageUrl(fotos?.[0]?.url_foto);
     const card = document.createElement("div"); card.className = "anuncio-card";
     // C4: Anúncios rejeitados pelo admin (status='expirado') NÃO têm botão Reativar
     // para impedir que o usuário reative conteúdo removido por moderação.
@@ -434,7 +485,7 @@ async function carregarAnunciosOutro() {
   cont.innerHTML = "";
   for (const a of data) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
+    const foto = safeImageUrl(fotos?.[0]?.url_foto);
     const card = document.createElement("div"); card.className = "anuncio-card";
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
     const km = Number(a.quilometragem || 0).toLocaleString("pt-BR");
@@ -468,13 +519,13 @@ btnSeguir.addEventListener("click", async () => {
   document.getElementById("seguidoresCount").textContent = Math.max(0, Number(p?.seguidores) || 0);
 });
 
-document.getElementById("btnDenunciarPerfil").addEventListener("click", () => { document.getElementById("modal-denuncia").style.display="flex"; });
+document.getElementById("btnDenunciarPerfil").addEventListener("click", () => { mgModal.open("modal-denuncia"); });
 document.getElementById("btn-enviar-denuncia")?.addEventListener("click", async () => {
   const motivo = document.getElementById("denuncia-motivo").value;
   if (!motivo || !usuarioAtual) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
   const ok = await executarOuAvisar(supabase.from("denuncias").insert({tipo:"perfil",alvo_id:perfilUsuarioId,denunciante_id:usuarioAtual.id,motivo,descricao:document.getElementById("denuncia-desc").value}), "Não foi possível enviar a denúncia.");
   if (ok === null) return;
-  document.getElementById("modal-denuncia").style.display="none";
+  mgModal.close("modal-denuncia");
   window.mgToast?.("Denúncia enviada. Analisaremos em breve.", "success");
 });
 
@@ -512,7 +563,8 @@ document.getElementById("uploadFoto").addEventListener("change", async e => {
   const { data: u } = supabase.storage.from("fotos-perfil").getPublicUrl(cam);
   const ok = await executarOuAvisar(supabase.from("usuarios").update({foto:u.publicUrl}).eq("id",usuarioAtual.id), "Não foi possível salvar a foto de perfil.");
   if (ok === null) return;
-  fotoPerfil.src=u.publicUrl; document.getElementById("header-foto").src=u.publicUrl; window.mgToast?.("Foto atualizada!", "info");
+  const fotoSegura = safeImageUrl(u.publicUrl, "../imagens/usuario.png");
+  fotoPerfil.src=fotoSegura; document.getElementById("header-foto").src=fotoSegura; window.mgToast?.("Foto atualizada!", "info");
 });
 
 document.getElementById("uploadCapa").addEventListener("change", async e => {
@@ -523,7 +575,7 @@ document.getElementById("uploadCapa").addEventListener("change", async e => {
   const { data: u } = supabase.storage.from("fotos-perfil").getPublicUrl(cam);
   const ok = await executarOuAvisar(supabase.from("usuarios").update({capa_foto:u.publicUrl}).eq("id",usuarioAtual.id), "Não foi possível salvar a capa.");
   if (ok === null) return;
-  capaFoto.src=u.publicUrl; window.mgToast?.("Capa atualizada!", "info");
+  capaFoto.src=safeImageUrl(u.publicUrl, "https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop"); window.mgToast?.("Capa atualizada!", "info");
 });
 
 document.getElementById("form-dados")?.addEventListener("submit", async e => {
@@ -620,7 +672,7 @@ async function carregarPostsOutro(uid) {
   if (!data || data.length === 0) { grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;padding:30px 0;">Nenhuma foto publicada ainda.</p>'; return; }
   grid.innerHTML = data.map(p => `
     <div class="post-card-outro" data-id="${escapeHtml(p.id)}" data-imagem="${escapeHtml(p.imagem)}" data-legenda="${escapeHtml(p.legenda || '')}" data-curtidas="${Number(p.curtidas || 0)}" style="aspect-ratio:1;overflow:hidden;border-radius:8px;cursor:pointer;background:#eee;">
-      <img src="${escapeHtml(p.imagem)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+      <img src="${escapeHtml(safeImageUrl(p.imagem))}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
     </div>
   `).join('');
   grid.querySelectorAll(".post-card-outro").forEach(el => {
@@ -636,7 +688,7 @@ async function abrirModalSeguidores(tipo) {
   const titulo = document.getElementById("modal-seg-titulo");
   titulo.textContent = tipo === 'seguidores' ? 'Seguidores' : 'Seguindo';
   lista.innerHTML = '<p style="text-align:center;color:#888;">Carregando...</p>';
-  modal.style.display = 'flex';
+  mgModal.open("modal-seguidores");
   let users = [];
   const coluna = tipo === 'seguidores' ? 'seguidor_id' : 'seguido_id';
   const filtro = tipo === 'seguidores' ? 'seguido_id' : 'seguidor_id';
@@ -649,7 +701,7 @@ async function abrirModalSeguidores(tipo) {
   if (!users.length) { lista.innerHTML = '<p style="text-align:center;color:#888;">Nenhum usuário aqui ainda.</p>'; return; }
   lista.innerHTML = users.map(u => `
     <a href="conta.html?id=${u.id}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1.5px solid rgba(20,75,113,.1);text-decoration:none;color:inherit;transition:background .2s;" onmouseover="this.style.background='rgba(20,75,113,.05)'" onmouseout="this.style.background=''">
-      <img src="${escapeHtml(u.foto||'../imagens/usuario.png')}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+      <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
       <div><div style="font-weight:800;font-size:14px;color:#144b71;">${escapeHtml(u.nome)||'Usuário'}</div>${u.cidade?`<div style="font-size:12px;color:#888;">${escapeHtml(u.cidade)}</div>`:''}</div>
     </a>
   `).join('');
@@ -671,7 +723,7 @@ async function carregarPostsFotos() {
   }
   grid.innerHTML = data.map(p => `
     <div class="post-card" data-id="${escapeHtml(p.id)}" data-imagem="${escapeHtml(p.imagem)}" data-legenda="${escapeHtml(p.legenda || '')}" data-curtidas="${Number(p.curtidas || 0)}" style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:8px;cursor:pointer;background:#eee;">
-      <img src="${escapeHtml(p.imagem)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+      <img src="${escapeHtml(safeImageUrl(p.imagem))}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
       <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:8px 10px;color:#fff;font-size:12px;display:flex;gap:6px;align-items:center;">
         <span>${Number(p.curtidas||0)}</span>
       </div>
@@ -699,10 +751,10 @@ async function excluirPost(id, card) {
 }
 
 function abrirFotoPostEl(id, imagem, legenda, curtidas) {
-  document.getElementById("modal-foto-post-img").src = imagem;
+  document.getElementById("modal-foto-post-img").src = safeImageUrl(imagem);
   document.getElementById("modal-foto-post-legenda").textContent = legenda || '';
   document.getElementById("modal-foto-post-curtidas").textContent = curtidas + ' curtidas';
-  document.getElementById("modal-foto-post").style.display = 'flex';
+  mgModal.open("modal-foto-post");
 };
 
 // Upload nova foto/post (função nomeada para poder re-anexar o listener após recriar o input)
@@ -747,9 +799,9 @@ await carregarPerfil();
 lucide.createIcons();
 </script>
 <!-- Modal visualizar foto do post -->
-<div id="modal-foto-post" class="modal-foto-post" role="dialog" aria-modal="true" aria-label="Visualização da foto" onclick="if(event.target===this)this.style.display='none'">
+<div id="modal-foto-post" class="modal-foto-post" role="dialog" aria-modal="true" aria-label="Visualização da foto" onclick="if(event.target===this)mgModal.close('modal-foto-post')">
   <div class="modal-foto-post-conteudo">
-    <button type="button" class="modal-foto-post-fechar" aria-label="Fechar" onclick="document.getElementById('modal-foto-post').style.display='none'">×</button>
+    <button type="button" class="modal-foto-post-fechar" aria-label="Fechar" onclick="mgModal.close('modal-foto-post')">×</button>
     <img id="modal-foto-post-img" src="" alt="Foto publicada no perfil">
     <div class="modal-foto-post-info">
       <p id="modal-foto-post-legenda"></p>

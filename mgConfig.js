@@ -46,3 +46,19 @@ export function escapeHtml(valor) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+// Aceita somente URLs HTTP(S) para imagens vindas do banco ou de uploads.
+// Isso evita que valores como javascript:, data: ou blob: sejam colocados em
+// atributos src. O retorno ainda deve passar por escapeHtml quando for usado
+// dentro de innerHTML.
+export function safeImageUrl(valor, fallback = "../imagens/image.webp") {
+  const bruto = String(valor || "").trim();
+  if (!bruto) return fallback;
+  try {
+    const url = new URL(bruto, window.location.href);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return fallback;
+    return url.href;
+  } catch {
+    return fallback;
+  }
+}

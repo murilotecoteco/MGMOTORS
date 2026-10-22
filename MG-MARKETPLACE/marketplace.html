@@ -154,10 +154,10 @@
     </div>
   </main>
 
-  <div id="modal-add-car" class="modal">
+  <div id="modal-add-car" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-add-car-titulo">
     <div class="modal-content">
       <span id="close-modal" class="close">&times;</span>
-      <h2>Anunciar Veículo</h2>
+      <h2 id="modal-add-car-titulo">Anunciar Veículo</h2>
       <form id="car-form">
         <select id="select-tipo-veiculo" required>
           <option value="carro">Carro</option>
@@ -239,7 +239,7 @@
     </div>
   </div>
 
-  <div id="modal-visualizar" class="modal">
+  <div id="modal-visualizar" class="modal" role="dialog" aria-modal="true" aria-labelledby="viz-titulo">
     <div class="modal-content modal-visualizar">
       <span id="close-visualizar" class="close">&times;</span>
       <div class="visualizar-container">
@@ -273,10 +273,10 @@
     </div>
   </div>
 
-  <div id="modal-denuncia" class="modal">
+  <div id="modal-denuncia" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-denuncia-titulo">
     <div class="modal-content" style="max-width:460px;">
       <span id="close-denuncia" class="close">&times;</span>
-      <h2>Denunciar</h2>
+      <h2 id="modal-denuncia-titulo">Denunciar</h2>
       <p style="color:var(--texto-suave);font-size:14px;margin-bottom:18px;">Selecione o motivo da denúncia.
         Analisaremos em até 24h.</p>
       <select id="denuncia-motivo" class="modal-select">
@@ -295,14 +295,14 @@
     </div>
   </div>
 
-  <div id="modal-aprovacao" class="modal">
+  <div id="modal-aprovacao" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-aprovacao-titulo">
     <div class="modal-content mg-aprovacao-content">
       <div class="mg-aprovacao-icone">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 6L9 17l-5-5"/>
         </svg>
       </div>
-      <h2>Anúncio enviado!</h2>
+      <h2 id="modal-aprovacao-titulo">Anúncio enviado!</h2>
       <p>Seu anúncio foi enviado para análise da nossa equipe e ficará visível no marketplace assim que for aprovado — normalmente em até <strong>24 horas</strong>.</p>
       <button id="btn-fechar-aprovacao" class="btn-submit">Entendi</button>
     </div>
@@ -340,9 +340,61 @@
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
-import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
+import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.js";
     import { carregarHeaderGlobal } from "../headerGlobal.js";
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // ── mgModal: sistema de modais acessíveis (P1.9) ────────────────────────────
+    const mgModal = (() => {
+      const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      let origemFoco = null;
+      let modalAtivo = null;
+      let trapFn = null;
+      let escFn = null;
+
+      function getFocaveis(modal) {
+        return [...modal.querySelectorAll(FOCAVEIS)].filter(el => !el.closest('[style*="display:none"]') && !el.closest('[hidden]'));
+      }
+
+      function open(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        origemFoco = document.activeElement;
+        modalAtivo = modal;
+        modal.style.display = 'flex';
+        const focaveis = getFocaveis(modal);
+        if (focaveis.length) focaveis[0].focus();
+
+        trapFn = (e) => {
+          if (e.key !== 'Tab') return;
+          const f = getFocaveis(modal);
+          if (!f.length) { e.preventDefault(); return; }
+          const primeiro = f[0], ultimo = f[f.length - 1];
+          if (e.shiftKey) {
+            if (document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+          } else {
+            if (document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
+          }
+        };
+        escFn = (e) => { if (e.key === 'Escape') close(id); };
+        modal.addEventListener('keydown', trapFn);
+        document.addEventListener('keydown', escFn);
+      }
+
+      function close(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.style.display = 'none';
+        if (trapFn) modal.removeEventListener('keydown', trapFn);
+        if (escFn) document.removeEventListener('keydown', escFn);
+        trapFn = null; escFn = null; modalAtivo = null;
+        if (origemFoco && typeof origemFoco.focus === 'function') origemFoco.focus();
+        origemFoco = null;
+      }
+
+      return { open, close };
+    })();
+    // ────────────────────────────────────────────────────────────────────────────
 
     let todosAnuncios = [];
     let filtroTextoAtual = "";
@@ -536,8 +588,8 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       for (const a of anuncios) {
         a.marcas  = { nome: a.marca_nome  || a.marca_texto  || "" };
         a.modelos = { nome: a.modelo_nome || a.modelo_texto || "" };
-        a.foto_principal = a.foto_principal || "../imagens/image.webp";
-        a.vendedor_foto  = a.vendedor_foto  || "../imagens/usuario.png";
+        a.foto_principal = safeImageUrl(a.foto_principal);
+        a.vendedor_foto  = safeImageUrl(a.vendedor_foto, "../imagens/usuario.png");
       }
 
       todosAnuncios = anuncios;
@@ -702,7 +754,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       denunciaAlvoId = alvoId; denunciaTipo = tipo;
       document.getElementById("denuncia-motivo").value = "";
       document.getElementById("denuncia-descricao").value = "";
-      document.getElementById("modal-denuncia").style.display = "flex";
+      mgModal.open("modal-denuncia");
     }
 
     document.getElementById("btn-enviar-denuncia").addEventListener("click", async () => {
@@ -710,11 +762,10 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       if (!motivo) { window.mgToast?.("Selecione um motivo.", "warning"); return; }
       const { error } = await supabase.from("denuncias").insert({ tipo: denunciaTipo, alvo_id: denunciaAlvoId, denunciante_id: usuarioAtual.id, motivo, descricao: document.getElementById("denuncia-descricao").value });
       if (error) { window.mgToast?.("Erro ao enviar: " + error.message, "error"); return; }
-      document.getElementById("modal-denuncia").style.display = "none";
+      mgModal.close("modal-denuncia");
       window.mgToast?.("Denúncia enviada. Analisaremos em breve.", "info");
     });
-
-    document.getElementById("close-denuncia").onclick = () => document.getElementById("modal-denuncia").style.display = "none";
+    document.getElementById("close-denuncia").onclick = () => mgModal.close("modal-denuncia");
 
     const curtidasEmProcessamento = new Set();
 
@@ -823,13 +874,14 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         gpsLink.href = `https://www.google.com/maps?q=${a.latitude},${a.longitude}`;
       } else { document.getElementById("viz-gps-link").style.display = "none"; }
       document.getElementById("viz-perfil-link").onclick = () => { window.location.href = `../MG-CONTA/conta.html?id=${a.usuario_id}`; };
-      document.getElementById("viz-denunciar").onclick = () => { document.getElementById("modal-visualizar").style.display = "none"; abrirDenuncia(anuncioId, 'anuncio'); };
+      document.getElementById("viz-denunciar").onclick = () => { mgModal.close("modal-visualizar"); abrirDenuncia(anuncioId, 'anuncio'); };
       if (fotos?.length > 0) {
-        document.getElementById("viz-foto-principal").src = fotos[0].url_foto;
+        document.getElementById("viz-foto-principal").src = safeImageUrl(fotos[0].url_foto);
         const min = document.getElementById("viz-miniaturas"); min.innerHTML = "";
         fotos.forEach((f, i) => {
-          const m = document.createElement("img"); m.src = f.url_foto; m.loading = "lazy"; m.className = "miniatura" + (i === 0 ? " ativa" : ""); m.onerror = () => m.src = "../imagens/image.webp";
-          m.onclick = () => { document.getElementById("viz-foto-principal").src = f.url_foto; document.querySelectorAll("#viz-miniaturas .miniatura").forEach(x => x.classList.remove("ativa")); m.classList.add("ativa"); };
+          const fotoSegura = safeImageUrl(f.url_foto);
+          const m = document.createElement("img"); m.src = fotoSegura; m.loading = "lazy"; m.className = "miniatura" + (i === 0 ? " ativa" : ""); m.onerror = () => m.src = "../imagens/image.webp";
+          m.onclick = () => { document.getElementById("viz-foto-principal").src = fotoSegura; document.querySelectorAll("#viz-miniaturas .miniatura").forEach(x => x.classList.remove("ativa")); m.classList.add("ativa"); };
           min.appendChild(m);
         });
       } else { document.getElementById("viz-foto-principal").src = "../imagens/image.webp"; }
@@ -869,12 +921,12 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         vizCurtir.disabled = false; vizCurtir.textContent = "Curtir"; vizCurtir.classList.remove("curtido");
         vizCurtir.onclick = () => { window.mgToast?.("Faça login para curtir!", "warning"); window.location.href = "../MG-LOGIN/login.html"; };
       }
-      document.getElementById("modal-visualizar").style.display = "flex";
+      mgModal.open("modal-visualizar");
     }
 
-    document.getElementById("close-visualizar").onclick = () => document.getElementById("modal-visualizar").style.display = "none";
-    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { window.mgToast?.("Faça login para anunciar!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; } document.getElementById("modal-add-car").style.display = "flex"; };
-    document.getElementById("close-modal").onclick = () => document.getElementById("modal-add-car").style.display = "none";
+    document.getElementById("close-visualizar").onclick = () => mgModal.close("modal-visualizar");
+    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { window.mgToast?.("Faça login para anunciar!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; } mgModal.open("modal-add-car"); };
+    document.getElementById("close-modal").onclick = () => mgModal.close("modal-add-car");
     document.getElementById("filtro-marca").addEventListener("change", () => { marcaSolicitada = ""; aplicarFiltroOrdenacao(); });
     document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
@@ -1056,7 +1108,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         if (!resExtra.ok) continue;
       }
       window.mgMostrarAprovacao?.();
-      document.getElementById("modal-add-car").style.display = "none";
+      mgModal.close("modal-add-car");
       document.getElementById("car-form").reset();
       if (counterEl) { counterEl.textContent = '0/500'; counterEl.className = 'char-counter'; }
       preencherSelectMarca("carro");
@@ -1069,22 +1121,22 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
     });
 
     window.addEventListener('click', (e) => {
-      if (e.target === document.getElementById("modal-add-car")) document.getElementById("modal-add-car").style.display = "none";
-      if (e.target === document.getElementById("modal-visualizar")) document.getElementById("modal-visualizar").style.display = "none";
-      if (e.target === document.getElementById("modal-denuncia")) document.getElementById("modal-denuncia").style.display = "none";
-      if (e.target === document.getElementById("modal-aprovacao")) document.getElementById("modal-aprovacao").style.display = "none";
+      if (e.target === document.getElementById("modal-add-car")) mgModal.close("modal-add-car");
+      if (e.target === document.getElementById("modal-visualizar")) mgModal.close("modal-visualizar");
+      if (e.target === document.getElementById("modal-denuncia")) mgModal.close("modal-denuncia");
+      if (e.target === document.getElementById("modal-aprovacao")) mgModal.close("modal-aprovacao");
     });
 
     window.mgMostrarAprovacao = function () {
-      document.getElementById("modal-aprovacao").style.display = "flex";
+      mgModal.open("modal-aprovacao");
     };
     document.getElementById("btn-fechar-aprovacao").addEventListener("click", () => {
-      document.getElementById("modal-aprovacao").style.display = "none";
+      mgModal.close("modal-aprovacao");
     });
 
     carregarAnuncios();
     if (abrirAnuncioAoCarregar) {
-      if (usuarioAtual) document.getElementById("modal-add-car").style.display = "flex";
+      if (usuarioAtual) mgModal.open("modal-add-car");
       else window.mgToast?.("Faça login para publicar um anúncio.", "warning");
     }
     lucide.createIcons();

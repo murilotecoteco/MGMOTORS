@@ -290,7 +290,7 @@
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
-import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
+import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.js";
 import { carregarHeaderGlobal } from "../headerGlobal.js";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -400,7 +400,7 @@ async function carregarVeiculosDestaque() {
 
   for (const anuncio of anuncios) {
     const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id", anuncio.id).order("ordem").limit(1);
-    const foto = fotos?.[0]?.url_foto || "../imagens/image.webp";
+    const foto = safeImageUrl(fotos?.[0]?.url_foto);
     const isFav = favoritos.includes(String(anuncio.id));
     
     const favIcon = isFav 

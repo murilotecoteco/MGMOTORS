@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anúncio | MG Motors</title>
+  <meta name="description" content="Confira os detalhes deste veículo anunciado na MG Motors.">
+  <link rel="icon" type="image/svg+xml" href="../imagens/favicon.svg">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="anuncio.css">
+  <script src="../tema.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <header id="header-global"></header>
+
+  <main class="anuncio-page">
+    <nav class="anuncio-breadcrumb" aria-label="Navegação estrutural">
+      <a href="../MG-INICIO/inicio.html">Início</a><span>›</span>
+      <a href="marketplace.html">Marketplace</a><span>›</span>
+      <strong id="breadcrumb-titulo">Anúncio</strong>
+    </nav>
+
+    <div id="anuncio-loading" class="anuncio-loading"><span class="loading-spinner"></span><p>Carregando anúncio...</p></div>
+    <section id="anuncio-conteudo" class="anuncio-conteudo" hidden>
+      <div class="anuncio-topo">
+        <div class="anuncio-galeria">
+          <div class="foto-principal-pagina">
+            <img id="foto-principal" src="../imagens/image.webp" alt="">
+            <button type="button" id="foto-anterior" class="seta-galeria" aria-label="Foto anterior"><i data-lucide="chevron-left"></i></button>
+            <button type="button" id="foto-proxima" class="seta-galeria" aria-label="Próxima foto"><i data-lucide="chevron-right"></i></button>
+          </div>
+          <div id="miniaturas" class="miniaturas-pagina"></div>
+        </div>
+
+        <article class="anuncio-resumo">
+          <p class="anuncio-kicker"><i data-lucide="badge-check"></i> Anúncio MG Motors</p>
+          <h1 id="anuncio-titulo">Veículo</h1>
+          <div class="anuncio-preco-pagina">R$ <span id="anuncio-preco">0</span></div>
+          <div id="anuncio-detalhes" class="anuncio-detalhes"></div>
+          <div class="anuncio-descricao-bloco">
+            <h2>Descrição</h2>
+            <p id="anuncio-descricao">Sem descrição.</p>
+          </div>
+          <div class="anuncio-acoes">
+            <button type="button" id="btn-interesse" class="acao-principal"><i data-lucide="message-circle"></i> Tenho interesse</button>
+            <button type="button" id="btn-curtir-pagina" class="acao-curtir"><i data-lucide="heart"></i> <span>Curtir</span></button>
+            <a id="btn-whatsapp-pagina" class="acao-whatsapp" href="#" target="_blank" rel="noopener"><i data-lucide="message-circle"></i> WhatsApp</a>
+          </div>
+          <a id="btn-mapa-pagina" class="acao-secundaria" href="#" target="_blank" rel="noopener" hidden><i data-lucide="map-pin"></i> Ver localização no Google Maps</a>
+          <button type="button" id="btn-perfil-pagina" class="acao-secundaria"><i data-lucide="user-round"></i> Ver perfil do vendedor</button>
+          <button type="button" id="btn-denunciar-pagina" class="acao-denunciar"><i data-lucide="flag"></i> Denunciar anúncio</button>
+        </article>
+      </div>
+
+      <section class="especificacoes" aria-labelledby="titulo-especificacoes">
+        <h2 id="titulo-especificacoes">Especificações técnicas</h2>
+        <div id="especificacoes-lista" class="especificacoes-lista"></div>
+      </section>
+    </section>
+
+    <section id="anuncio-erro" class="anuncio-erro" hidden>
+      <i data-lucide="car-front"></i><h1>Anúncio não encontrado</h1>
+      <p>Este veículo pode ter sido removido ou não está mais disponível.</p>
+      <a href="marketplace.html" class="acao-principal">Voltar ao marketplace</a>
+    </section>
+  </main>
+
+  <footer class="anuncio-footer"><span>© 2026 MG Motors</span><a href="marketplace.html">Voltar ao marketplace</a></footer>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
+    import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+    import { carregarHeaderGlobal } from "../headerGlobal.js";
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const anuncioId = new URLSearchParams(location.search).get("id");
+    let usuarioAtual = null;
+    let anuncioAtual = null;
+    let fotos = [];
+    let fotoAtual = 0;
+
+    const $ = id => document.getElementById(id);
+    const fallbackFoto = "../imagens/image.webp";
+    const texto = valor => valor === null || valor === undefined || valor === "" ? "Não informado" : String(valor);
+    const formatarNumero = valor => Number(valor || 0).toLocaleString("pt-BR");
+    const notificar = (msg, tipo = "info") => window.mgToast?.(msg, tipo) || alert(msg);
+
+    function detalhe(label, valor, icone) {
+      const item = document.createElement("div"); item.className = "detalhe-item";
+      item.innerHTML = `<i data-lucide="${icone}"></i><div><span>${label}</span><strong></strong></div>`;
+      item.querySelector("strong").textContent = texto(valor);
+      return item;
+    }
+
+    function grupoEspecificacao(titulo, itens) {
+      const details = document.createElement("details"); details.className = "spec-grupo";
+      const summary = document.createElement("summary"); summary.innerHTML = `<span>${titulo}</span><i data-lucide="chevron-down"></i>`;
+      details.appendChild(summary);
+      const lista = document.createElement("div"); lista.className = "spec-itens";
+      itens.filter(([, valor]) => valor !== undefined && valor !== null && valor !== "").forEach(([label, valor]) => {
+        const linha = document.createElement("div"); linha.innerHTML = `<span>${label}</span><strong></strong>`;
+        linha.querySelector("strong").textContent = texto(valor); lista.appendChild(linha);
+      });
+      details.appendChild(lista); return details;
+    }
+
+    function exibirFoto(indice) {
+      if (!fotos.length) return;
+      fotoAtual = (indice + fotos.length) % fotos.length;
+      $("foto-principal").src = fotos[fotoAtual].url_foto || fallbackFoto;
+      $("foto-principal").onerror = () => { $("foto-principal").src = fallbackFoto; };
+      document.querySelectorAll(".miniatura-pagina").forEach((el, i) => el.classList.toggle("ativa", i === fotoAtual));
+    }
+
+    async function configurarCurtida() {
+      const botao = $("btn-curtir-pagina");
+      if (!usuarioAtual) { botao.onclick = () => { notificar("Faça login para curtir este anúncio.", "warning"); location.href = "../MG-LOGIN/login.html"; }; return; }
+      const { data } = await supabase.from("curtidas_anuncio").select("id").eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id).maybeSingle();
+      if (data) botao.classList.add("curtido");
+      botao.querySelector("span").textContent = data ? "Curtido" : "Curtir";
+      botao.onclick = async () => {
+        botao.disabled = true; const curtido = botao.classList.contains("curtido");
+        const resposta = curtido
+          ? await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId).eq("usuario_id", usuarioAtual.id)
+          : await supabase.from("curtidas_anuncio").insert({ anuncio_id: anuncioId, usuario_id: usuarioAtual.id });
+        if (resposta.error && resposta.error.code !== "23505") notificar("Não foi possível atualizar a curtida.", "error");
+        else { botao.classList.toggle("curtido", !curtido); botao.querySelector("span").textContent = curtido ? "Curtir" : "Curtido"; }
+        botao.disabled = false;
+      };
+    }
+
+    async function denunciar() {
+      if (!usuarioAtual) { notificar("Faça login para denunciar.", "warning"); return; }
+      const motivo = prompt("Informe o motivo da denúncia:"); if (!motivo?.trim()) return;
+      const { error } = await supabase.from("denuncias").insert({ tipo: "anuncio", alvo_id: anuncioId, denunciante_id: usuarioAtual.id, motivo: motivo.trim() });
+      if (error) notificar("Não foi possível enviar a denúncia.", "error"); else notificar("Denúncia enviada para análise.", "success");
+    }
+
+    async function iniciar() {
+      usuarioAtual = await carregarHeaderGlobal(supabase);
+      if (!anuncioId) { $("anuncio-loading").hidden = true; $("anuncio-erro").hidden = false; lucide.createIcons(); return; }
+      const [{ data: anuncio }, { data: fotosAnuncio }] = await Promise.all([
+        supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", anuncioId).maybeSingle(),
+        supabase.from("fotos_anuncio").select("*").eq("anuncio_id", anuncioId).order("ordem")
+      ]);
+      if (!anuncio) { $("anuncio-loading").hidden = true; $("anuncio-erro").hidden = false; lucide.createIcons(); return; }
+      anuncioAtual = anuncio; fotos = fotosAnuncio || [];
+      const marca = anuncio.marca_texto || anuncio.marcas?.nome || "Marca";
+      const modelo = anuncio.modelo_texto || anuncio.modelos?.nome || "Veículo";
+      const titulo = `${marca} ${modelo}`.trim();
+      document.title = `${titulo} | MG Motors`;
+      $("breadcrumb-titulo").textContent = titulo; $("anuncio-titulo").textContent = titulo;
+      $("anuncio-preco").textContent = formatarNumero(anuncio.preco);
+      $("anuncio-descricao").textContent = anuncio.descricao || "O vendedor não adicionou uma descrição.";
+      $("anuncio-detalhes").append(
+        detalhe("Fabricação", anuncio.ano_fabricacao, "calendar-days"), detalhe("Modelo", anuncio.ano_modelo, "calendar"),
+        detalhe("Quilometragem", `${formatarNumero(anuncio.quilometragem)} km`, "gauge"), detalhe("Cor", anuncio.cor, "palette"),
+        detalhe("Localização", anuncio.cidade_display || [anuncio.cidade, anuncio.estado].filter(Boolean).join(", "), "map-pin")
+      );
+      const specs = $("especificacoes-lista");
+      specs.append(grupoEspecificacao("Parâmetros básicos", [["Tipo de veículo", anuncio.tipo_veiculo], ["Marca", marca], ["Modelo", modelo], ["Ano de fabricação", anuncio.ano_fabricacao], ["Ano do modelo", anuncio.ano_modelo]]));
+      specs.append(grupoEspecificacao("Performance", [["Quilometragem", `${formatarNumero(anuncio.quilometragem)} km`], ["Câmbio", anuncio.cambio], ["Combustível", anuncio.combustivel], ["Potência", anuncio.potencia]]));
+      specs.append(grupoEspecificacao("Exterior e interior", [["Cor", anuncio.cor], ["Portas", anuncio.portas], ["Descrição", anuncio.descricao]]));
+      if (fotos.length) {
+        $("miniaturas").innerHTML = "";
+        fotos.forEach((foto, indice) => { const img = document.createElement("img"); img.className = "miniatura-pagina"; img.src = foto.url_foto || fallbackFoto; img.alt = `Foto ${indice + 1} de ${titulo}`; img.onclick = () => exibirFoto(indice); $("miniaturas").appendChild(img); });
+        exibirFoto(0);
+      }
+      $("foto-anterior").onclick = () => exibirFoto(fotoAtual - 1); $("foto-proxima").onclick = () => exibirFoto(fotoAtual + 1);
+      $("btn-interesse").onclick = () => { if (!usuarioAtual) { location.href = "../MG-LOGIN/login.html"; return; } location.href = `../MG-MENSAGENS/mensagens.html?usuario=${anuncio.usuario_id}&carro=${anuncioId}`; };
+      $("btn-perfil-pagina").onclick = () => location.href = `../MG-CONTA/conta.html?id=${anuncio.usuario_id}`;
+      $("btn-denunciar-pagina").onclick = denunciar;
+      const whatsapp = (anuncio.whatsapp || "").replace(/\D/g, ""); if (whatsapp) $("btn-whatsapp-pagina").href = `https://wa.me/${whatsapp}`; else { $("btn-whatsapp-pagina").classList.add("desabilitado"); $("btn-whatsapp-pagina").onclick = e => { e.preventDefault(); notificar("O vendedor não informou WhatsApp.", "info"); }; }
+      if (anuncio.latitude && anuncio.longitude) { $("btn-mapa-pagina").hidden = false; $("btn-mapa-pagina").href = `https://www.google.com/maps?q=${anuncio.latitude},${anuncio.longitude}`; }
+      $("anuncio-loading").hidden = true; $("anuncio-conteudo").hidden = false; lucide.createIcons({ attrs: { "aria-hidden": "true" } }); await configurarCurtida();
+    }
+    iniciar();
+  </script>
+</body>
+</html>

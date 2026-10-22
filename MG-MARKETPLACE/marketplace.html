@@ -516,7 +516,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
       if (urlParams.get("ordenar")) { const s = document.getElementById("ordenar"); if (s && urlParams.get("ordenar") === "curtidas") s.value = "curtidas"; }
       aplicarFiltroOrdenacao();
       const carroId = urlParams.get("carro");
-      if (carroId) abrirVisualizacao(carroId);
+      if (carroId) window.location.href = `anuncio.html?id=${encodeURIComponent(carroId)}`;
     }
 
     function aplicarFiltroOrdenacao() {
@@ -647,7 +647,7 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         }
 
         card.querySelector('.perfil-link').addEventListener('click', e => { e.stopPropagation(); window.location.href = `../MG-CONTA/conta.html?id=${anuncio.usuario_id}`; });
-        card.addEventListener('click', e => { if (!e.target.closest('.btn-curtir,.btn-excluir,.perfil-link,.btn-denunciar-card')) abrirVisualizacao(anuncio.id); });
+        card.addEventListener('click', e => { if (!e.target.closest('.btn-curtir,.btn-excluir,.perfil-link,.btn-denunciar-card')) window.location.href = `anuncio.html?id=${encodeURIComponent(anuncio.id)}`; });
 
         const btnCurtir = card.querySelector('.btn-curtir');
         btnCurtir.addEventListener('click', async e => { e.stopPropagation(); await toggleCurtida(anuncio.id, btnCurtir); });

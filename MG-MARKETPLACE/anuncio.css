@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Ruda:wght@400;500;600;700;800;900&display=swap');
+
+:root { --anuncio-azul: #144b71; --anuncio-texto: #252b36; --anuncio-suave: #697586; --anuncio-linha: #dde2e8; --anuncio-fundo: #f4f6f8; }
+* { box-sizing: border-box; }
+body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: var(--anuncio-texto); font-family: Ruda, sans-serif; }
+.anuncio-page { max-width: 1260px; margin: 0 auto; padding: 0 28px 70px; }
+.anuncio-breadcrumb { display: flex; align-items: center; gap: 10px; padding: 24px 0; color: var(--anuncio-suave); font-size: 12px; }
+.anuncio-breadcrumb a { color: var(--anuncio-azul); text-decoration: none; font-weight: 700; }
+.anuncio-breadcrumb strong { max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.anuncio-conteudo { background: #fff; border: 1px solid #e1e6eb; box-shadow: 0 16px 45px rgba(19,45,67,.09); }
+.anuncio-topo { display: grid; grid-template-columns: minmax(0, 1.16fr) minmax(360px, .84fr); min-height: 650px; }
+.anuncio-galeria { padding: 32px 26px 28px; background: #edf1f4; }
+.foto-principal-pagina { position: relative; height: min(570px, 58vw); min-height: 420px; overflow: hidden; border-radius: 16px; background: #0d1822; box-shadow: 0 14px 30px rgba(15,23,42,.15); }
+.foto-principal-pagina img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.seta-galeria { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(255,255,255,.9); color: var(--anuncio-azul); cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,.14); }
+.seta-galeria:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
+.seta-galeria:first-of-type { left: 14px; } .seta-galeria:last-of-type { right: 14px; }
+.seta-galeria svg { width: 18px; }
+.miniaturas-pagina { display: flex; gap: 10px; margin-top: 13px; overflow-x: auto; padding-bottom: 3px; }
+.miniatura-pagina { width: 70px; height: 58px; object-fit: cover; border-radius: 9px; cursor: pointer; opacity: .7; border: 2px solid transparent; background: #d9e0e5; }
+.miniatura-pagina:hover, .miniatura-pagina.ativa { opacity: 1; border-color: var(--anuncio-azul); }
+.anuncio-resumo { padding: 44px 38px 32px; background: #fff; }
+.anuncio-kicker { display: flex; align-items: center; gap: 7px; margin: 0 0 15px; color: var(--anuncio-azul); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
+.anuncio-kicker svg { width: 16px; color: #e1a900; }
+.anuncio-resumo h1 { margin: 0 0 24px; font-size: clamp(28px, 3vw, 42px); line-height: 1.04; letter-spacing: -.045em; }
+.anuncio-preco-pagina { padding: 16px 0 20px; border-top: 1px solid var(--anuncio-linha); border-bottom: 1px solid var(--anuncio-linha); color: #1e293b; font-size: 30px; font-weight: 900; letter-spacing: -.04em; }
+.anuncio-detalhes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin: 4px 0 22px; }
+.detalhe-item { display: flex; align-items: center; gap: 10px; min-height: 67px; border-bottom: 1px solid var(--anuncio-linha); }
+.detalhe-item > svg { width: 17px; color: var(--anuncio-azul); }
+.detalhe-item span { display: block; margin-bottom: 5px; color: #7b8490; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.detalhe-item strong { display: block; font-size: 14px; }
+.anuncio-descricao-bloco h2 { margin: 22px 0 7px; font-size: 18px; }
+.anuncio-descricao-bloco p { max-height: 100px; overflow-y: auto; margin: 0 0 20px; color: #5f6b7a; font-size: 13px; line-height: 1.65; }
+.anuncio-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.anuncio-acoes button, .anuncio-acoes a, .acao-secundaria { min-height: 46px; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; text-decoration: none; }
+.acao-principal { grid-column: 1 / -1; border: 0; background: #ef1742; color: #fff; box-shadow: 0 8px 18px rgba(239,23,66,.2); }
+.acao-principal:hover { background: #d90d35; }
+.acao-curtir { border: 1px solid #f1b8c3; background: #fff; color: #e84040; }
+.acao-curtir.curtido { background: #e84040; color: #fff; }
+.acao-whatsapp { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 7px; background: #20c76a; color: #fff; }
+.acao-whatsapp.desabilitado { opacity: .45; }
+.acao-secundaria { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 9px; padding: 0 12px; border: 0; background: #eef1f4; color: #2563c7; }
+.acao-secundaria:hover { background: #e3e8ee; }
+.acao-denunciar { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 7px 0; border: 0; background: transparent; color: #e84040; font: inherit; font-size: 11px; cursor: pointer; }
+.anuncio-acoes svg, .acao-secundaria svg, .acao-denunciar svg { width: 16px; }
+.especificacoes { padding: 44px 0 25px; background: #fff; border-top: 1px solid #eef1f4; }
+.especificacoes h2 { max-width: 1000px; margin: 0 auto 22px; padding: 0 20px; font-size: 21px; }
+.especificacoes-lista { max-width: 1000px; margin: 0 auto; border-top: 1px solid var(--anuncio-linha); }
+.spec-grupo { border-bottom: 1px solid var(--anuncio-linha); }
+.spec-grupo summary { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 2px; color: #252b36; font-size: 13px; cursor: pointer; list-style: none; }
+.spec-grupo summary::-webkit-details-marker { display: none; }
+.spec-grupo summary svg { width: 16px; transition: transform .2s; }
+.spec-grupo[open] summary svg { transform: rotate(180deg); }
+.spec-itens { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 0 0 12px; }
+.spec-itens div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; color: #687384; font-size: 12px; border-top: 1px solid #f0f2f4; }
+.spec-itens strong { color: #273142; font-weight: 700; text-align: right; }
+.anuncio-loading, .anuncio-erro { min-height: 500px; display: grid; place-content: center; justify-items: center; gap: 12px; text-align: center; }
+.anuncio-loading p, .anuncio-erro p { color: var(--anuncio-suave); font-size: 14px; }
+.anuncio-erro i { width: 44px; height: 44px; color: var(--anuncio-azul); }
+.anuncio-erro h1 { margin: 0; font-size: 24px; }
+.anuncio-erro .acao-principal { display: inline-flex; align-items: center; padding: 0 20px; text-decoration: none; }
+.anuncio-footer { display: flex; justify-content: space-between; gap: 15px; max-width: 1260px; margin: 0 auto; padding: 24px 28px 40px; color: #7b8490; font-size: 12px; }
+.anuncio-footer a { color: var(--anuncio-azul); font-weight: 700; text-decoration: none; }
+[data-tema="escuro"] body { background: #101820; }
+[data-tema="escuro"] .anuncio-conteudo, [data-tema="escuro"] .anuncio-resumo, [data-tema="escuro"] .especificacoes { background: #171f28; }
+[data-tema="escuro"] .anuncio-galeria { background: #0d151e; }
+[data-tema="escuro"] .anuncio-resumo h1, [data-tema="escuro"] .anuncio-preco-pagina, [data-tema="escuro"] .detalhe-item strong, [data-tema="escuro"] .especificacoes h2, [data-tema="escuro"] .spec-grupo summary { color: #f1f5f9; }
+[data-tema="escuro"] .anuncio-preco-pagina, [data-tema="escuro"] .detalhe-item, [data-tema="escuro"] .especificacoes-lista, [data-tema="escuro"] .spec-grupo, [data-tema="escuro"] .spec-itens div { border-color: #33404e; }
+[data-tema="escuro"] .anuncio-descricao-bloco p, [data-tema="escuro"] .spec-itens { color: #aeb8c4; }
+@media (max-width: 850px) { .anuncio-topo { grid-template-columns: 1fr; } .foto-principal-pagina { height: min(500px, 64vw); } .anuncio-resumo { padding: 30px 26px; } .especificacoes { padding-left: 26px; padding-right: 26px; } }
+@media (max-width: 520px) { body { padding-top: 76px; } .anuncio-page { padding: 0 12px 45px; } .anuncio-breadcrumb { padding: 17px 2px; } .anuncio-galeria { padding: 16px 14px 18px; } .foto-principal-pagina { min-height: 250px; height: 66vw; border-radius: 12px; } .anuncio-resumo { padding: 25px 18px; } .anuncio-resumo h1 { font-size: 30px; } .anuncio-preco-pagina { font-size: 26px; } .anuncio-detalhes { gap: 0 12px; } .detalhe-item { min-height: 61px; } .spec-itens { grid-template-columns: 1fr; gap: 0; } .especificacoes { padding: 32px 18px 18px; } .anuncio-footer { padding: 20px 18px 32px; flex-direction: column; } }

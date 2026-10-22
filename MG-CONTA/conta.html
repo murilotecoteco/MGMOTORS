@@ -326,7 +326,7 @@ async function carregarMeusAnuncios() {
       card.innerHTML = `<img src="${escapeHtml(foto)}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${escapeHtml(a.id)}">Excluir</button></div>`;
       card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
       card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
-      card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`; });
+      card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/anuncio.html?id=${encodeURIComponent(a.id)}`; });
 
       const btnExcluir = card.querySelector('.btn-excluir-anuncio');
       btnExcluir.addEventListener("click", async e => {
@@ -441,7 +441,7 @@ async function carregarAnunciosOutro() {
     card.innerHTML = `<img src="${escapeHtml(foto)}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
     card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
     card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
-    card.addEventListener("click", () => window.location.href = `../MG-MARKETPLACE/marketplace.html?carro=${a.id}`);
+    card.addEventListener("click", () => window.location.href = `../MG-MARKETPLACE/anuncio.html?id=${encodeURIComponent(a.id)}`);
     cont.appendChild(card);
   }
 }

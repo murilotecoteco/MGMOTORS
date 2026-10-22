@@ -1688,3 +1688,67 @@ footer {
 [data-tema="escuro"] .mg-aprovacao-content h2 {
   color: var(--texto);
 }
+
+/* Modal de detalhes do veículo — layout compacto e orientado à decisão */
+.modal-visualizar {
+  width: min(1120px, calc(100% - 32px));
+  max-height: min(88vh, 820px);
+  padding: 28px;
+  border-radius: 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.modal-visualizar > .close {
+  top: 12px;
+  right: 14px;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, .78);
+  color: #fff;
+  font-size: 23px;
+  box-shadow: 0 5px 14px rgba(0,0,0,.18);
+}
+.modal-visualizar > .close:hover { background: #e84040; color: #fff; }
+.modal-visualizar .visualizar-container { grid-template-columns: minmax(0, 1.06fr) minmax(350px, .94fr); gap: 28px; }
+.modal-visualizar .galeria-container { position: static; align-self: start; }
+.modal-visualizar .foto-principal { height: clamp(330px, 52vh, 470px); border: 0; border-radius: 18px; background: #0b141d; box-shadow: 0 14px 30px rgba(7,23,35,.16); }
+.modal-visualizar .foto-principal img { object-fit: contain; }
+.modal-visualizar .miniaturas { grid-template-columns: repeat(auto-fill, minmax(64px, 76px)); justify-content: start; gap: 9px; margin-top: 12px; }
+.modal-visualizar .miniatura { height: 64px; border-radius: 11px; }
+.modal-visualizar .info-container { padding: 5px 2px 0; }
+.modal-visualizar .info-container h2 { max-width: calc(100% - 30px); margin: 0 0 13px; font-size: clamp(27px, 3vw, 38px); line-height: 1.05; letter-spacing: -.04em; }
+.modal-visualizar .visualizar-preco { margin: 0 0 16px; padding: 16px 18px; border-radius: 13px; font-size: clamp(27px, 3vw, 35px); line-height: 1; }
+.modal-visualizar .viz-detalhes { margin: 0 0 16px; gap: 8px; }
+.modal-visualizar .viz-detalhe { min-height: 63px; justify-content: center; padding: 10px 13px; border-radius: 11px; background: #f6f8fa; }
+.modal-visualizar .viz-label { font-size: 10px; letter-spacing: .12em; }
+.modal-visualizar .viz-detalhe span:last-child { font-size: 15px; }
+.descricao-titulo { margin: 0 0 6px; color: var(--texto-suave); font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.modal-visualizar .visualizar-descricao { min-height: 58px; max-height: 130px; overflow-y: auto; margin: 0 0 15px; padding: 14px 16px; border-radius: 11px; background: #f6f8fa; border: 1px solid rgba(20,75,113,.06); font-size: 14px; line-height: 1.55; }
+.modal-visualizar .visualizar-acoes { grid-template-columns: 1fr 1fr; gap: 8px; }
+.modal-visualizar .visualizar-acoes button, .modal-visualizar .visualizar-acoes a { min-height: 43px; border-radius: 10px !important; font-size: 13px; }
+.modal-visualizar .visualizar-acoes .btn-mensagem-visualizar { grid-column: 1 / -1; }
+.modal-visualizar .visualizar-acoes .btn-whatsapp { grid-column: 1 / -1; }
+.modal-visualizar .btn-gps-link { margin-top: 9px; min-height: 39px; border-radius: 10px; }
+.modal-visualizar .perfil-link { margin-top: 9px; padding: 11px 14px; border-radius: 10px; font-size: 13px; }
+.modal-visualizar .btn-denunciar-anuncio { display: block; margin: 9px 0 0; padding: 8px 12px; border-radius: 9px; font-size: 11px; }
+[data-tema="escuro"] .modal-visualizar .viz-detalhe,
+[data-tema="escuro"] .modal-visualizar .visualizar-descricao { background: #111b25; border-color: rgba(77,166,216,.14); }
+[data-tema="escuro"] .modal-visualizar .descricao-titulo { color: var(--texto-suave); }
+@media (max-width: 800px) {
+  .modal-visualizar { width: calc(100% - 18px); max-height: 92vh; padding: 20px; }
+  .modal-visualizar .visualizar-container { grid-template-columns: 1fr; gap: 20px; }
+  .modal-visualizar .foto-principal { height: min(390px, 44vh); }
+}
+@media (max-width: 480px) {
+  .modal-visualizar { padding: 14px; border-radius: 17px; }
+  .modal-visualizar .foto-principal { height: 270px; border-radius: 13px; }
+  .modal-visualizar .miniatura { height: 54px; }
+  .modal-visualizar .viz-detalhe { min-height: 58px; padding: 9px; }
+  .modal-visualizar .visualizar-acoes { grid-template-columns: 1fr; }
+  .modal-visualizar .visualizar-acoes .btn-mensagem-visualizar,
+  .modal-visualizar .visualizar-acoes .btn-whatsapp { grid-column: auto; }
+}

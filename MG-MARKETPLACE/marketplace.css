@@ -1863,6 +1863,30 @@ footer {
   color: var(--texto);
 }
 
+/* Ações do card: linha principal alinhada e denúncia discreta */
+.card .card-actions {
+  display: grid;
+  grid-template-columns: 42px minmax(30px, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 72px;
+  padding-top: 13px;
+}
+.card .btn-curtir { grid-column: 1; width: 42px; padding: 0; }
+.card .vendedor-link { grid-column: 2; justify-self: start; margin-left: 0; }
+.card .btn-ver-detalhes { grid-column: 3; white-space: nowrap; }
+.card .btn-denunciar-card,
+.card .btn-excluir { grid-column: 1 / -1; justify-self: start; min-height: 28px; margin-top: 1px; padding: 0 9px; border: 0; border-top: 1px solid rgba(20,75,113,.12); border-radius: 0; background: transparent; color: var(--texto-suave); font-size: 10px; font-weight: 700; }
+.card .btn-denunciar-card:hover,
+.card .btn-excluir:hover { background: transparent; color: var(--vermelho); transform: none; }
+[data-tema="escuro"] .card .btn-denunciar-card,
+[data-tema="escuro"] .card .btn-excluir { border-top-color: rgba(77,166,216,.15); color: #aeb8c4; }
+@media (max-width: 700px) {
+  .card .card-actions { grid-template-columns: 40px minmax(28px, 1fr) auto; gap: 7px; }
+  .card .btn-curtir { width: 40px; }
+  .card .btn-ver-detalhes { padding: 0 9px; font-size: 10px; }
+}
+
 /* Modal de detalhes do veículo — layout compacto e orientado à decisão */
 .modal-visualizar {
   width: min(1120px, calc(100% - 32px));

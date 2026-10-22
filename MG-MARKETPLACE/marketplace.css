@@ -921,6 +921,160 @@ header {
   }
 }
 
+/* Direção visual premium para o detalhe do veículo */
+#modal-visualizar {
+  background: rgba(8, 15, 25, .72);
+  backdrop-filter: blur(12px);
+}
+#modal-visualizar .modal-visualizar {
+  width: min(1180px, calc(100% - 44px));
+  max-height: min(88vh, 840px);
+  padding: 0;
+  overflow: hidden auto;
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 20px;
+  background: #f5f6f8;
+  box-shadow: 0 30px 90px rgba(0,0,0,.38);
+}
+#modal-visualizar .modal-visualizar > .close {
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: rgba(17,24,39,.86);
+  font-size: 24px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.22);
+}
+#modal-visualizar .visualizar-container {
+  grid-template-columns: minmax(0, 1.18fr) minmax(360px, .82fr);
+  gap: 0;
+  min-height: 610px;
+}
+#modal-visualizar .galeria-container {
+  padding: 30px 26px 28px;
+  background: #edf0f3;
+}
+#modal-visualizar .foto-principal {
+  height: min(560px, 62vh);
+  border-radius: 18px;
+  background: #0b141d;
+  box-shadow: 0 16px 30px rgba(15,23,42,.15);
+}
+#modal-visualizar .foto-principal img { object-fit: contain; }
+#modal-visualizar .miniaturas {
+  grid-template-columns: repeat(auto-fill, minmax(64px, 72px));
+  justify-content: start;
+  gap: 9px;
+  margin-top: 13px;
+}
+#modal-visualizar .miniatura { height: 58px; border-radius: 9px; }
+#modal-visualizar .info-container {
+  padding: 46px 38px 30px;
+  background: #f8f9fa;
+}
+#modal-visualizar .info-container h2 {
+  max-width: calc(100% - 22px);
+  margin-bottom: 26px;
+  color: #252b36;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 800;
+  letter-spacing: -.045em;
+}
+#modal-visualizar .visualizar-preco {
+  width: 100%;
+  margin: 0 0 22px;
+  padding: 15px 0 20px;
+  border-top: 1px solid #d9dde3;
+  border-bottom: 1px solid #d9dde3;
+  border-radius: 0;
+  background: transparent;
+  color: #1f2937;
+  font-size: 29px;
+  letter-spacing: -.035em;
+}
+#modal-visualizar .viz-detalhes {
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+  margin: 0 0 22px;
+}
+#modal-visualizar .viz-detalhe {
+  min-height: 62px;
+  padding: 13px 0;
+  justify-content: center;
+  border: 0;
+  border-bottom: 1px solid #e1e4e8;
+  border-radius: 0;
+  background: transparent;
+}
+#modal-visualizar .viz-detalhe:hover { background: transparent; transform: none; }
+#modal-visualizar .viz-label { color: #737b88; font-size: 10px; letter-spacing: .13em; }
+#modal-visualizar .viz-detalhe span:last-child { color: #252b36; font-size: 15px; font-weight: 700; }
+#modal-visualizar .descricao-titulo { color: #333b48; font-size: 19px; font-weight: 800; letter-spacing: -.02em; text-transform: none; }
+#modal-visualizar .visualizar-descricao {
+  min-height: 0;
+  max-height: 130px;
+  margin: 0 0 22px;
+  padding: 0;
+  overflow-y: auto;
+  border: 0;
+  background: transparent;
+  color: #596273;
+  font-size: 13px;
+  line-height: 1.65;
+}
+#modal-visualizar .visualizar-acoes { grid-template-columns: 1fr 1fr; gap: 10px; }
+#modal-visualizar .visualizar-acoes button,
+#modal-visualizar .visualizar-acoes a {
+  min-height: 48px;
+  border-radius: 8px !important;
+  font-size: 13px;
+  font-weight: 800;
+}
+#modal-visualizar .visualizar-acoes .btn-mensagem-visualizar {
+  grid-column: 1 / -1;
+  background: #ef1742 !important;
+  color: #fff !important;
+  box-shadow: 0 9px 18px rgba(239,23,66,.20);
+}
+#modal-visualizar .visualizar-acoes .btn-mensagem-visualizar:hover { background: #d90d35 !important; transform: translateY(-1px); }
+#modal-visualizar .visualizar-acoes .btn-curtir {
+  background: #fff !important;
+  color: #ef1742 !important;
+  border: 1px solid #f0b7c2 !important;
+}
+#modal-visualizar .visualizar-acoes .btn-whatsapp { grid-column: 1 / -1; background: #20c76a; }
+#modal-visualizar .btn-gps-link,
+#modal-visualizar .perfil-link,
+#modal-visualizar .btn-denunciar-anuncio { border-radius: 8px; }
+#modal-visualizar .btn-gps-link { background: #eef1f4; color: #2e67c7; }
+#modal-visualizar .perfil-link { margin-top: 12px; padding: 12px; background: #eef1f4; color: #2e67c7; font-size: 12px; }
+#modal-visualizar .btn-denunciar-anuncio { margin-top: 10px; color: #e84040; background: transparent; }
+[data-tema="escuro"] #modal-visualizar .modal-visualizar,
+[data-tema="escuro"] #modal-visualizar .info-container { background: #111820; }
+[data-tema="escuro"] #modal-visualizar .galeria-container { background: #0d141c; }
+[data-tema="escuro"] #modal-visualizar .info-container h2,
+[data-tema="escuro"] #modal-visualizar .visualizar-preco,
+[data-tema="escuro"] #modal-visualizar .viz-detalhe span:last-child { color: #f4f6f8; }
+[data-tema="escuro"] #modal-visualizar .visualizar-preco,
+[data-tema="escuro"] #modal-visualizar .viz-detalhe { border-color: #293542; }
+[data-tema="escuro"] #modal-visualizar .visualizar-descricao { color: #aeb8c4; }
+@media (max-width: 800px) {
+  #modal-visualizar .modal-visualizar { width: calc(100% - 18px); max-height: 94vh; }
+  #modal-visualizar .visualizar-container { grid-template-columns: 1fr; min-height: 0; }
+  #modal-visualizar .galeria-container { padding: 18px 18px 20px; }
+  #modal-visualizar .foto-principal { height: min(420px, 48vh); }
+  #modal-visualizar .info-container { padding: 26px 22px 24px; }
+}
+@media (max-width: 480px) {
+  #modal-visualizar .modal-visualizar { border-radius: 15px; }
+  #modal-visualizar .info-container h2 { font-size: 29px; margin-bottom: 20px; }
+  #modal-visualizar .visualizar-preco { font-size: 26px; }
+  #modal-visualizar .viz-detalhes { gap: 0 12px; }
+  #modal-visualizar .visualizar-acoes { grid-template-columns: 1fr; }
+  #modal-visualizar .visualizar-acoes .btn-mensagem-visualizar,
+  #modal-visualizar .visualizar-acoes .btn-whatsapp { grid-column: auto; }
+}
+
 /* Cards do marketplace — acabamento visual final */
 .grid-quadrado {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

@@ -34,11 +34,13 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 .anuncio-descricao-bloco p { max-height: 100px; overflow-y: auto; margin: 0 0 20px; color: #5f6b7a; font-size: 13px; line-height: 1.65; }
 .anuncio-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .anuncio-acoes button, .anuncio-acoes a, .acao-secundaria { min-height: 46px; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; text-decoration: none; }
-.acao-principal { grid-column: 1 / -1; border: 0; background: #ef1742; color: #fff; box-shadow: 0 8px 18px rgba(239,23,66,.2); }
-.acao-principal:hover { background: #d90d35; }
-.acao-curtir { border: 1px solid #f1b8c3; background: #fff; color: #e84040; }
-.acao-curtir.curtido { background: #e84040; color: #fff; }
-.acao-whatsapp { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 7px; background: #20c76a; color: #fff; }
+.acao-principal { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: #ef1742; color: #fff; box-shadow: 0 8px 18px rgba(239,23,66,.2); }
+.acao-principal:hover { background: #d90d35; transform: translateY(-1px); }
+.acao-curtir { display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #d8dee6; background: #fff; color: #6c7684; }
+.acao-curtir:hover { border-color: #ef9dad; color: #e84040; background: #fff8f9; }
+.acao-curtir.curtido { border-color: #e84040; background: #fff1f3; color: #e84040; }
+.acao-whatsapp { display: flex; align-items: center; justify-content: center; gap: 7px; background: #20c76a; color: #fff; box-shadow: 0 6px 14px rgba(32,199,106,.16); }
+.acao-whatsapp:hover { background: #16aa58; transform: translateY(-1px); }
 .acao-whatsapp.desabilitado { opacity: .45; }
 .acao-secundaria { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 9px; padding: 0 12px; border: 0; background: #eef1f4; color: #2563c7; }
 .acao-secundaria:hover { background: #e3e8ee; }
@@ -70,3 +72,11 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 [data-tema="escuro"] .anuncio-descricao-bloco p, [data-tema="escuro"] .spec-itens { color: #aeb8c4; }
 @media (max-width: 850px) { .anuncio-topo { grid-template-columns: 1fr; } .foto-principal-pagina { height: min(500px, 64vw); } .anuncio-resumo { padding: 30px 26px; } .especificacoes { padding-left: 26px; padding-right: 26px; } }
 @media (max-width: 520px) { body { padding-top: 76px; } .anuncio-page { padding: 0 12px 45px; } .anuncio-breadcrumb { padding: 17px 2px; } .anuncio-galeria { padding: 16px 14px 18px; } .foto-principal-pagina { min-height: 250px; height: 66vw; border-radius: 12px; } .anuncio-resumo { padding: 25px 18px; } .anuncio-resumo h1 { font-size: 30px; } .anuncio-preco-pagina { font-size: 26px; } .anuncio-detalhes { gap: 0 12px; } .detalhe-item { min-height: 61px; } .spec-itens { grid-template-columns: 1fr; gap: 0; } .especificacoes { padding: 32px 18px 18px; } .anuncio-footer { padding: 20px 18px 32px; flex-direction: column; } }
+
+/* Barra de ações do anúncio */
+.anuncio-acoes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 4px; }
+.anuncio-acoes .acao-principal { min-height: 50px; font-size: 13px; letter-spacing: .01em; }
+.anuncio-acoes .acao-curtir, .anuncio-acoes .acao-whatsapp { min-height: 44px; }
+.anuncio-acoes svg { width: 17px; height: 17px; stroke-width: 2.2; }
+[data-tema="escuro"] .acao-curtir { border-color: #3a4653; background: #202a35; color: #c2ccd7; }
+[data-tema="escuro"] .acao-curtir:hover { border-color: #ef9dad; background: #32232a; color: #ff9bad; }

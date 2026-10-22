@@ -732,6 +732,68 @@ footer {
 [data-tema="escuro"] .footer-col a:hover { color: #ffffff; }
 [data-tema="escuro"] .footer-bottom { color: rgba(255,255,255,0.4); }
 
+/* ===== MELHORIAS DE PERFIL, FOTOS E ANÚNCIOS ===== */
+.fotos-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 18px;
+  border: 1px solid rgba(20,75,113,.10);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(20,75,113,.06), rgba(255,255,255,.75));
+}
+.fotos-titulo, .fotos-subtitulo { display: block; }
+.fotos-titulo { color: var(--texto); font-size: 17px; margin-bottom: 5px; }
+.fotos-subtitulo { color: var(--texto-suave); font-size: 13px; line-height: 1.45; }
+.fotos-upload-area { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.foto-legenda-input { width: 190px; min-height: 40px; padding: 0 12px; border: 1px solid rgba(20,75,113,.18); border-radius: 10px; background: var(--branco); color: var(--texto); font: inherit; font-size: 12px; }
+.foto-legenda-input:focus { outline: 2px solid rgba(20,75,113,.18); border-color: var(--azul); }
+.btn-publicar-foto { min-height: 40px; padding: 10px 15px; border-radius: 10px; background: linear-gradient(135deg,#144b71,#0f3652); color: #fff; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: transform .2s, box-shadow .2s, opacity .2s; }
+.btn-publicar-foto:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15,54,82,.22); }
+.btn-publicar-foto.enviando { opacity: .65; pointer-events: none; }
+.foto-upload-status { flex-basis: 100%; color: var(--texto-suave); text-align: right; font-size: 11px; min-height: 15px; }
+.posts-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.post-card, .post-card-outro { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 14px !important; cursor: pointer; background: var(--cinza-claro, #eef2f5) !important; box-shadow: 0 4px 12px rgba(16,40,60,.08); transition: transform .2s, box-shadow .2s; }
+.post-card:hover, .post-card-outro:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(16,40,60,.16); }
+.post-card > img, .post-card-outro > img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+.post-card:hover > img, .post-card-outro:hover > img { transform: scale(1.05); }
+.post-card > div { padding: 18px 10px 9px !important; background: linear-gradient(transparent,rgba(0,0,0,.72)) !important; }
+.post-card-excluir { width: 30px !important; height: 30px !important; background: rgba(0,0,0,.62) !important; backdrop-filter: blur(5px); }
+.anuncios-grid { grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
+.anuncio-card { border: 1px solid rgba(20,75,113,.10); box-shadow: 0 8px 22px rgba(20,50,70,.08); transition: transform .22s, box-shadow .22s, border-color .22s; }
+.anuncio-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(20,50,70,.16); border-color: rgba(20,75,113,.25); }
+.anuncio-card > img { height: 190px; display: block; background: #e9eef2; object-fit: cover; }
+.anuncio-card > img[style*="grayscale"] { filter: grayscale(.55) brightness(.9) !important; }
+.anuncio-info { padding: 16px 17px 17px; }
+.anuncio-info h3 { font-size: 17px; margin-bottom: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.anuncio-info p { color: var(--texto-suave); font-size: 12px; margin: 0; }
+.anuncio-preco { font-size: 21px; margin: 13px 0 8px; letter-spacing: -.02em; }
+.anuncio-curtidas { margin-top: 2px; }
+.btn-excluir-anuncio, .btn-reativar { border-radius: 9px !important; transition: filter .2s, transform .2s; }
+.btn-excluir-anuncio:hover, .btn-reativar:hover { filter: brightness(.93); transform: translateY(-1px); }
+.modal-foto-post { display: none; position: fixed; inset: 0; background: rgba(4,12,20,.88); z-index: 3000; justify-content: center; align-items: center; padding: 18px; backdrop-filter: blur(10px); }
+.modal-foto-post-conteudo { width: min(620px, 100%); max-height: calc(100vh - 36px); overflow: hidden; position: relative; border-radius: 18px; background: var(--branco, #fff); box-shadow: 0 24px 70px rgba(0,0,0,.35); }
+.modal-foto-post-conteudo > img { width: 100%; max-height: min(66vh, 560px); object-fit: contain; display: block; background: #0a1118; }
+.modal-foto-post-fechar { position: absolute; top: 10px; right: 12px; z-index: 1; width: 34px; height: 34px; border: 0; border-radius: 50%; color: #fff; background: rgba(0,0,0,.55); font-size: 25px; line-height: 1; cursor: pointer; }
+.modal-foto-post-info { padding: 16px 18px 18px; }
+.modal-foto-post-info p { color: var(--texto); font-size: 14px; line-height: 1.5; margin: 0 0 8px; }
+.modal-foto-post-info span { color: #e84040; font-size: 13px; font-weight: 800; }
+[data-tema="escuro"] .fotos-toolbar { background: linear-gradient(135deg, rgba(77,166,216,.10), #171717); border-color: rgba(77,166,216,.18); }
+[data-tema="escuro"] .foto-legenda-input { background: #111; border-color: #3f3f46; }
+
+@media (max-width: 600px) {
+  .fotos-toolbar { align-items: stretch; flex-direction: column; padding: 15px; }
+  .fotos-upload-area { justify-content: stretch; }
+  .foto-legenda-input { width: 100%; flex: 1 1 100%; }
+  .btn-publicar-foto { justify-content: center; flex: 1; }
+  .foto-upload-status { text-align: left; }
+  .posts-grid { gap: 7px; }
+  .anuncios-grid { gap: 13px; }
+  .anuncio-card > img { height: 205px; }
+}
+
 
 @media (max-width: 360px) {
   .container-principal {

@@ -105,14 +105,21 @@
       <div id="pausados-lista" class="anuncios-grid"></div>
     </div>
     <div id="tab-fotos" class="tab-content">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-        <span style="font-size:14px;color:var(--texto-suave,#4a6070);">Compartilhe momentos, carros e viagens com seus seguidores.</span>
-        <label id="btn-nova-foto" style="background:linear-gradient(135deg,#144b71,#0f3652);color:#fff;padding:10px 20px;border-radius:10px;font-weight:900;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+      <div class="fotos-toolbar">
+        <div>
+          <strong class="fotos-titulo">Fotos do perfil</strong>
+          <span class="fotos-subtitulo">Compartilhe momentos, carros e viagens com seus seguidores.</span>
+        </div>
+        <div class="fotos-upload-area">
+          <input type="text" id="foto-legenda" class="foto-legenda-input" maxlength="180" placeholder="Legenda opcional...">
+          <label id="btn-nova-foto" class="btn-publicar-foto">
           <i data-lucide="camera" style="width:14px;height:14px;vertical-align:-1px;margin-right:4px;"></i> Publicar Foto
-          <input type="file" id="upload-post-foto" accept="image/*" style="display:none">
-        </label>
+            <input type="file" id="upload-post-foto" accept="image/jpeg,image/png,image/webp" style="display:none">
+          </label>
+          <small id="foto-upload-status" class="foto-upload-status" aria-live="polite"></small>
+        </div>
       </div>
-      <div id="posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+      <div id="posts-grid" class="posts-grid"></div>
     </div>
   </div>
 
@@ -126,7 +133,7 @@
       <div id="anuncios-outro-lista" class="anuncios-grid"></div>
     </div>
     <div id="tab-fotos-outro" class="tab-content">
-      <div id="posts-grid-outro" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+      <div id="posts-grid-outro" class="posts-grid"></div>
     </div>
     <div id="tab-avaliacao" class="tab-content">
       <div id="avaliacao-section">
@@ -701,19 +708,25 @@ function abrirFotoPostEl(id, imagem, legenda, curtidas) {
 // Upload nova foto/post (função nomeada para poder re-anexar o listener após recriar o input)
 async function handleUploadPostFoto(e) {
   const file = e.target.files[0]; if (!file || !usuarioAtual) return;
-  if (file.size > 5 * 1024 * 1024) { window.mgToast?.("Foto muito grande. Máximo: 5MB.", "info"); return; }
-  const legenda = prompt("Adicione uma legenda (opcional):") || '';
+  const status = document.getElementById("foto-upload-status");
+  const input = document.getElementById("upload-post-foto");
   const btn = document.getElementById("btn-nova-foto");
-  btn.textContent = "Enviando...";
-  const ext = file.name.split('.').pop();
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { window.mgToast?.("Use uma imagem JPG, PNG ou WEBP.", "info"); input.value = ""; return; }
+  if (file.size > 5 * 1024 * 1024) { window.mgToast?.("Foto muito grande. Máximo: 5MB.", "info"); input.value = ""; return; }
+  const legenda = document.getElementById("foto-legenda")?.value.trim() || '';
+  btn.classList.add("enviando");
+  btn.setAttribute("aria-disabled", "true");
+  if (status) status.textContent = "Enviando foto...";
+  const ext = file.type.split('/')[1].replace('jpeg', 'jpg');
   const path = `posts/${usuarioAtual.id}/${Date.now()}.${ext}`;
   const { data: up, error } = await supabase.storage.from("fotos-perfil").upload(path, file, {upsert: true});
-  if (error) { window.mgToast?.("Erro ao enviar: " + error.message, "error"); btn.innerHTML = 'Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }
+  if (error) { window.mgToast?.("Erro ao enviar: " + error.message, "error"); if (status) status.textContent = "Não foi possível enviar."; btn.classList.remove("enviando"); btn.removeAttribute("aria-disabled"); input.value = ""; return; }
   const { data: url } = supabase.storage.from("fotos-perfil").getPublicUrl(path);
   const okPost = await executarOuAvisar(supabase.from("posts_usuario").insert({ usuario_id: usuarioAtual.id, imagem: url.publicUrl, legenda, curtidas: 0 }), "Não foi possível publicar a foto.");
-  if (okPost === null) { btn.innerHTML = 'Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">'; reatacharUploadFoto(); return; }
-  btn.innerHTML = 'Publicar Foto<input type="file" id="upload-post-foto" accept="image/*" style="display:none">';
-  reatacharUploadFoto();
+  if (okPost === null) { if (status) status.textContent = "Não foi possível publicar."; btn.classList.remove("enviando"); btn.removeAttribute("aria-disabled"); input.value = ""; return; }
+  if (status) status.textContent = "Foto publicada com sucesso.";
+  btn.classList.remove("enviando"); btn.removeAttribute("aria-disabled"); input.value = "";
+  const legendaInput = document.getElementById("foto-legenda"); if (legendaInput) legendaInput.value = "";
   carregarPostsFotos();
 }
 function reatacharUploadFoto() {
@@ -734,13 +747,13 @@ await carregarPerfil();
 lucide.createIcons();
 </script>
 <!-- Modal visualizar foto do post -->
-<div id="modal-foto-post" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:3000;justify-content:center;align-items:center;backdrop-filter:blur(8px);">
-  <div style="background:var(--branco,#fff);border-radius:20px;overflow:hidden;max-width:520px;width:96%;position:relative;">
-    <span onclick="document.getElementById('modal-foto-post').style.display='none'" style="position:absolute;top:12px;right:16px;font-size:26px;cursor:pointer;color:#fff;z-index:1;text-shadow:0 2px 8px rgba(0,0,0,.6);">×</span>
-    <img id="modal-foto-post-img" src="" style="width:100%;max-height:420px;object-fit:cover;display:block;">
-    <div style="padding:16px 18px;">
-      <p id="modal-foto-post-legenda" style="font-size:14px;color:var(--texto,#1a2a38);margin-bottom:8px;"></p>
-      <span id="modal-foto-post-curtidas" style="font-size:13px;color:#e84040;font-weight:700;"></span>
+<div id="modal-foto-post" class="modal-foto-post" role="dialog" aria-modal="true" aria-label="Visualização da foto" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-foto-post-conteudo">
+    <button type="button" class="modal-foto-post-fechar" aria-label="Fechar" onclick="document.getElementById('modal-foto-post').style.display='none'">×</button>
+    <img id="modal-foto-post-img" src="" alt="Foto publicada no perfil">
+    <div class="modal-foto-post-info">
+      <p id="modal-foto-post-legenda"></p>
+      <span id="modal-foto-post-curtidas"></span>
     </div>
   </div>
 </div>

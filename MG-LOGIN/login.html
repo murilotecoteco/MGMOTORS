@@ -122,7 +122,7 @@ document.getElementById("botao-google-login").addEventListener("click", async ()
   mostrarFeedback("Abrindo o login do Google...", "sucesso");
   // A home é o Site URL oficial do projeto e está na allow list do Supabase.
   // Depois do retorno, o headerGlobal lê a sessão persistida e atualiza o perfil.
-  const redirectTo = new URL("/MG-INICIO/inicio.html?oauth=1", window.location.origin).href;
+  const redirectTo = new URL("/MG-INICIO/inicio.html", window.location.origin).href;
   const { error } = await supa.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo }

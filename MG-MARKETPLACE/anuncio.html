@@ -84,6 +84,7 @@
     const fallbackFoto = "../imagens/image.webp";
     const texto = valor => valor === null || valor === undefined || valor === "" ? "Não informado" : String(valor);
     const formatarNumero = valor => Number(valor || 0).toLocaleString("pt-BR");
+    const formatarOpcao = valor => ({ manual: "Manual", automatico: "Automático", automatizado: "Automatizado", gasolina: "Gasolina", alcool: "Álcool", flex: "Flex", diesel: "Diesel", eletrico: "Elétrico", hibrido: "Híbrido" }[valor] || valor);
     const notificar = (msg, tipo = "info") => window.mgToast?.(msg, tipo) || alert(msg);
 
     function detalhe(label, valor, icone) {
@@ -156,11 +157,13 @@
       $("anuncio-detalhes").append(
         detalhe("Fabricação", anuncio.ano_fabricacao, "calendar-days"), detalhe("Modelo", anuncio.ano_modelo, "calendar"),
         detalhe("Quilometragem", `${formatarNumero(anuncio.quilometragem)} km`, "gauge"), detalhe("Cor", anuncio.cor, "palette"),
-        detalhe("Localização", anuncio.cidade_display || [anuncio.cidade, anuncio.estado].filter(Boolean).join(", "), "map-pin")
+        detalhe("Localização", anuncio.cidade_display || [anuncio.cidade, anuncio.estado].filter(Boolean).join(", "), "map-pin"),
+        detalhe("Câmbio", formatarOpcao(anuncio.cambio), "settings-2"), detalhe("Combustível", formatarOpcao(anuncio.combustivel), "fuel"),
+        detalhe("Final da placa", anuncio.final_placa, "hash")
       );
       const specs = $("especificacoes-lista");
       specs.append(grupoEspecificacao("Parâmetros básicos", [["Tipo de veículo", anuncio.tipo_veiculo], ["Marca", marca], ["Modelo", modelo], ["Ano de fabricação", anuncio.ano_fabricacao], ["Ano do modelo", anuncio.ano_modelo]]));
-      specs.append(grupoEspecificacao("Performance", [["Quilometragem", `${formatarNumero(anuncio.quilometragem)} km`], ["Câmbio", anuncio.cambio], ["Combustível", anuncio.combustivel], ["Potência", anuncio.potencia]]));
+      specs.append(grupoEspecificacao("Performance", [["Quilometragem", `${formatarNumero(anuncio.quilometragem)} km`], ["Câmbio", formatarOpcao(anuncio.cambio)], ["Combustível", formatarOpcao(anuncio.combustivel)], ["Horas do motor", anuncio.horas_motor]]));
       specs.append(grupoEspecificacao("Exterior e interior", [["Cor", anuncio.cor], ["Portas", anuncio.portas], ["Descrição", anuncio.descricao]]));
       if (fotos.length) {
         $("miniaturas").innerHTML = "";

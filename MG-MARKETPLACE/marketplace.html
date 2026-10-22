@@ -186,6 +186,24 @@
           <input type="number" id="car-preco" placeholder="Preço (R$)" required>
           <input type="number" id="car-km" placeholder="Quilometragem" required>
         </div>
+        <div class="form-row">
+          <select id="car-cambio">
+            <option value="">Câmbio (opcional)</option>
+            <option value="manual">Manual</option>
+            <option value="automatico">Automático</option>
+            <option value="automatizado">Automatizado</option>
+          </select>
+          <select id="car-combustivel">
+            <option value="">Combustível (opcional)</option>
+            <option value="gasolina">Gasolina</option>
+            <option value="alcool">Álcool</option>
+            <option value="flex">Flex</option>
+            <option value="diesel">Diesel</option>
+            <option value="eletrico">Elétrico</option>
+            <option value="hibrido">Híbrido</option>
+          </select>
+        </div>
+        <input type="text" id="car-final-placa" placeholder="Final da placa (opcional)" maxlength="1" inputmode="numeric" pattern="[0-9]">
         <input type="text" id="car-cor" placeholder="Cor" required>
         <div class="form-row">
           <input type="text" id="car-cidade" placeholder="Cidade">
@@ -990,6 +1008,9 @@ import { supabaseUrl, supabaseKey, escapeHtml } from "../mgConfig.js";
         titulo: "Anúncio de veículo", descricao: document.getElementById("car-descricao").value,
         preco: parseFloat(document.getElementById("car-preco").value), ano_fabricacao: parseInt(document.getElementById("car-ano").value),
         ano_modelo: parseInt(document.getElementById("car-ano-modelo").value), quilometragem: parseInt(document.getElementById("car-km").value),
+        cambio: document.getElementById("car-cambio").value || null,
+        combustivel: document.getElementById("car-combustivel").value || null,
+        final_placa: document.getElementById("car-final-placa").value || null,
         cor: document.getElementById("car-cor").value, whatsapp: document.getElementById("car-whatsapp").value,
         status: "pendente", cidade: cidade || "Não informada", estado: estado,
         latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)

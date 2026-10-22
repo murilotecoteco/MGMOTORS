@@ -48,7 +48,7 @@
 </main>
 
 <script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 const supa = createClient(supabaseUrl, supabaseKey);
 const feedback = document.getElementById("form-feedback");
@@ -117,11 +117,21 @@ document.getElementById("form-login").addEventListener("submit", async e => {
 });
 
 document.getElementById("botao-google-login").addEventListener("click", async () => {
-  const redirectTo = new URL("../MG-CONTA/conta.html", window.location.href).href;
-  await supa.auth.signInWithOAuth({
+  const botao = document.getElementById("botao-google-login");
+  botao.disabled = true;
+  mostrarFeedback("Abrindo o login do Google...", "sucesso");
+  // A home é o Site URL oficial do projeto e está na allow list do Supabase.
+  // Depois do retorno, o headerGlobal lê a sessão persistida e atualiza o perfil.
+  const redirectTo = new URL("/MG-INICIO/inicio.html?oauth=1", window.location.origin).href;
+  const { error } = await supa.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo }
   });
+  if (error) {
+    botao.disabled = false;
+    mostrarFeedback("Não foi possível iniciar o login com Google. Confira a configuração OAuth no Supabase.");
+    console.error("Google OAuth error:", error);
+  }
 });
 </script>
 <script>window.chtlConfig={chatbotId:"6944231868"}</script>

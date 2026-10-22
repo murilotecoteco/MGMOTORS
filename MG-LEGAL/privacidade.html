@@ -128,7 +128,7 @@
 <script type="module">
   import { carregarHeaderGlobal } from "../headerGlobal.js";
   try {
-    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.45.4");
+    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.117.3");
     const { supabaseUrl, supabaseKey } = await import("../mgConfig.js");
     const supabase = createClient(supabaseUrl, supabaseKey);
     carregarHeaderGlobal(supabase);

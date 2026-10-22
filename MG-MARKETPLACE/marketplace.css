@@ -1887,6 +1887,17 @@ footer {
   .card .btn-ver-detalhes { padding: 0 9px; font-size: 10px; }
 }
 
+/* Mantém curtir e perfil com proporções idênticas */
+.card .card-actions { grid-template-columns: 42px 42px minmax(0, 1fr); }
+.card .btn-curtir { width: 42px; height: 34px; }
+.card .vendedor-link { width: 42px; height: 34px; display: grid; place-items: center; padding: 0; border-radius: 10px; }
+.card .vendedor-mini-foto { width: 28px; height: 28px; }
+.card .btn-ver-detalhes { justify-self: end; }
+@media (max-width: 700px) {
+  .card .card-actions { grid-template-columns: 40px 40px minmax(0, 1fr); }
+  .card .btn-curtir, .card .vendedor-link { width: 40px; }
+}
+
 /* Modal de detalhes do veículo — layout compacto e orientado à decisão */
 .modal-visualizar {
   width: min(1120px, calc(100% - 32px));

@@ -1890,9 +1890,11 @@ footer {
 /* Mantém curtir e perfil com proporções idênticas */
 .card .card-actions { grid-template-columns: 42px 42px minmax(0, 1fr); }
 .card .btn-curtir { width: 42px; height: 34px; }
-.card .vendedor-link { width: 42px; height: 34px; display: grid; place-items: center; padding: 0; border-radius: 10px; }
+.card .vendedor-link { width: 42px; height: 34px; display: grid; place-items: center; margin: 0; padding: 0; border-radius: 10px; align-self: center; }
 .card .vendedor-mini-foto { width: 28px; height: 28px; }
 .card .btn-ver-detalhes { justify-self: end; }
+.card .btn-curtir, .card .vendedor-link, .card .btn-ver-detalhes { grid-row: 1; }
+.card .btn-denunciar-card, .card .btn-excluir { grid-row: 2; }
 @media (max-width: 700px) {
   .card .card-actions { grid-template-columns: 40px 40px minmax(0, 1fr); }
   .card .btn-curtir, .card .vendedor-link { width: 40px; }

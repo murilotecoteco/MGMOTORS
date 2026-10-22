@@ -783,6 +783,36 @@ footer {
 [data-tema="escuro"] .fotos-toolbar { background: linear-gradient(135deg, rgba(77,166,216,.10), #171717); border-color: rgba(77,166,216,.18); }
 [data-tema="escuro"] .foto-legenda-input { background: #111; border-color: #3f3f46; }
 
+/* Cabeçalho do perfil: foto e indicadores mais limpos */
+.perfil-header { border: 1px solid rgba(20,75,113,.10); box-shadow: 0 14px 34px rgba(20,50,70,.10); }
+.capa-container { height: 210px; background: linear-gradient(120deg, #0f3652, #2563eb); }
+.capa-container::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,25,40,.04), rgba(5,25,40,.38)); pointer-events: none; }
+.capa-imagem { filter: saturate(.92) contrast(1.04); }
+.btn-editar-capa { z-index: 1; display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(255,255,255,.35); backdrop-filter: blur(8px); background: rgba(5,25,40,.58); }
+.perfil-info { align-items: flex-start; padding: 0 34px 30px; }
+.foto-container { z-index: 2; margin-top: -68px; margin-right: 26px; padding: 5px; border-radius: 50%; background: linear-gradient(135deg, #fff, #cfe5f5); box-shadow: 0 10px 24px rgba(13,54,83,.22); }
+.foto-perfil { width: 142px; height: 142px; border: 4px solid #fff; box-shadow: 0 0 0 1px rgba(20,75,113,.10); }
+.btn-editar-foto { right: 5px; bottom: 6px; width: 36px; height: 36px; display: grid; place-items: center; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(20,75,113,.25); }
+.dados-container { padding-top: 24px; }
+.nome-usuario { color: var(--texto); font-size: 26px; font-weight: 900; letter-spacing: -.03em; }
+.stats-container { gap: 9px; margin: 18px 0; flex-wrap: wrap; }
+.stat-item { min-width: 88px; padding: 10px 13px; border: 1px solid rgba(20,75,113,.10); border-radius: 12px; background: rgba(20,75,113,.035); transition: transform .2s, background .2s; }
+.stat-item:hover { transform: translateY(-2px); background: rgba(20,75,113,.08); }
+.stat-number { font-size: 19px; font-weight: 900; }
+.stat-label { margin-top: 3px; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+[data-tema="escuro"] .foto-container { background: linear-gradient(135deg, #25394a, #14212d); }
+[data-tema="escuro"] .foto-perfil { border-color: #171717; }
+[data-tema="escuro"] .stat-item { border-color: rgba(77,166,216,.16); background: rgba(77,166,216,.08); }
+[data-tema="escuro"] .stat-item:hover { background: rgba(77,166,216,.14); }
+@media (max-width: 768px) {
+  .capa-container { height: 160px; }
+  .perfil-info { padding: 0 20px 24px; }
+  .foto-container { margin-top: -57px; margin-right: 0; align-self: center; }
+  .foto-perfil { width: 112px; height: 112px; }
+  .dados-container { width: 100%; padding-top: 15px; }
+  .stats-container { justify-content: center; }
+}
+
 @media (max-width: 600px) {
   .fotos-toolbar { align-items: stretch; flex-direction: column; padding: 15px; }
   .fotos-upload-area { justify-content: stretch; }

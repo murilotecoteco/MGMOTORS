@@ -260,8 +260,8 @@ async function carregarPerfil() {
   fotoPerfil.src = perfil.foto || "https://via.placeholder.com/150";
   capaFoto.src = perfil.capa_foto || "https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop";
   bioExibido.textContent = perfil.bio || "Sem biografia";
-  document.getElementById("seguidoresCount").textContent = perfil.seguidores || 0;
-  document.getElementById("seguindoCount").textContent = perfil.seguindo || 0;
+  document.getElementById("seguidoresCount").textContent = Math.max(0, Number(perfil.seguidores) || 0);
+  document.getElementById("seguindoCount").textContent = Math.max(0, Number(perfil.seguindo) || 0);
   if (perfil.nota_media > 0) {
     document.getElementById("nota-media-container").style.display = "flex";
     const estrelas = "★".repeat(Math.round(perfil.nota_media)) + "☆".repeat(5-Math.round(perfil.nota_media));
@@ -465,7 +465,7 @@ btnSeguir.addEventListener("click", async () => {
   }
   // Perfil já foi carregado acima; maybeSingle() evita 406 em leitura concorrente.
   const { data: p } = await supabase.from("usuarios_publicos").select("seguidores").eq("id",perfilUsuarioId).maybeSingle();
-  document.getElementById("seguidoresCount").textContent = p?.seguidores||0;
+  document.getElementById("seguidoresCount").textContent = Math.max(0, Number(p?.seguidores) || 0);
 });
 
 document.getElementById("btnDenunciarPerfil").addEventListener("click", () => { document.getElementById("modal-denuncia").style.display="flex"; });

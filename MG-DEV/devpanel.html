@@ -775,11 +775,20 @@ async function carregarCategorias() {
   for (const marca of marcas) {
     const card = document.createElement("div"); card.className = "card-dev";
     const filhos = (modelos || []).filter(m => m.marca_id === marca.id);
-    card.innerHTML = `<div class="card-dev-header"><div style="flex:1"><h3></h3><p class="categoria-modelos"></p></div><div style="display:flex;gap:8px;align-items:center"><select class="motivo-input categoria-tipo"><option value="carro">Carro</option><option value="moto">Moto</option><option value="caminhao">Caminhão</option><option value="trator">Trator</option><option value="embarcacao">Embarcação</option></select><button class="btn-dev btn-ver categoria-salvar">Salvar</button><button class="btn-dev btn-rejeitar categoria-excluir">Excluir</button></div></div>`;
-    card.querySelector("h3").textContent = marca.nome; card.querySelector(".categoria-modelos").textContent = filhos.length ? `Modelos: ${filhos.map(m => m.nome).join(", ")}` : "Nenhum modelo cadastrado";
+    card.innerHTML = `<div class="card-dev-header"><div style="flex:1"><h3></h3><p class="categoria-modelos-resumo"></p><div class="lista-modelos" style="display:grid;gap:8px;margin-top:10px;"></div></div><div style="display:flex;gap:8px;align-items:center"><select class="motivo-input categoria-tipo"><option value="carro">Carro</option><option value="moto">Moto</option><option value="caminhao">Caminhão</option><option value="trator">Trator</option><option value="embarcacao">Embarcação</option></select><button class="btn-dev btn-ver categoria-salvar">Salvar</button><button class="btn-dev btn-rejeitar categoria-excluir">Excluir</button></div></div>`;
+    card.querySelector("h3").textContent = marca.nome; card.querySelector(".categoria-modelos-resumo").textContent = filhos.length ? `${filhos.length} modelo(s) cadastrado(s)` : "Nenhum modelo cadastrado";
     card.querySelector(".categoria-tipo").value = marca.categoria || "carro";
     card.querySelector(".categoria-salvar").onclick = async () => { const { error } = await db.from("marcas").update({ categoria: card.querySelector(".categoria-tipo").value }).eq("id", marca.id); if (error) toast("Não foi possível atualizar a marca: " + error.message, "error"); else toast("Categoria atualizada", "success"); };
     card.querySelector(".categoria-excluir").onclick = async () => { if (!confirm(`Excluir a marca ${marca.nome}? Marcas com anúncios/modelos vinculados serão bloqueadas.`)) return; const { error } = await db.from("marcas").delete().eq("id", marca.id); if (error) { toast("Não foi possível excluir: a marca pode estar em uso.", "error"); return; } toast("Marca excluída", "success"); carregarCategorias(); };
+    const modelosCont = card.querySelector(".lista-modelos");
+    filhos.forEach(modelo => {
+      const linha = document.createElement("div"); linha.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap";
+      linha.innerHTML = `<input class="motivo-input modelo-nome" maxlength="80"><button class="btn-dev btn-ver modelo-salvar">Salvar</button><button class="btn-dev btn-rejeitar modelo-excluir">Excluir</button>`;
+      linha.querySelector(".modelo-nome").value = modelo.nome;
+      linha.querySelector(".modelo-salvar").onclick = async () => { const nome = linha.querySelector(".modelo-nome").value.trim(); if (!nome) return; const { error } = await db.from("modelos").update({ nome }).eq("id", modelo.id); if (error) toast("Não foi possível editar o modelo: " + error.message, "error"); else { toast("Modelo atualizado", "success"); carregarCategorias(); } };
+      linha.querySelector(".modelo-excluir").onclick = async () => { if (!confirm(`Excluir o modelo ${modelo.nome}?`)) return; const { error } = await db.from("modelos").delete().eq("id", modelo.id); if (error) { toast("Não foi possível excluir: o modelo pode estar em uso.", "error"); return; } toast("Modelo excluído", "success"); carregarCategorias(); };
+      modelosCont.appendChild(linha);
+    });
     cont.appendChild(card);
   }
   lucide.createIcons();

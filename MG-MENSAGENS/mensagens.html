@@ -162,9 +162,14 @@ function getOutroId(msg) {
 
 function getPreview(msg) {
   if (!msg) return '';
-  if (msg.tipo === 'foto') return '[Foto]';
+  if (isFotoMensagem(msg)) return '[Foto]';
   const texto = msg.conteudo || '';
   return texto.length > 40 ? texto.substring(0, 40) + '...' : texto;
+}
+
+function isFotoMensagem(msg) {
+  return msg?.tipo === 'foto'
+    || (typeof msg?.conteudo === 'string' && msg.conteudo.startsWith('mensagens/'));
 }
 
 // Busca em lote os perfis públicos das conversas (evita N+1).
@@ -420,7 +425,7 @@ function renderizarMensagem(msg, rolar = true) {
   div.dataset.messageId = msg.id;
 
   let conteudoEl;
-  if (msg.tipo === 'foto' && typeof msg.conteudo === 'string') {
+  if (isFotoMensagem(msg) && typeof msg.conteudo === 'string') {
     const img = document.createElement('img');
     img.className = 'msg-foto';
     img.onerror = () => { img.style.display = 'none'; };
@@ -454,7 +459,7 @@ function renderizarMensagem(msg, rolar = true) {
     const reportBtn = document.createElement('button');
     reportBtn.className = 'btn-denunciar-msg';
     reportBtn.dataset.id = msg.id;
-    reportBtn.dataset.tipo = msg.tipo || 'texto';
+    reportBtn.dataset.tipo = isFotoMensagem(msg) ? 'foto' : (msg.tipo || 'texto');
     reportBtn.title = 'Denunciar';
     reportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
     reportBtn.setAttribute('aria-label', 'Denunciar');
@@ -503,12 +508,25 @@ async function carregarMensagensConversa(outroUsuarioId) {
     div.dataset.messageId = msg.id;
 
     let conteudoEl;
-    if (msg.tipo === 'foto' && typeof msg.conteudo === 'string' && msg.conteudo.startsWith('http')) {
+    if (isFotoMensagem(msg) && typeof msg.conteudo === 'string') {
       const img = document.createElement('img');
-      img.src = msg.conteudo;
       img.className = 'msg-foto';
       img.onerror = () => { img.style.display = 'none'; };
-      img.addEventListener('click', () => window.open(msg.conteudo, '_blank'));
+      const urlFoto = msg.conteudo.startsWith('http')
+        ? Promise.resolve(msg.conteudo)
+        : supabase.storage.from('FOTOS-MENSAGENS').createSignedUrl(msg.conteudo, 3600)
+          .then(({ data, error }) => {
+            if (error) throw error;
+            return data?.signedUrl;
+          });
+      urlFoto.then((url) => {
+        if (!url) throw new Error('URL da foto indisponível');
+        img.src = url;
+        img.addEventListener('click', () => window.open(url, '_blank'));
+      }).catch((error) => {
+        console.warn('Não foi possível carregar a foto da conversa:', error.message);
+        img.style.display = 'none';
+      });
       conteudoEl = img;
     } else {
       const textDiv = document.createElement('div');
@@ -524,7 +542,7 @@ async function carregarMensagensConversa(outroUsuarioId) {
       const reportBtn = document.createElement('button');
       reportBtn.className = 'btn-denunciar-msg';
       reportBtn.dataset.id = msg.id;
-      reportBtn.dataset.tipo = msg.tipo || 'texto';
+      reportBtn.dataset.tipo = isFotoMensagem(msg) ? 'foto' : (msg.tipo || 'texto');
       reportBtn.title = 'Denunciar';
       reportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
       reportBtn.setAttribute('aria-label', 'Denunciar');

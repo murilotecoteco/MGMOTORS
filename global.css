@@ -286,6 +286,16 @@ textarea:focus-visible,
     min-height: 68px;
     gap: 12px;
     padding: 12px 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  #header-global .logo {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   #header-global .logo-text {
@@ -294,19 +304,21 @@ textarea:focus-visible,
 
   #header-global .nav-toggle {
     display: inline-flex;
-    order: 2;
+    grid-column: 2;
+    grid-row: 1;
   }
 
   #header-global .nav {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 16px;
-    right: 16px;
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
     display: none;
     align-items: stretch;
     flex-direction: column;
     gap: 4px;
     padding: 8px;
+    margin-top: 4px;
     background: #111;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
@@ -325,8 +337,9 @@ textarea:focus-visible,
   }
 
   #header-global .icones {
-    order: 3;
-    margin-left: auto;
+    grid-column: 3;
+    grid-row: 1;
+    margin-left: 0;
     gap: 6px;
   }
 
@@ -343,6 +356,12 @@ textarea:focus-visible,
   #header-global .icone-foto {
     width: 34px;
     height: 34px;
+  }
+
+  /* O menu aberto ocupa uma segunda linha real; assim não fica sobre os
+     ícones nem cobre o primeiro conteúdo da página. */
+  body.nav-aberta {
+    padding-top: 330px !important;
   }
 }
 
@@ -379,6 +398,10 @@ textarea:focus-visible,
 
   body.mg-tem-breadcrumb #header-global {
     min-height: 110px;
+  }
+
+  body.nav-aberta {
+    padding-top: 370px !important;
   }
 }
 

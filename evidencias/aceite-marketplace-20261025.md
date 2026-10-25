@@ -3,7 +3,8 @@
 Data: 25/10/2026  
 Ambiente: produção — `https://mgmotorss.vercel.app`  
 Sistema operacional: Arch Linux  
-Navegadores: Chrome e Firefox  
+Navegadores: Chromium 156.0.8078.47 e Firefox 158.0.1
+Dispositivos móveis: Redmi 13C (1600×720) e Samsung A35 (1080×2340)
 Responsável pelo aceite: usuário do projeto
 
 ## Resultado confirmado
@@ -20,11 +21,11 @@ Responsável pelo aceite: usuário do projeto
 ## Declaração de aceite
 
 O usuário confirmou que todas as funcionalidades listadas estão funcionando
-após os testes realizados no Arch Linux, utilizando Chrome e Firefox.
+após os testes realizados no Arch Linux, utilizando Chromium e Firefox, com
+verificação responsiva no Redmi 13C e no Samsung A35.
 
 Status final: **PASS**.
 
 ## Limites do registro
 
-As versões exatas dos navegadores, a resolução das telas e os passos
-individuais de cada execução não foram informados neste registro.
+Os passos individuais de cada execução não foram detalhados neste registro.

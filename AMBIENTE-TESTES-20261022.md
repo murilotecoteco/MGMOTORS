@@ -1,6 +1,6 @@
 # Ambiente de desenvolvimento e testes — MG Motors
 
-Registro das versões verificadas em **22/10/2026** para apoiar a documentação do projeto e os testes de responsividade.
+Registro das versões verificadas em **25/10/2026** para apoiar a documentação do projeto e os testes de responsividade.
 
 ## Sistema e ferramentas
 
@@ -10,7 +10,7 @@ Registro das versões verificadas em **22/10/2026** para apoiar a documentação
 | Kernel | 7.2.11-arch1-1 | Confirmado |
 | Node.js | v26.12.0 | Confirmado |
 | npm | 12.2.1 | Confirmado |
-| VS Code | 1.142.0 (`6d62b1d5dace93a33b3a6d3eca1317bd5e15bcb1`) | Confirmado |
+| VS Code | 1.143.1 (`e646868227c3e3a9e3f24277c8c7220be42c0be7`) | Confirmado |
 | Supabase CLI | 2.117.0 | Confirmado |
 | PostgreSQL no computador | Cliente `psql` não instalado | Não disponível localmente |
 | PostgreSQL no Supabase | 17.6 | Confirmado pelo painel do projeto |
@@ -38,15 +38,14 @@ Registro das versões verificadas em **22/10/2026** para apoiar a documentação
 
 | Navegador/dispositivo | Versão/estado |
 |---|---|
-| Firefox no Arch Linux | 158.0 |
-| Chromium instalado no Arch Linux | 154.0.8037.97 |
-| Google Chrome no Windows 11 | 156.0.8078.47/.48 — versão estável oficial de referência em 22/10/2026 |
-| Brave no Windows 11 | 1.97.57 — versão desktop oficial; Chromium 155.0.8059.80 |
-| Windows | Windows 11 — confirmado pelo responsável pelos testes |
-| Mobile FIRST (Firefox) | 4.20.4 |
-| Tamanhos testados | Smartphone, tablet e desktop por simulador responsivo; resoluções exatas ainda precisam ser registradas |
+| Firefox no Arch Linux | 158.0.1 |
+| Chromium instalado no Arch Linux | 156.0.8078.47 |
+| Google Chrome/Brave | Não instalados neste ambiente de coleta |
+| Windows | Utilizado em testes anteriores, sem versão coletada neste registro |
+| Redmi 13C | 1600 × 720 — navbar responsiva observada |
+| Samsung A35 | 1080 × 2340 — navbar responsiva observada |
 
-As versões acima são as versões estáveis oficiais encontradas nas páginas dos fabricantes na data deste registro. Para comprovar a versão efetivamente instalada no computador usado na demonstração, ainda é recomendável salvar um print de `chrome://version` e `brave://version`.
+As versões dos navegadores acima são as versões efetivamente instaladas no Arch Linux durante a coleta. Os testes móveis foram registrados pelos modelos e resoluções informados pelo responsável pelo projeto.
 
 ## Chatling
 
@@ -58,7 +57,5 @@ Fonte: [preços oficiais do Chatling](https://chatling.ai/pricing).
 
 ## Pendências para fechar o artigo
 
-1. Confirmar com print as versões instaladas do Chrome e do Brave no computador usado.
-2. Registrar as resoluções exatas dos testes e associá-las a navegador e dispositivo simulado.
-3. Registrar no painel do Chatling o nome do plano e a data da consulta; a versão do widget não aparece no embed.
-4. Se a banca exigir PostgreSQL local, instalar apenas o cliente `psql` ou declarar que o PostgreSQL foi utilizado exclusivamente como serviço gerenciado pelo Supabase.
+1. Registrar no painel do Chatling o nome do plano e a data da consulta; a versão do widget não aparece no embed.
+2. Se a banca exigir PostgreSQL local, instalar apenas o cliente `psql` ou declarar que o PostgreSQL foi utilizado exclusivamente como serviço gerenciado pelo Supabase.

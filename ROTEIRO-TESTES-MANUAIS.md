@@ -170,7 +170,7 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 | T03 | | | | | | |
 | T04 | | | | | | |
 | T05 | | | | | | |
-| T06 | 2026-10-25 | Chrome/Firefox — Arch Linux | não informado | PASS | `evidencias/aceite-marketplace-20261025.md` | Filtros estendidos confirmados |
+| T06 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Filtros estendidos confirmados |
 | T07 | | | | | | |
 | T08 | | | | | | |
 | T09 | | | | | | |
@@ -179,11 +179,11 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 | T12 | | | | | | |
 | T13 | | | | | | |
 | T14 | | | | | | |
-| T15 | 2026-10-25 | Chrome/Firefox — Arch Linux | não informado | PASS | `evidencias/aceite-marketplace-20261025.md` | Edição confirmada |
-| T16 | 2026-10-25 | Chrome/Firefox — Arch Linux | não informado | PASS | `evidencias/aceite-marketplace-20261025.md` | Categorias, marcas e modelos confirmados |
-| T17 | 2026-10-25 | Chrome/Firefox — Arch Linux | não informado | PASS | `evidencias/aceite-marketplace-20261025.md` | Venda confirmada |
-| T18 | 2026-10-25 | Chrome/Firefox — Arch Linux | não informado | PASS | `evidencias/aceite-marketplace-20261025.md` | Compartilhamento confirmado |
-| T19 | 2026-10-25 | Chrome/Firefox — Arch Linux | não informado | PASS | `evidencias/aceite-marketplace-20261025.md` | Formulário confirmado |
+| T15 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Edição confirmada |
+| T16 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Categorias, marcas e modelos confirmados |
+| T17 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Venda confirmada |
+| T18 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Compartilhamento confirmado |
+| T19 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Formulário confirmado |
 | T20 | | | | | | |
 
 ## 5. Critério de saída

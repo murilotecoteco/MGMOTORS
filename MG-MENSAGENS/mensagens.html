@@ -529,6 +529,33 @@ async function carregarMensagensConversa(outroUsuarioId) {
   container.scrollTop = container.scrollHeight;
 }
 
+async function atualizarMensagensConversaSemRecarregar(outroUsuarioId) {
+  if (!usuarioAtual || !outroUsuarioId || conversaAtual !== outroUsuarioId) return;
+
+  const { data: mensagens, error } = await supabase
+    .from('mensagens')
+    .select('*')
+    .or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${outroUsuarioId}),and(remetente_id.eq.${outroUsuarioId},destinatario_id.eq.${usuarioAtual.id})`)
+    .order('data_envio', { ascending: true });
+
+  if (error) {
+    console.warn('Falha na atualização periódica das mensagens:', error.message);
+    return;
+  }
+
+  // O fallback não deve limpar/recriar o chat: isso causa piscadas e reposiciona
+  // o scroll. Só novas linhas são adicionadas ao DOM.
+  let adicionouMensagem = false;
+  for (const msg of mensagens || []) {
+    if (!mensagensRenderizadas.has(msg.id)) {
+      renderizarMensagem(msg, false);
+      adicionouMensagem = true;
+    }
+  }
+  const container = document.getElementById('chat-messages');
+  if (adicionouMensagem) container.scrollTop = container.scrollHeight;
+}
+
 async function abrirConversa(outroUsuarioId, carroInfo) {
   if (!usuarioAtual) return;
   conversaAtual = outroUsuarioId;
@@ -598,8 +625,7 @@ function iniciarRealtime() {
     if (realtimeFallbackTimer) return;
     console.warn('Realtime indisponível; usando atualização periódica das mensagens.');
     realtimeFallbackTimer = setInterval(async () => {
-      await carregarConversas();
-      if (conversaAtual) await carregarMensagensConversa(conversaAtual);
+      if (conversaAtual) await atualizarMensagensConversaSemRecarregar(conversaAtual);
     }, 5000);
   };
 

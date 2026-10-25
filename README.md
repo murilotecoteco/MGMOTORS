@@ -47,9 +47,9 @@
 ## Observações da versão atual
 
 - O schema do banco de dados e as políticas RLS estão versionados em `supabase/migrations/`. A captura inicial está em `20260915145500_remote_schema.sql` e as alterações incrementais, como o consentimento legal, ficam em migrations posteriores. Valide tudo em ambiente de teste antes de aplicar em produção.
-- A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor; ela precisa ser publicada e validada no ambiente Supabase antes da demonstração.
+- A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor. Ela está publicada no Supabase e rejeita requisições sem token ou com token inválido; a exclusão completa deve ser ensaiada apenas com uma conta descartável.
 - O fluxo legal possui páginas públicas, aceite obrigatório no cadastro, versionamento `1.0` e registro no perfil por meio da função protegida `registrar_aceite_legal`. O fluxo ainda deve ser validado no projeto Supabase de demonstração.
-- A migration de hardening de segurança foi aplicada no projeto conectado. Testes destrutivos de RLS continuam restritos a staging com conta descartável.
+- A migration de hardening de segurança foi aplicada no projeto conectado e o verificador somente leitura confirmou **27 PASS / 0 FAIL** em 25/10/2026. Testes destrutivos de RLS continuam restritos a staging com conta descartável.
 - As fotos enviadas no chat usam um bucket público; a correção para bucket privado com URL assinada está pendente.
 - A paginação do marketplace é feita no banco pela RPC `get_anuncios_marketplace_paginado`; a tela solicita apenas a página atual.
 - A tela de configurações mantém apenas preferências com efeito real (tema escuro, senha, sessões). Os toggles de privacidade, notificações, localização e chat foram removidos por não serem aplicados pelo app nem pelo banco.

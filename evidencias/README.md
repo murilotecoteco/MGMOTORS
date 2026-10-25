@@ -35,3 +35,14 @@ evidencias/
 | Capturas reais (Figuras 6–8) | Pendente | Depende de anúncio de teste com fotos |
 | Roteiro de demo com prints | Pendente | Usar `ROTEIRO-DEMO.md` |
 | Vídeo de backup | Pendente | Plano B offline |
+
+## Evidências automatizadas coletadas em 2026-10-25
+
+| Evidência | Arquivo | Resultado |
+|---|---|---|
+| Verificador de hardening em produção | `hardening-producao-20261025.md` | 27 PASS / 0 FAIL |
+| Validação estática, WCAG e smoke test HTTP | `validacoes-automatizadas-20261025.md` | Aprovados |
+
+As evidências manuais continuam pendentes até serem executadas com contas de
+teste, navegador e resolução registrados. Não marcar esses casos como PASS sem
+uma execução observável.

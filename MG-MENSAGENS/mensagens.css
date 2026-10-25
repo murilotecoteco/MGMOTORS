@@ -119,7 +119,7 @@ header {
     font-size: 14px;
 }
 .conversa-data {
-    color: #999;
+    color: var(--texto-suave, #6b7280);
     font-size: 12px;
 }
 .nao-lida { background: #EFF6FF; }

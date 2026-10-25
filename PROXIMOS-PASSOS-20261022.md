@@ -519,6 +519,7 @@ Atualizar esta seção a cada sessão de trabalho.
 | 25/10/2026 | P1.12 | Concluída | RPC `get_anuncios_marketplace_paginado` pagina e filtra no banco; retorno validado no projeto conectado | — |
 | 24/10/2026 | P2.1 | Roteiro criado; execução pendente | `ROTEIRO-TESTES-MANUAIS.md` com casos, campos e critérios | — |
 | 24/10/2026 | P2.2 | Parcial | `aria-label` em filtros/campos, `role="switch"` + `aria-checked` nos toggles, botões de ícone nomeados; contraste ainda pendente | — |
+| 25/10/2026 | P2.2 | Contraste revisado | Textos secundários em `#888`/`#999`/`#7b8490`/`#737b88` (3,5–4,3:1 sobre branco) trocados por `var(--texto-suave)` (≥4,8:1) em conta, mensagens, anúncio e marketplace; `:focus-visible` global já existente conferido | Cálculo WCAG das cores + `npm test` |
 | 24/10/2026 | P2.3 | Concluída no frontend | Chat e conta passaram a buscar perfis/fotos em lote (N+1 removido) | — |
 | 22/10/2026 | P2.4 | Concluída | CSP e headers no `vercel.json` | — |
 | 24/10/2026 | P2.5 | Documento criado; retenção a confirmar | `CHATLING.md` com plano, limites e pendências | — |

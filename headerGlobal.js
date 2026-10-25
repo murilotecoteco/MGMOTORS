@@ -2,7 +2,9 @@
 
 import { consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
 import { configError } from "./mgConfig.js";
-import { createIcons, icons } from "https://esm.sh/lucide@0.468.0";
+
+/* O header é carregado em todas as páginas. Manter seus ícones inline evita
+   que uma falha de CDN bloqueie a montagem inteira da navbar no Firefox. */
 
 /**
  * Injeta o header global, marca a pagina ativa e sincroniza a area de
@@ -65,14 +67,13 @@ export async function carregarHeaderGlobal(supabase) {
         </svg>
       </a>
       <a id="header-notificacoes" class="icone-link header-notificacoes" href="/MG-MENSAGENS/mensagens.html" aria-label="Notificações e mensagens">
-        <i data-lucide="bell" aria-hidden="true"></i><span id="header-notificacoes-badge" class="header-notificacoes-badge" hidden>0</span>
+        <svg class="icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span id="header-notificacoes-badge" class="header-notificacoes-badge" hidden>0</span>
       </a>
     </div>
   `;
 
   ativarLinkAtual();
   configurarMenuMobile(headerContainer);
-  createIcons({ icons, attrs: { "aria-hidden": "true" } });
 
   if (configError) {
     window.mgToast?.("Serviço temporariamente indisponível. Tente novamente mais tarde.", "error");
@@ -409,8 +410,9 @@ window.mgToast = function(msg, tipo = 'info', titulo = '') {
   const iconEl = document.createElement('div');
   iconEl.className = 'mg-toast-icon';
   iconEl.setAttribute('aria-hidden', 'true');
-  const icon = document.createElement('i');
+  const icon = document.createElement('span');
   icon.setAttribute('data-lucide', iconeMap[tipo] || iconeMap.info);
+  icon.textContent = { success: '✓', error: '!', info: 'i', warning: '!' }[tipo] || 'i';
   iconEl.appendChild(icon);
   const bodyEl = document.createElement('div');
   bodyEl.className = 'mg-toast-body';
@@ -425,7 +427,6 @@ window.mgToast = function(msg, tipo = 'info', titulo = '') {
   t.appendChild(iconEl);
   t.appendChild(bodyEl);
   c.appendChild(t);
-  createIcons({ icons, attrs: { "aria-hidden": "true" } });
   const dur = tipo === 'error' ? 5500 : 3800;
   setTimeout(() => {
     t.classList.add('hide');

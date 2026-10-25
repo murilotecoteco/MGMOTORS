@@ -25,6 +25,7 @@ As três possuem pré-condições e rodam dentro da transação de migration. Se
 
 - fazer backup/export do banco;
 - aplicar em um projeto de staging;
+- rodar `supabase/tests/verificar-hardening.sql` no SQL Editor (somente leitura; pode rodar em produção) e guardar a saída em `evidencias/`;
 - executar `supabase/tests/rls-security-check.sh` com usuário de teste descartável;
 - validar login, publicação, fotos, mensagens, moderação e notificações;
 - somente então executar `supabase db push` em produção.

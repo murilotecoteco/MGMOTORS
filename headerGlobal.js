@@ -2,6 +2,7 @@
 
 import { consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
 import { configError } from "./mgConfig.js";
+import { createIcons, icons } from "https://esm.sh/lucide@0.468.0";
 
 /**
  * Injeta o header global, marca a pagina ativa e sincroniza a area de
@@ -17,10 +18,17 @@ export async function carregarHeaderGlobal(supabase) {
     return null;
   }
 
+  // Em telas pequenas o header quebra em duas linhas. Sinaliza no body para
+  // que o CSS reserve o espaco correto antes do breadcrumb/conteudo.
+  document.body.classList.toggle(
+    "mg-tem-breadcrumb",
+    Boolean(document.querySelector(".mg-breadcrumb"))
+  );
+
   headerContainer.innerHTML = `
     <div class="logo">
       <a href="/MG-INICIO/inicio.html" class="logo-link" aria-label="Ir para o inicio da MG Motors">
-        <img class="logo-img" src="../imagens/logo-mg.png" alt="Logo MG Motors">
+        <img class="logo-img" src="/imagens/logo-mg.png" alt="Logo MG Motors">
         <span class="logo-text">MG Motors</span>
       </a>
     </div>
@@ -41,7 +49,7 @@ export async function carregarHeaderGlobal(supabase) {
 
     <div class="icones" aria-label="Acoes da conta">
       <a id="header-nome" class="header-nome" href="/MG-LOGIN/login.html">Entrar</a>
-      <img id="header-foto" class="icone-foto" src="../imagens/usuario.png" alt="Foto de perfil do usuario">
+      <img id="header-foto" class="icone-foto" src="/imagens/usuario.png" alt="Foto de perfil do usuario">
 
       <a class="icone-link" href="/MG-CONFIGURACOES/configuracoes.html" aria-label="Configuracoes">
         <svg class="icone" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -57,13 +65,14 @@ export async function carregarHeaderGlobal(supabase) {
         </svg>
       </a>
       <a id="header-notificacoes" class="icone-link header-notificacoes" href="/MG-MENSAGENS/mensagens.html" aria-label="Notificações e mensagens">
-        <span aria-hidden="true">🔔</span><span id="header-notificacoes-badge" class="header-notificacoes-badge" hidden>0</span>
+        <i data-lucide="bell" aria-hidden="true"></i><span id="header-notificacoes-badge" class="header-notificacoes-badge" hidden>0</span>
       </a>
     </div>
   `;
 
   ativarLinkAtual();
   configurarMenuMobile(headerContainer);
+  createIcons({ icons, attrs: { "aria-hidden": "true" } });
 
   if (configError) {
     window.mgToast?.("Serviço temporariamente indisponível. Tente novamente mais tarde.", "error");
@@ -75,7 +84,7 @@ export async function carregarHeaderGlobal(supabase) {
   if (!supabase) {
     headerNome.textContent = "Entrar";
     headerNome.href = "/MG-LOGIN/login.html";
-    headerFoto.src = "../imagens/usuario.png";
+    headerFoto.src = "/imagens/usuario.png";
     mostrarBannerTermos();
     return null;
   }
@@ -86,7 +95,7 @@ export async function carregarHeaderGlobal(supabase) {
     if (authError || !data?.user) {
       headerNome.textContent = "Entrar";
       headerNome.href = "/MG-LOGIN/login.html";
-      headerFoto.src = "../imagens/usuario.png";
+      headerFoto.src = "/imagens/usuario.png";
       mostrarBannerTermos();
       return null;
     }
@@ -111,7 +120,7 @@ export async function carregarHeaderGlobal(supabase) {
 
     headerNome.textContent = perfil?.nome || data.user.email;
     headerNome.href = "/MG-CONTA/conta.html";
-    headerFoto.src = perfil?.foto || "../imagens/usuario.png";
+    headerFoto.src = perfil?.foto || "/imagens/usuario.png";
     headerFoto.alt = `Foto de perfil de ${perfil?.nome || data.user.email}`;
 
     const { count: notificacoesNaoLidas, error: notificacoesError } = await supabase
@@ -147,7 +156,7 @@ export async function carregarHeaderGlobal(supabase) {
     console.error("Erro inesperado ao carregar header:", error);
     headerNome.textContent = "Entrar";
     headerNome.href = "/MG-LOGIN/login.html";
-    headerFoto.src = "../imagens/usuario.png";
+    headerFoto.src = "/imagens/usuario.png";
     mostrarBannerTermos();
     return null;
   }
@@ -394,11 +403,15 @@ window.mgToast = function(msg, tipo = 'info', titulo = '') {
   t.className = `mg-toast ${tipo}`;
   t.setAttribute('role', 'alert');
   const tituloMap = { success: 'Sucesso', error: 'Erro', info: 'Informação', warning: 'Atenção' };
+  const iconeMap = { success: 'circle-check', error: 'circle-alert', info: 'info', warning: 'triangle-alert' };
   const tituloFinal = titulo || tituloMap[tipo] || 'Aviso';
   // M1: Constrói via DOM (textContent) — nunca innerHTML com dados externos (anti-XSS)
   const iconEl = document.createElement('div');
   iconEl.className = 'mg-toast-icon';
   iconEl.setAttribute('aria-hidden', 'true');
+  const icon = document.createElement('i');
+  icon.setAttribute('data-lucide', iconeMap[tipo] || iconeMap.info);
+  iconEl.appendChild(icon);
   const bodyEl = document.createElement('div');
   bodyEl.className = 'mg-toast-body';
   const titleEl = document.createElement('div');
@@ -412,6 +425,7 @@ window.mgToast = function(msg, tipo = 'info', titulo = '') {
   t.appendChild(iconEl);
   t.appendChild(bodyEl);
   c.appendChild(t);
+  createIcons({ icons, attrs: { "aria-hidden": "true" } });
   const dur = tipo === 'error' ? 5500 : 3800;
   setTimeout(() => {
     t.classList.add('hide');

@@ -1,0 +1,9 @@
+{
+  "name": "mgmotors",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-static.mjs",
+    "test": "npm run validate"
+  }
+}

@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotorss.vercel.app/MG-MENSAGENS/mensagens.html">
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.468.0"></script>
+<meta name="robots" content="noindex, nofollow">
 <style>.lucide-icon{width:20px;height:20px;stroke:currentColor;stroke-width:2;vertical-align:middle;display:inline-block;}</style>
 </head>
 <body>
@@ -33,13 +34,13 @@
     <div class="conversas-lista" id="conversas-lista"><div class="empty-state"><h3>Carregando conversas...</h3></div></div>
     <div class="chat-container" id="chat-container">
         <div class="chat-header"><h3 id="chat-titulo">Selecione uma conversa</h3></div>
-        <div class="chat-messages" id="chat-messages"><div class="empty-state"><h3>Selecione uma conversa</h3></div></div>
+        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Mensagens da conversa"><div class="empty-state"><h3>Selecione uma conversa</h3></div></div>
         <div class="chat-input">
-            <label id="label-upload-foto" class="btn-upload-foto" title="Enviar foto" style="display:inline-flex;align-items:center;justify-content:center;">
-              <i data-lucide="camera"></i>
-              <input type="file" id="input-foto-msg" accept="image/*" style="display:none;">
+            <label id="label-upload-foto" class="btn-upload-foto" title="Enviar foto" aria-label="Enviar foto na conversa" style="display:inline-flex;align-items:center;justify-content:center;">
+              <i data-lucide="camera" aria-hidden="true"></i>
+              <input type="file" id="input-foto-msg" accept="image/*" aria-label="Selecionar foto para enviar" style="display:none;">
             </label>
-            <textarea id="mensagem-texto" placeholder="Digite sua mensagem..." disabled></textarea>
+            <textarea id="mensagem-texto" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem" disabled></textarea>
             <button class="btn-enviar" id="btn-enviar" disabled>Enviar</button>
         </div>
     </div>
@@ -47,12 +48,12 @@
 
 
 <!-- Modal Denúncia de mensagem/foto -->
-<div id="modal-denuncia-msg" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:3000;justify-content:center;align-items:center;">
+<div id="modal-denuncia-msg" role="dialog" aria-modal="true" aria-labelledby="denuncia-msg-titulo" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:3000;justify-content:center;align-items:center;">
   <div style="background:var(--branco,#fff);padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.35);">
-    <span onclick="document.getElementById('modal-denuncia-msg').style.display='none'" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:#888;">×</span>
-    <h2 style="color:#144b71;margin-bottom:6px;font-size:19px;font-weight:900;"><i data-lucide="flag" style="width:18px;height:18px;vertical-align:-2px;margin-right:6px;"></i> Denunciar</h2>
+    <button type="button" onclick="mgModal.close('modal-denuncia-msg')" aria-label="Fechar denúncia" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:#888;background:none;border:none;line-height:1;">×</button>
+    <h2 id="denuncia-msg-titulo" style="color:#144b71;margin-bottom:6px;font-size:19px;font-weight:900;"><i data-lucide="flag" aria-hidden="true" style="width:18px;height:18px;vertical-align:-2px;margin-right:6px;"></i> Denunciar</h2>
     <p id="denuncia-msg-subtitulo" style="font-size:13px;color:#4a6070;margin-bottom:16px;">Selecione o motivo da denúncia.</p>
-    <select id="denuncia-msg-motivo" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;font-family:inherit;background:#f4f8fb;color:#1a2a38;">
+    <select id="denuncia-msg-motivo" aria-label="Motivo da denúncia" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;font-family:inherit;background:#f4f8fb;color:#1a2a38;">
       <option value="">Selecione o motivo</option>
       <option value="Conteúdo ofensivo">Conteúdo ofensivo</option>
       <option value="Golpe ou fraude">Golpe ou fraude</option>
@@ -61,7 +62,7 @@
       <option value="Assédio">Assédio</option>
       <option value="Outro">Outro</option>
     </select>
-    <textarea id="denuncia-msg-desc" placeholder="Detalhes adicionais (opcional)..." rows="3" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+    <textarea id="denuncia-msg-desc" placeholder="Detalhes adicionais (opcional)..." aria-label="Detalhes adicionais da denúncia" rows="3" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;font-family:inherit;resize:vertical;"></textarea>
     <button id="btn-enviar-denuncia-msg" style="width:100%;margin-top:12px;background:linear-gradient(135deg,#144b71,#0f3652);color:#fff;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;"><i data-lucide="send" style="width:16px;height:16px;vertical-align:-2px;margin-right:6px;"></i> Enviar Denúncia</button>
   </div>
 </div>
@@ -73,10 +74,63 @@ import { carregarHeaderGlobal } from "../headerGlobal.js";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// ── mgModal: modais acessíveis (role/aria, focus trap, ESC, retorno de foco) ──
+const mgModal = (() => {
+  const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  let origemFoco = null;
+  let trapFn = null;
+  let escFn = null;
+
+  function getFocaveis(modal) {
+    return [...modal.querySelectorAll(FOCAVEIS)].filter(el => !el.closest('[hidden]'));
+  }
+
+  function open(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    origemFoco = document.activeElement;
+    modal.style.display = 'flex';
+    const focaveis = getFocaveis(modal);
+    if (focaveis.length) focaveis[0].focus();
+
+    trapFn = (e) => {
+      if (e.key !== 'Tab') return;
+      const f = getFocaveis(modal);
+      if (!f.length) { e.preventDefault(); return; }
+      const primeiro = f[0], ultimo = f[f.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+      } else if (document.activeElement === ultimo) {
+        e.preventDefault(); primeiro.focus();
+      }
+    };
+    escFn = (e) => { if (e.key === 'Escape') close(id); };
+    modal.addEventListener('keydown', trapFn);
+    document.addEventListener('keydown', escFn);
+  }
+
+  function close(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.style.display = 'none';
+    if (trapFn) modal.removeEventListener('keydown', trapFn);
+    if (escFn) document.removeEventListener('keydown', escFn);
+    trapFn = null; escFn = null;
+    if (origemFoco && typeof origemFoco.focus === 'function') origemFoco.focus();
+    origemFoco = null;
+  }
+
+  return { open, close };
+})();
+window.mgModal = mgModal;
+
 let conversaAtual = null;
 let realtimeChannel = null;
 const conversasCache = new Map();
 const mensagensRenderizadas = new Set();
+// Cache dos perfis públicos já resolvidos. Evita uma consulta por conversa
+// (N+1) e também repetir a busca a cada mensagem recebida em tempo real.
+const usuariosCache = new Map();
 
 // --- Helper de escrita com aviso ao usuário ---
 async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. Tente novamente.") {
@@ -100,6 +154,35 @@ function getPreview(msg) {
   if (msg.tipo === 'foto') return '[Foto]';
   const texto = msg.conteudo || '';
   return texto.length > 40 ? texto.substring(0, 40) + '...' : texto;
+}
+
+// Busca em lote os perfis públicos das conversas (evita N+1).
+// Perfis inexistentes ficam marcados como null para não repetir a consulta.
+async function carregarUsuariosPublicos(ids) {
+  const faltantes = [...new Set(ids)].filter(id => id && !usuariosCache.has(id));
+  if (!faltantes.length) return;
+  const { data, error } = await supabase
+    .from('usuarios_publicos')
+    .select('id, nome, foto')
+    .in('id', faltantes);
+  if (error) {
+    console.error('Falha ao carregar perfis públicos:', error.message);
+    return;
+  }
+  for (const u of data || []) usuariosCache.set(u.id, u);
+  for (const id of faltantes) if (!usuariosCache.has(id)) usuariosCache.set(id, null);
+}
+
+async function obterUsuarioPublico(id) {
+  if (!id) return null;
+  if (!usuariosCache.has(id)) await carregarUsuariosPublicos([id]);
+  return usuariosCache.get(id) || null;
+}
+
+// Usa o carro já conhecido pela conversa. Antes, cada envio fazia uma consulta
+// extra só para repetir a mesma informação.
+function carroInfoDaConversa() {
+  return conversasCache.get(conversaAtual)?.carroInfo || 'Carro não especificado';
 }
 
 function atualizarItemConversa(outroId) {
@@ -218,7 +301,7 @@ async function adicionarOuAtualizarConversa(msg) {
 
   let item = document.querySelector(`.conversa-item[data-user-id="${CSS.escape(outroId)}"]`);
   if (!item) {
-    const { data: outroUser } = await supabase.from('usuarios_publicos').select('nome, foto').eq('id', outroId).maybeSingle();
+    const outroUser = await obterUsuarioPublico(outroId);
     item = criarItemConversa(outroId, conv, outroUser);
     const lista = document.getElementById('conversas-lista');
     const empty = lista.querySelector('.empty-state');
@@ -276,8 +359,10 @@ async function carregarConversas() {
     return;
   }
 
+  await carregarUsuariosPublicos([...conversasCache.keys()]);
+
   for (const [outroId, conv] of conversasCache) {
-    const { data: outroUser } = await supabase.from('usuarios_publicos').select('nome, foto').eq('id', outroId).maybeSingle();
+    const outroUser = usuariosCache.get(outroId) || null;
     listaEl.appendChild(criarItemConversa(outroId, conv, outroUser));
   }
   ordenarListaConversas();
@@ -409,7 +494,9 @@ async function carregarMensagensConversa(outroUsuarioId) {
 async function abrirConversa(outroUsuarioId, carroInfo) {
   if (!usuarioAtual) return;
   conversaAtual = outroUsuarioId;
-  const { data: outroUser } = await supabase.from('usuarios_publicos').select('nome, foto').eq('id', outroUsuarioId).maybeSingle();
+  const outroUser = await obterUsuarioPublico(outroUsuarioId);
+  const conv = conversasCache.get(outroUsuarioId);
+  if (conv && carroInfo) conv.carroInfo = carroInfo;
   const chatTitulo = document.getElementById('chat-titulo');
   chatTitulo.innerHTML = '';
 
@@ -500,10 +587,7 @@ async function enviarMensagem() {
   const texto = document.getElementById('mensagem-texto').value.trim();
   if (!texto || !conversaAtual || !usuarioAtual) return;
 
-  const { data: lastMsg } = await supabase.from('mensagens').select('carro_info')
-    .or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`)
-    .order('data_envio', { ascending: false }).limit(1).maybeSingle();
-  const carroInfo = lastMsg?.carro_info || 'Carro não especificado';
+  const carroInfo = carroInfoDaConversa();
 
   const ok = await executarOuAvisar(
     supabase.from('mensagens').insert({
@@ -534,10 +618,7 @@ document.getElementById('input-foto-msg').addEventListener('change', async (e) =
   if (error) { window.mgToast?.('Erro ao enviar foto: ' + error.message, 'error'); return; }
 
   const { data: urlData } = supabase.storage.from('FOTOS-ANUNCIOS').getPublicUrl(caminho);
-  const { data: lastMsg } = await supabase.from('mensagens').select('carro_info')
-    .or(`and(remetente_id.eq.${usuarioAtual.id},destinatario_id.eq.${conversaAtual}),and(remetente_id.eq.${conversaAtual},destinatario_id.eq.${usuarioAtual.id})`)
-    .order('data_envio', { ascending: false }).limit(1).maybeSingle();
-  const carroInfo = lastMsg?.carro_info || 'Carro não especificado';
+  const carroInfo = carroInfoDaConversa();
 
   const ok = await executarOuAvisar(
     supabase.from('mensagens').insert({
@@ -566,7 +647,7 @@ function abrirDenunciaMensagem(msgId, tipo) {
   document.getElementById('denuncia-msg-motivo').value = '';
   document.getElementById('denuncia-msg-desc').value = '';
   document.getElementById('denuncia-msg-subtitulo').textContent = tipo === 'foto' ? 'Denunciar foto enviada na conversa.' : 'Denunciar mensagem de texto.';
-  document.getElementById('modal-denuncia-msg').style.display = 'flex';
+  mgModal.open('modal-denuncia-msg');
 }
 
 document.getElementById('btn-enviar-denuncia-msg').addEventListener('click', async () => {
@@ -582,7 +663,7 @@ document.getElementById('btn-enviar-denuncia-msg').addEventListener('click', asy
     descricao: descComContexto
   });
   if (error) { window.mgToast?.('Erro: ' + error.message, 'error'); return; }
-  document.getElementById('modal-denuncia-msg').style.display = 'none';
+  mgModal.close('modal-denuncia-msg');
   window.mgToast?.('Denúncia enviada. Analisaremos em breve.', 'success');
 });
 

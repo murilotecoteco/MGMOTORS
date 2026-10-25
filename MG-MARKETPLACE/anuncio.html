@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anúncio | MG Motors</title>
-  <meta name="description" content="Confira os detalhes deste veículo anunciado na MG Motors.">
+  <meta id="anuncio-description" name="description" content="Confira os detalhes deste veículo anunciado na MG Motors.">
+  <meta name="robots" content="index, follow">
+  <link id="anuncio-canonical" rel="canonical" href="https://mgmotorss.vercel.app/MG-MARKETPLACE/anuncio.html">
   <link rel="icon" type="image/png" href="../imagens/logo-mg.png">
   <link rel="stylesheet" href="../global.css">
   <link rel="stylesheet" href="anuncio.css">
   <script src="../tema.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@0.468.0"></script>
 </head>
 <body>
   <header id="header-global"></header>
@@ -26,7 +28,7 @@
       <div class="anuncio-topo">
         <div class="anuncio-galeria">
           <div class="foto-principal-pagina">
-            <img id="foto-principal" src="../imagens/image.webp" alt="">
+            <img id="foto-principal" src="../imagens/image.webp" alt="" loading="eager">
             <button type="button" id="foto-anterior" class="seta-galeria" aria-label="Foto anterior"><i data-lucide="chevron-left"></i></button>
             <button type="button" id="foto-proxima" class="seta-galeria" aria-label="Próxima foto"><i data-lucide="chevron-right"></i></button>
           </div>
@@ -85,7 +87,10 @@
     const texto = valor => valor === null || valor === undefined || valor === "" ? "Não informado" : String(valor);
     const formatarNumero = valor => Number(valor || 0).toLocaleString("pt-BR");
     const formatarOpcao = valor => ({ manual: "Manual", automatico: "Automático", automatizado: "Automatizado", gasolina: "Gasolina", alcool: "Álcool", flex: "Flex", diesel: "Diesel", eletrico: "Elétrico", hibrido: "Híbrido" }[valor] || valor);
-    const notificar = (msg, tipo = "info") => window.mgToast?.(msg, tipo) || alert(msg);
+    const notificar = (msg, tipo = "info") => {
+      if (window.mgToast) window.mgToast(msg, tipo);
+      else alert(msg);
+    };
 
     function detalhe(label, valor, icone) {
       const item = document.createElement("div"); item.className = "detalhe-item";
@@ -151,6 +156,8 @@
       const modelo = anuncio.modelo_texto || anuncio.modelos?.nome || "Veículo";
       const titulo = `${marca} ${modelo}`.trim();
       document.title = `${titulo} | MG Motors`;
+      $("anuncio-canonical").href = `${location.origin}${location.pathname}?id=${encodeURIComponent(anuncioId)}`;
+      $("anuncio-description").content = `Confira detalhes, preço e especificações do ${titulo} anunciado na MG Motors.`;
       $("breadcrumb-titulo").textContent = titulo; $("anuncio-titulo").textContent = titulo;
       $("anuncio-preco").textContent = formatarNumero(anuncio.preco);
       $("anuncio-descricao").textContent = anuncio.descricao || "O vendedor não adicionou uma descrição.";

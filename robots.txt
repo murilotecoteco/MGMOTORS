@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /MG-CONTA/
+Disallow: /MG-CONFIGURACOES/
+Disallow: /MG-MENSAGENS/
+Disallow: /MG-DEV/
+
+Sitemap: https://mgmotorss.vercel.app/sitemap.xml

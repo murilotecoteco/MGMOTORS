@@ -6,9 +6,10 @@
 <link rel="shortcut icon" href="../imagens/logo-mg.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel Admin — MG Motors</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.468.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotorss.vercel.app/MG-DEV/devpanel.html">
@@ -179,6 +180,75 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
   .sidebar-nav { flex-direction:row; flex-wrap:wrap; padding:0; }
   .sidebar-logo { padding-bottom:12px; margin-bottom:8px; border-bottom:none; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   PAINEL ADMIN — acabamento visual moderno
+   ══════════════════════════════════════════════════════════ */
+.nav-item {
+  position: relative;
+  transition: background .22s ease, color .22s ease, transform .22s cubic-bezier(.16,1,.3,1);
+}
+.nav-item:hover { transform: translateX(3px); }
+.nav-item.ativo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #60a5fa, #38bdf8);
+  box-shadow: 0 0 12px rgba(96,165,250,.6);
+}
+.page.ativo { animation: dev-page-in .35s cubic-bezier(.16,1,.3,1) both; }
+@keyframes dev-page-in {
+  from { opacity: 0; translate: 0 10px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.stat-card {
+  overflow: hidden;
+  transition: transform .28s cubic-bezier(.16,1,.3,1), box-shadow .28s ease, border-color .28s ease;
+}
+.stat-card::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--card-accent, linear-gradient(90deg,#2563eb,#38bdf8));
+  opacity: .08;
+  filter: blur(6px);
+  transition: opacity .3s ease, transform .3s ease;
+}
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 18px 44px -20px rgba(0,0,0,.55); }
+.stat-card:hover::after { opacity: .16; transform: scale(1.15); }
+.card-dev {
+  transition: background .22s ease, border-color .22s ease, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s ease;
+}
+.card-dev:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px -24px rgba(0,0,0,.6);
+}
+.btn-dev {
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.btn-dev:hover { transform: translateY(-1px); }
+.search-dev {
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.sidebar-logo h1 {
+  background: linear-gradient(100deg, #ffffff, #bfdbfe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.section-title { letter-spacing: -.01em; }
+@media (prefers-reduced-motion: reduce) {
+  .page.ativo { animation: none; }
+  .stat-card, .card-dev, .nav-item, .btn-dev { transition: none; }
+}
 </style>
 </head>
 <body>
@@ -318,7 +388,8 @@ async function init() {
     const { data: sess } = await db.auth.getUser();
 
     if (!sess?.user) {
-      h2El.textContent = '🔑 Login do Admin';
+      h2El.innerHTML = '<i data-lucide="key-round" aria-hidden="true" style="width:22px;height:22px;vertical-align:-4px;margin-right:6px;"></i>Login do Admin';
+      lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
       pEl.innerHTML = `
         <form id="form-login-dev" style="display:flex;flex-direction:column;gap:12px;min-width:280px;margin-top:8px;">
           <input id="dev-email" type="email"
@@ -390,19 +461,35 @@ async function carregarDashboard() {
   animateNum(document.getElementById("stat-banidos"), b.count || 0);
 }
 
+// Carrega a primeira foto de cada anúncio em uma única consulta.
+async function carregarPrimeirasFotos(anuncioIds) {
+  const ids = [...new Set((anuncioIds || []).filter(Boolean))];
+  const fotosPorAnuncio = new Map();
+  if (!ids.length) return fotosPorAnuncio;
+  const { data, error } = await db.from("fotos_anuncio")
+    .select("anuncio_id,url_foto,ordem")
+    .in("anuncio_id", ids)
+    .order("ordem", { ascending: true });
+  if (error) { console.error("Falha ao carregar fotos:", error); return fotosPorAnuncio; }
+  for (const foto of data || []) {
+    if (!fotosPorAnuncio.has(foto.anuncio_id) && foto.url_foto) fotosPorAnuncio.set(foto.anuncio_id, foto.url_foto);
+  }
+  return fotosPorAnuncio;
+}
+
 async function carregarPendentes() {
   const { data } = await db.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("status","pendente").order("criado_em",{ascending:false});
   const cont = document.getElementById("lista-pendentes");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum anúncio pendente ✓</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev"><i data-lucide="circle-check" aria-hidden="true"></i> Nenhum anúncio pendente</div>'; lucide.createIcons({ attrs: { "aria-hidden": "true" } }); return; }
   cont.innerHTML = "";
+  const fotosPorAnuncio = await carregarPrimeirasFotos(data.map(anuncio => anuncio.id));
   for (const a of data) {
-    const { data: fotos } = await db.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = fotos?.[0]?.url_foto || "";
+    const foto = fotosPorAnuncio.get(a.id) || "";
     const d = document.createElement("div");
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        ${foto ? `<img src="${escapeHtml(safeImageUrl(foto))}" class="anuncio-img">` : ""}
+        ${foto ? `<img src="${escapeHtml(safeImageUrl(foto))}" class="anuncio-img" loading="lazy">` : ""}
         <div style="flex:1;">
           <h3>${escapeHtml(a.marcas?.nome)} ${escapeHtml(a.modelos?.nome)} — ${a.ano_fabricacao}/${a.ano_modelo}</h3>
           <p>R$ ${Number(a.preco).toLocaleString("pt-BR")} · ${Number(a.quilometragem).toLocaleString()} km · ${escapeHtml(a.cidade) || "Cidade não informada"}</p>
@@ -434,7 +521,12 @@ async function banirUsuario(uid, motivo) {
   const { data: meData } = await db.auth.getUser();
   const { error } = await db.from("usuarios").update({banido:true}).eq("id", uid);
   if (error) { toast("Erro: " + error.message); return false; }
-  await db.from("anuncios").update({pausado:true}).eq("usuario_id", uid).eq("status","ativo");
+  const { error: erroPausa } = await db.from("anuncios")
+    .update({pausado:true, pausado_por_ban:true})
+    .eq("usuario_id", uid)
+    .eq("status","ativo")
+    .or("pausado.is.false,pausado.is.null");
+  if (erroPausa) { toast("Usuário banido, mas não foi possível pausar os anúncios: " + erroPausa.message, "error"); }
   await db.from("usuarios_banidos").upsert({usuario_id:uid, motivo, banido_por:meData?.user?.id, banido_em:new Date().toISOString()}, {onConflict:'usuario_id'});
   return true;
 }
@@ -442,7 +534,14 @@ async function banirUsuario(uid, motivo) {
 async function desbanirUsuario(uid) {
   const { error } = await db.from("usuarios").update({banido:false}).eq("id", uid);
   if (error) { toast("Erro: " + error.message); return false; }
-  await db.from("anuncios").update({pausado:false}).eq("usuario_id", uid).eq("status","ativo");
+  // Só reativa anúncios que foram pausados por este fluxo de banimento.
+  // Pausas voluntárias, rejeições e expirações continuam preservadas.
+  const { error: erroReativacao } = await db.from("anuncios")
+    .update({pausado:false, pausado_por_ban:false})
+    .eq("usuario_id", uid)
+    .eq("status","ativo")
+    .eq("pausado_por_ban", true);
+  if (erroReativacao) { toast("Usuário desbanido, mas não foi possível reativar os anúncios: " + erroReativacao.message, "error"); }
   await db.from("usuarios_banidos").delete().eq("usuario_id", uid);
   return true;
 }
@@ -450,35 +549,43 @@ async function desbanirUsuario(uid) {
 async function carregarDenuncias() {
   const { data } = await db.from("denuncias").select("*").eq("status","pendente").order("criado_em",{ascending:false});
   const cont = document.getElementById("lista-denuncias");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhuma denúncia pendente ✓</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev"><i data-lucide="circle-check" aria-hidden="true"></i> Nenhuma denúncia pendente</div>'; lucide.createIcons({ attrs: { "aria-hidden": "true" } }); return; }
   cont.innerHTML = "";
+  const usuarioIds = [...new Set(data.flatMap(den => [den.denunciante_id, den.tipo === 'perfil' ? den.alvo_id : null]).filter(Boolean))];
+  const anuncioIds = [...new Set(data.filter(den => den.tipo === 'anuncio').map(den => den.alvo_id))];
+  const [{ data: usuarios }, { data: anuncios }, fotosPorAnuncio] = await Promise.all([
+    usuarioIds.length ? db.from("usuarios").select("id,nome,email,foto").in("id", usuarioIds) : Promise.resolve({ data: [] }),
+    anuncioIds.length ? db.from("anuncios").select("id,ano_fabricacao,preco,cidade,marcas(nome),modelos(nome)").in("id", anuncioIds) : Promise.resolve({ data: [] }),
+    carregarPrimeirasFotos(anuncioIds)
+  ]);
+  const usuariosPorId = new Map((usuarios || []).map(usuario => [usuario.id, usuario]));
+  const anunciosPorId = new Map((anuncios || []).map(anuncio => [anuncio.id, anuncio]));
   for (const den of data) {
     let denuncianteInfo = '';
-    const { data: denunciante } = await db.from("usuarios").select("nome,email,foto").eq("id", den.denunciante_id).maybeSingle();
+    const denunciante = usuariosPorId.get(den.denunciante_id);
     if (denunciante) {
       denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:10px;">
-      <img src="${escapeHtml(safeImageUrl(denunciante.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+      <img src="${escapeHtml(safeImageUrl(denunciante.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'" loading="lazy">
         <div><div style="font-size:12px;font-weight:800;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(denunciante.email)}</div></div>
-        <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver</a>
+        <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" rel="noopener" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver</a>
       </div>`;
     }
     let alvoInfo = '';
     if (den.tipo === 'perfil') {
-      const { data: alvo } = await db.from("usuarios").select("nome,email,foto").eq("id", den.alvo_id).maybeSingle();
+      const alvo = usuariosPorId.get(den.alvo_id);
       if (alvo) {
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(239,68,68,.06);border-radius:10px;border:1px solid rgba(239,68,68,.15);">
-          <img src="${escapeHtml(safeImageUrl(alvo.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
+          <img src="${escapeHtml(safeImageUrl(alvo.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'" loading="lazy">
           <div><div style="font-size:12px;font-weight:800;color:var(--red);">Denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(alvo.email)}</div></div>
-          <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver perfil</a>
+          <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" rel="noopener" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver perfil</a>
         </div>`;
       }
     } else if (den.tipo === 'anuncio') {
-      const { data: anuncio } = await db.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", den.alvo_id).maybeSingle();
+      const anuncio = anunciosPorId.get(den.alvo_id);
       if (anuncio) {
-        const { data: fotos } = await db.from("fotos_anuncio").select("url_foto").eq("anuncio_id", den.alvo_id).limit(1);
-        const fotoAnuncio = fotos?.[0]?.url_foto || '';
+        const fotoAnuncio = fotosPorAnuncio.get(den.alvo_id) || '';
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.15);">
-          ${fotoAnuncio ? `<img src="${escapeHtml(safeImageUrl(fotoAnuncio))}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;">` : ''}
+          ${fotoAnuncio ? `<img src="${escapeHtml(safeImageUrl(fotoAnuncio))}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;" loading="lazy">` : ''}
           <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--orange);">Anúncio: ${escapeHtml(anuncio.marcas?.nome)} ${escapeHtml(anuncio.modelos?.nome)} (${anuncio.ano_fabricacao})</div>
           <div style="font-size:11px;color:var(--text-muted);">R$ ${Number(anuncio.preco).toLocaleString('pt-BR')} · ${escapeHtml(anuncio.cidade)}</div></div>
         </div>`;
@@ -555,7 +662,7 @@ async function carregarUsuarios(busca = "") {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" class="user-foto" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" class="user-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy">
         <div style="flex:1;">
           <h3>${escapeHtml(u.nome) || "Sem nome"} ${u.banido ? '<span class="badge badge-ban" style="margin-left:8px;">Banido</span>' : ''}</h3>
           <p>${escapeHtml(u.email)} ${u.cidade ? `· ${escapeHtml(u.cidade)}` : ""}</p>
@@ -565,7 +672,7 @@ async function carregarUsuarios(busca = "") {
           ${u.banido
             ? `<button class="btn-dev btn-desbanir" data-uid="${u.id}">Desbanir</button>`
             : `<button class="btn-dev btn-banir" data-uid="${u.id}">Banir</button>`}
-          <a href="../MG-CONTA/conta.html?id=${u.id}" target="_blank" class="btn-dev btn-ver">Ver perfil</a>
+          <a href="../MG-CONTA/conta.html?id=${u.id}" target="_blank" rel="noopener" class="btn-dev btn-ver">Ver perfil</a>
         </div>
       </div>
     `;
@@ -591,14 +698,14 @@ async function carregarUsuarios(busca = "") {
 async function carregarBanidos() {
   const { data } = await db.from("usuarios").select("id,nome,email,foto,cidade,estado").eq("banido",true).order("nome");
   const cont = document.getElementById("lista-banidos");
-  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev">Nenhum usuário banido ✓</div>'; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="empty-dev"><i data-lucide="circle-check" aria-hidden="true"></i> Nenhum usuário banido</div>'; lucide.createIcons({ attrs: { "aria-hidden": "true" } }); return; }
   cont.innerHTML = "";
   for (const u of data) {
     const d = document.createElement("div");
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'">
+        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'" loading="lazy">
         <div style="flex:1;">
           <h3 style="color:var(--red);">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
           <p>${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>

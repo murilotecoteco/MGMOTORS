@@ -31,6 +31,7 @@
 // Valores vêm das variáveis de ambiente da Vercel, não do código.
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const SITE_URL = process.env.SITE_URL || "https://mgmotorss.vercel.app";
 
 function formatarPreco(preco) {
   const n = Number(preco) || 0;
@@ -39,6 +40,11 @@ function formatarPreco(preco) {
 
 export default async function handler(req, res) {
   try {
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      console.error("SUPABASE_URL ou SUPABASE_KEY não configuradas.");
+      return res.status(503).send("Serviço temporariamente indisponível.");
+    }
+
     const select = [
       "id",
       "titulo",
@@ -65,7 +71,7 @@ export default async function handler(req, res) {
       // pausado pode ser null (nunca pausado) ou false — cobre os dois casos
       or: "(pausado.eq.false,pausado.is.null)",
       order: "criado_em.desc",
-      limit: "500",
+      limit: "100",
     });
 
     const resp = await fetch(
@@ -79,8 +85,8 @@ export default async function handler(req, res) {
     );
 
     if (!resp.ok) {
-      const errBody = await resp.text();
-      res.status(502).send("Erro ao consultar os anuncios: " + errBody);
+      console.error("Falha ao consultar anúncios:", resp.status, await resp.text());
+      res.status(502).send("Não foi possível carregar os anúncios agora.");
       return;
     }
 
@@ -89,7 +95,7 @@ export default async function handler(req, res) {
     let texto = `Lista de veiculos disponiveis no MG Motors (atualizado em ${new Date().toLocaleString(
       "pt-BR"
     )}).\n`;
-    texto += `Para ver fotos e falar com o vendedor, acesse: https://mgmotors.vercel.app/MG-MARKETPLACE/marketplace.html\n`;
+    texto += `Para ver fotos e falar com o vendedor, acesse: ${SITE_URL}/MG-MARKETPLACE/marketplace.html\n`;
     texto += `Total de anuncios ativos: ${anuncios.length}\n\n`;
 
     if (anuncios.length === 0) {
@@ -117,9 +123,10 @@ export default async function handler(req, res) {
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     // cache curto: os dados mudam com anuncios novos/pausados, mas nao
     // precisa ser 100% instantaneo para o treinamento do chatbot
-    res.setHeader("Cache-Control", "public, max-age=300");
+    res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
     res.status(200).send(texto);
   } catch (err) {
-    res.status(500).send("Erro interno ao gerar lista de veiculos: " + err.message);
+    console.error("Erro interno ao gerar lista de veículos:", err);
+    res.status(500).send("Erro interno ao gerar a lista de veículos.");
   }
 }

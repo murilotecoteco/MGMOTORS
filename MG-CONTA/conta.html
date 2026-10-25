@@ -6,6 +6,7 @@
   <link rel="shortcut icon" href="../imagens/logo-mg.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Minha Conta - MG Motors | Perfil e Anúncios</title>
+<meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Gerencie seu perfil, anúncios publicados, favoritos e avaliações recebidas na MG Motors.">
 <meta property="og:title" content="Minha Conta - MG Motors">
 <meta property="og:description" content="Veja e edite seu perfil, anúncios e informações pessoais no marketplace MG Motors.">
@@ -15,7 +16,7 @@
 <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotorss.vercel.app/MG-CONTA/conta.html">
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.468.0"></script>
 </head>
 <body>
 <header id="header-global"></header>
@@ -28,6 +29,7 @@
 
 
 <div class="container-principal">
+  <h1 class="sr-only">Minha conta</h1>
   <div class="perfil-header">
     <div class="capa-container">
       <img id="capaFoto" class="capa-imagem" src="https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop" alt="Capa" loading="lazy">
@@ -37,7 +39,7 @@
     <div class="perfil-info">
       <div class="foto-container">
         <img id="fotoPerfil" class="foto-perfil" src="https://via.placeholder.com/150" alt="Foto" loading="lazy">
-        <button id="btnEditarFoto" class="btn-editar-foto"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+        <button id="btnEditarFoto" class="btn-editar-foto" aria-label="Editar foto de perfil"><i data-lucide="pencil" aria-hidden="true" style="width:14px;height:14px;"></i></button>
         <input type="file" id="uploadFoto" accept="image/*" style="display:none">
       </div>
       <div class="dados-container">
@@ -72,10 +74,10 @@
     <div id="tab-dados" class="tab-content active">
       <form id="form-dados">
         <div class="form-grid">
-          <div class="form-group"><label>Nome completo</label><input type="text" id="nome" placeholder="Seu nome"></div>
-          <div class="form-group"><label>Idade</label><input type="number" id="idade" placeholder="Sua idade"></div>
-          <div class="form-group"><label>Cidade</label><input type="text" id="cidade" placeholder="Sua cidade"></div>
-          <div class="form-group"><label>Estado</label>
+          <div class="form-group"><label for="nome">Nome completo</label><input type="text" id="nome" placeholder="Seu nome"></div>
+          <div class="form-group"><label for="idade">Idade</label><input type="number" id="idade" placeholder="Sua idade"></div>
+          <div class="form-group"><label for="cidade">Cidade</label><input type="text" id="cidade" placeholder="Sua cidade"></div>
+          <div class="form-group"><label for="estado">Estado</label>
             <select id="estado">
               <option value="">Estado (UF)</option>
               <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
@@ -87,12 +89,12 @@
               <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
             </select>
           </div>
-          <div class="form-group"><label>Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000"></div>
-          <div class="form-group"><label>E-mail</label><input type="email" id="email" disabled></div>
-          <div class="form-group"><label>Instagram</label><input type="text" id="instagram" placeholder="@usuario"></div>
-          <div class="form-group"><label>Site</label><input type="text" id="site" placeholder="https://..."></div>
-          <div class="form-group full"><label>Biografia</label><textarea id="bio" placeholder="Conte um pouco sobre você..."></textarea></div>
-          <div class="form-group full"><label>Data de criação</label><input type="text" id="dataCriacao" disabled></div>
+          <div class="form-group"><label for="telefone">Telefone</label><input type="text" id="telefone" placeholder="(00) 00000-0000"></div>
+          <div class="form-group"><label for="email">E-mail</label><input type="email" id="email" disabled></div>
+          <div class="form-group"><label for="instagram">Instagram</label><input type="text" id="instagram" placeholder="@usuario"></div>
+          <div class="form-group"><label for="site">Site</label><input type="text" id="site" placeholder="https://..."></div>
+          <div class="form-group full"><label for="bio">Biografia</label><textarea id="bio" placeholder="Conte um pouco sobre você..."></textarea></div>
+          <div class="form-group full"><label for="dataCriacao">Data de criação</label><input type="text" id="dataCriacao" disabled></div>
         </div>
         <button type="submit" class="btn-salvar">Salvar Alterações</button>
         <button type="button" id="excluirConta" class="btn-danger">Excluir Conta</button>
@@ -111,6 +113,7 @@
           <span class="fotos-subtitulo">Compartilhe momentos, carros e viagens com seus seguidores.</span>
         </div>
         <div class="fotos-upload-area">
+          <label for="foto-legenda" class="sr-only">Legenda da foto</label>
           <input type="text" id="foto-legenda" class="foto-legenda-input" maxlength="180" placeholder="Legenda opcional...">
           <label id="btn-nova-foto" class="btn-publicar-foto">
           <i data-lucide="camera" style="width:14px;height:14px;vertical-align:-1px;margin-right:4px;"></i> Publicar Foto
@@ -150,7 +153,7 @@
 
 <!-- Modal Seguidores/Seguindo --><div id="modal-seguidores" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;" role="dialog" aria-modal="true" aria-labelledby="modal-seg-titulo">
   <div style="background:var(--branco,#fff);padding:28px;border-radius:20px;width:420px;max-width:96%;position:relative;max-height:80vh;overflow-y:auto;">
-    <span onclick="mgModal.close('modal-seguidores')" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#888;" aria-label="Fechar">×</span>
+    <button type="button" onclick="mgModal.close('modal-seguidores')" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#888;background:none;border:none;padding:0;line-height:1;" aria-label="Fechar seguidores">×</button>
     <h2 id="modal-seg-titulo" style="color:#144b71;margin-bottom:16px;font-size:18px;font-weight:900;"></h2>
     <div id="modal-seg-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
@@ -159,9 +162,9 @@
 <!-- Modal denúncia -->
 <div id="modal-denuncia" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;" role="dialog" aria-modal="true" aria-labelledby="modal-denuncia-conta-titulo">
   <div style="background:white;padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;">
-    <span onclick="mgModal.close('modal-denuncia')" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:#888;" aria-label="Fechar">×</span>
-    <h2 id="modal-denuncia-conta-titulo" style="color:#144b71;margin-bottom:16px;"><i data-lucide="flag" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i> Denunciar Perfil</h2>
-    <select id="denuncia-motivo" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;">
+    <button type="button" onclick="mgModal.close('modal-denuncia')" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:#888;background:none;border:none;padding:0;line-height:1;" aria-label="Fechar denúncia">×</button>
+    <h2 id="modal-denuncia-conta-titulo" style="color:#144b71;margin-bottom:16px;"><i data-lucide="flag" aria-hidden="true" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i> Denunciar Perfil</h2>
+    <select id="denuncia-motivo" aria-label="Motivo da denúncia" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;">
       <option value="">Selecione o motivo</option>
       <option value="Comportamento abusivo">Comportamento abusivo</option>
       <option value="Golpista">Golpista / fraude</option>
@@ -169,7 +172,7 @@
       <option value="Spam">Spam</option>
       <option value="Outro">Outro</option>
     </select>
-    <textarea id="denuncia-desc" placeholder="Detalhes adicionais..." rows="3" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+    <textarea id="denuncia-desc" placeholder="Detalhes adicionais..." aria-label="Detalhes adicionais da denúncia" rows="3" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;font-family:inherit;resize:vertical;"></textarea>
     <button id="btn-enviar-denuncia" style="width:100%;margin-top:12px;background:#144b71;color:#fff;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;"><i data-lucide="send" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"></i> Enviar</button>
   </div>
 </div>
@@ -352,6 +355,27 @@ async function carregarPerfil() {
   await carregarCurtidasRecebidas();
 }
 
+// Busca em uma única consulta a primeira foto de cada anúncio (evita N+1).
+// Antes, cada card disparava um SELECT próprio em fotos_anuncio.
+async function carregarPrimeirasFotos(anuncios) {
+  const mapa = new Map();
+  const ids = [...new Set((anuncios || []).map(a => a?.id).filter(Boolean))];
+  if (!ids.length) return mapa;
+  const { data, error } = await supabase
+    .from("fotos_anuncio")
+    .select("anuncio_id, url_foto, ordem")
+    .in("anuncio_id", ids)
+    .order("ordem", { ascending: true });
+  if (error) {
+    console.error("Falha ao carregar fotos dos anúncios:", error.message);
+    return mapa;
+  }
+  for (const f of data || []) {
+    if (!mapa.has(f.anuncio_id) && f.url_foto) mapa.set(f.anuncio_id, f.url_foto);
+  }
+  return mapa;
+}
+
 async function carregarMeusAnuncios() {
   if (!perfilUsuarioId) return;
   const { data: anuncios } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("pausado",false).order("criado_em",{ascending:false});
@@ -359,6 +383,7 @@ async function carregarMeusAnuncios() {
   const cont = document.getElementById("meus-anuncios-lista");
   if (!anuncios || anuncios.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
   cont.innerHTML = "";
+  const fotosPorAnuncio = await carregarPrimeirasFotos(anuncios);
   for (const a of anuncios) {
     // BUG CORRIGIDO: se um único anúncio desse loop lançasse um erro (por
     // exemplo, quilometragem nula chamando .toLocaleString() em null), a
@@ -368,13 +393,12 @@ async function carregarMeusAnuncios() {
     // Agora: try/catch por item + valores numéricos com fallback + o
     // listener de cada botão é preso na hora, dentro do próprio loop.
     try {
-      const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).order("ordem").limit(1);
-      const foto = safeImageUrl(fotos?.[0]?.url_foto);
+      const foto = safeImageUrl(fotosPorAnuncio.get(a.id));
       const card = document.createElement("div"); card.className = "anuncio-card";
       const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
       const km = Number(a.quilometragem || 0).toLocaleString();
       // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
-      card.innerHTML = `<img src="${escapeHtml(foto)}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${escapeHtml(a.id)}">Excluir</button></div>`;
+      card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" loading="lazy"><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${escapeHtml(a.id)}">Excluir</button></div>`;
       card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
       card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
       card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/anuncio.html?id=${encodeURIComponent(a.id)}`; });
@@ -412,22 +436,8 @@ async function carregarMeusAnuncios() {
           window.mgToast?.("Anúncio excluído!", "success");
           carregarMeusAnuncios();
 
-          // Limpeza definitiva em segundo plano (best-effort, não bloqueia
-          // nem alerta o usuário): o anúncio já sumiu de toda tela acima,
-          // então se isso falhar não é mais um bug visível — só sobra lixo
-          // no banco pra limpar depois.
-          (async () => {
-            try {
-              const { data: fotosParaApagar } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
-              if (fotosParaApagar) for (const f of fotosParaApagar) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
-              await supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId);
-              await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId);
-              await supabase.from("mensagens").delete().eq("anuncio_id", anuncioId);
-              await supabase.from("anuncios").delete().eq("id", anuncioId);
-            } catch (e) {
-              console.warn("Limpeza em segundo plano do anúncio excluído falhou (sem impacto pro usuário, ele já está oculto):", e);
-            }
-          })();
+          // A exclusão é lógica: mensagens, fotos e referências ficam
+          // preservadas para não apagar o histórico da outra parte.
         } catch (excecao) {
           // Antes, um erro "de verdade" (jogado, não retornado como {error})
           // virava um "Uncaught (in promise)" silencioso no console — o
@@ -450,9 +460,9 @@ async function carregarPausados() {
   const cont = document.getElementById("pausados-lista");
   if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio pausado.</p>"; return; }
   cont.innerHTML = "";
+  const fotosPorAnuncio = await carregarPrimeirasFotos(data);
   for (const a of data) {
-    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = safeImageUrl(fotos?.[0]?.url_foto);
+    const foto = safeImageUrl(fotosPorAnuncio.get(a.id));
     const card = document.createElement("div"); card.className = "anuncio-card";
     // C4: Anúncios rejeitados pelo admin (status='expirado') NÃO têm botão Reativar
     // para impedir que o usuário reative conteúdo removido por moderação.
@@ -463,7 +473,7 @@ async function carregarPausados() {
     const btnReativar = isRejeitado ? '' : `<button class="btn-reativar" data-id="${a.id}" style="width:100%;padding:8px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:800;margin-top:8px;">Reativar</button>`;
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
     const km = Number(a.quilometragem || 0).toLocaleString("pt-BR");
-    card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" style="filter:grayscale(.6)"><div class="anuncio-info" style="opacity:.8;"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p>${badgeRejeitado}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div>${btnReativar}</div>`;
+    card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" loading="lazy" style="filter:grayscale(.6)"><div class="anuncio-info" style="opacity:.8;"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p>${badgeRejeitado}<div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div>${btnReativar}</div>`;
     card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
     card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
     cont.appendChild(card);
@@ -483,13 +493,13 @@ async function carregarAnunciosOutro() {
   const cont = document.getElementById("anuncios-outro-lista");
   if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
   cont.innerHTML = "";
+  const fotosPorAnuncio = await carregarPrimeirasFotos(data);
   for (const a of data) {
-    const { data: fotos } = await supabase.from("fotos_anuncio").select("url_foto").eq("anuncio_id",a.id).limit(1);
-    const foto = safeImageUrl(fotos?.[0]?.url_foto);
+    const foto = safeImageUrl(fotosPorAnuncio.get(a.id));
     const card = document.createElement("div"); card.className = "anuncio-card";
     // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
     const km = Number(a.quilometragem || 0).toLocaleString("pt-BR");
-    card.innerHTML = `<img src="${escapeHtml(foto)}" alt=""><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
+    card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" loading="lazy"><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao} | ${km} km</p><div class="anuncio-preco">R$ ${Number(a.preco).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div></div>`;
     card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
     card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
     card.addEventListener("click", () => window.location.href = `../MG-MARKETPLACE/anuncio.html?id=${encodeURIComponent(a.id)}`);

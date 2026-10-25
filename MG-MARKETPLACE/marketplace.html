@@ -35,7 +35,7 @@
   </style>
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotorss.vercel.app/MG-MARKETPLACE/marketplace.html">
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.468.0"></script>
 </head>
 
 <body>
@@ -58,10 +58,10 @@
     <div class="pesquisa">
       <div class="barra-pesquisa">
         <span class="search-icon"></span>
-        <input type="text" id="barra_pesquisa" placeholder="Pesquisar por marca, modelo...">
+        <input type="text" id="barra_pesquisa" placeholder="Pesquisar por marca, modelo..." aria-label="Pesquisar por marca ou modelo">
       </div>
       <div class="filtro-marca">
-        <select id="filtro-tipo-veiculo">
+        <select id="filtro-tipo-veiculo" aria-label="Filtrar por tipo de veículo">
           <option value="">Todos os tipos</option>
           <option value="carro">Carro</option>
           <option value="moto">Moto</option>
@@ -71,12 +71,12 @@
         </select>
       </div>
       <div class="filtro-marca">
-        <select id="filtro-marca">
+        <select id="filtro-marca" aria-label="Filtrar por marca">
           <option value="">Todas as marcas</option>
         </select>
       </div>
       <div class="filtro-preco">
-        <select id="filtro-preco">
+        <select id="filtro-preco" aria-label="Filtrar por faixa de preço">
           <option value="">Qualquer preço</option>
           <option value="0-50000">Até R$ 50 mil</option>
           <option value="50000-150000">R$ 50k – 150k</option>
@@ -86,7 +86,7 @@
         </select>
       </div>
       <div class="filtro-estado">
-        <select id="filtro-estado">
+        <select id="filtro-estado" aria-label="Filtrar por estado">
           <option value="">Todos os estados</option>
           <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
           <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
@@ -101,7 +101,7 @@
         <button id="btn-localizacao" class="btn-loc">Localização</button>
       </div>
       <div class="ordenar">
-        <select id="ordenar">
+        <select id="ordenar" aria-label="Ordenar resultados">
           <option value="aleatorio">Aleatório</option>
           <option value="curtidas">Mais Curtidos</option>
           <option value="preco_asc">Menor Preço</option>
@@ -116,6 +116,7 @@
 
     <div id="loc-info" class="loc-info" style="display:none;">
       <span id="loc-texto"></span>
+      <label for="raio-select" class="sr-only">Raio de busca</label>
       <select id="raio-select">
         <option value="50">50 km</option>
         <option value="100" selected>100 km</option>
@@ -156,44 +157,44 @@
 
   <div id="modal-add-car" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-add-car-titulo">
     <div class="modal-content">
-      <span id="close-modal" class="close">&times;</span>
+      <button type="button" id="close-modal" class="close" aria-label="Fechar formulário de anúncio">&times;</button>
       <h2 id="modal-add-car-titulo">Anunciar Veículo</h2>
       <form id="car-form">
-        <select id="select-tipo-veiculo" required>
+        <select id="select-tipo-veiculo" aria-label="Tipo de veículo" required>
           <option value="carro">Carro</option>
           <option value="moto">Moto</option>
           <option value="caminhao">Caminhão</option>
           <option value="trator">Trator</option>
           <option value="embarcacao">Embarcação</option>
         </select>
-        <select id="select-marca" required>
+        <select id="select-marca" aria-label="Marca do veículo" required>
           <option value="">Selecione a Marca</option>
         </select>
-        <input type="text" id="car-marca-texto" placeholder="Digite a marca" style="display:none;">
-        <select id="select-modelo" required disabled>
+        <input type="text" id="car-marca-texto" placeholder="Digite a marca" aria-label="Marca do veículo (texto livre)" style="display:none;">
+        <select id="select-modelo" aria-label="Modelo do veículo" required disabled>
           <option value="">Selecione o Modelo</option>
         </select>
-        <input type="text" id="car-modelo-texto" placeholder="Digite o modelo" style="display:none;">
-        <input type="tel" id="car-whatsapp" placeholder="WhatsApp (ex: 44999999999)" required
+        <input type="text" id="car-modelo-texto" placeholder="Digite o modelo" aria-label="Modelo do veículo (texto livre)" style="display:none;">
+        <input type="tel" id="car-whatsapp" placeholder="WhatsApp (ex: 44999999999)" aria-label="WhatsApp para contato" required
           pattern="^\d{10,11}$" maxlength="11" inputmode="numeric"
           title="Informe DDD + número, ex: 44999999999 (10 ou 11 dígitos)">
         <small id="whatsapp-erro" style="color:#e84040;font-size:11px;display:none;margin-top:-6px;">Número inválido. Use DDD + número (ex: 44999999999).</small>
         <div class="form-row">
-          <input type="number" id="car-ano" placeholder="Ano fabricação" required>
-          <input type="number" id="car-ano-modelo" placeholder="Ano modelo" required>
+          <input type="number" id="car-ano" placeholder="Ano fabricação" aria-label="Ano de fabricação" required>
+          <input type="number" id="car-ano-modelo" placeholder="Ano modelo" aria-label="Ano do modelo" required>
         </div>
         <div class="form-row">
-          <input type="number" id="car-preco" placeholder="Preço (R$)" required>
-          <input type="number" id="car-km" placeholder="Quilometragem" required>
+          <input type="number" id="car-preco" placeholder="Preço (R$)" aria-label="Preço em reais" required>
+          <input type="number" id="car-km" placeholder="Quilometragem" aria-label="Quilometragem" required>
         </div>
         <div class="form-row">
-          <select id="car-cambio">
+          <select id="car-cambio" aria-label="Câmbio (opcional)">
             <option value="">Câmbio (opcional)</option>
             <option value="manual">Manual</option>
             <option value="automatico">Automático</option>
             <option value="automatizado">Automatizado</option>
           </select>
-          <select id="car-combustivel">
+          <select id="car-combustivel" aria-label="Combustível (opcional)">
             <option value="">Combustível (opcional)</option>
             <option value="gasolina">Gasolina</option>
             <option value="alcool">Álcool</option>
@@ -203,11 +204,11 @@
             <option value="hibrido">Híbrido</option>
           </select>
         </div>
-        <input type="text" id="car-final-placa" placeholder="Final da placa (opcional)" maxlength="1" inputmode="numeric" pattern="[0-9]">
-        <input type="text" id="car-cor" placeholder="Cor" required>
+        <input type="text" id="car-final-placa" placeholder="Final da placa (opcional)" aria-label="Final da placa (opcional)" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" id="car-cor" placeholder="Cor" aria-label="Cor do veículo" required>
         <div class="form-row">
-          <input type="text" id="car-cidade" placeholder="Cidade">
-          <select id="car-estado" required>
+          <input type="text" id="car-cidade" placeholder="Cidade" aria-label="Cidade do veículo">
+          <select id="car-estado" aria-label="Estado (UF) do veículo" required>
             <option value="">Estado (UF)</option>
             <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
             <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
@@ -220,16 +221,16 @@
         </div>
         <button type="button" id="btn-usar-gps" class="btn-gps">Usar minha localização</button>
         <div class="textarea-wrap">
-          <textarea id="car-descricao" placeholder="Descrição do veículo" rows="3" required maxlength="500"></textarea>
+          <textarea id="car-descricao" placeholder="Descrição do veículo" aria-label="Descrição do veículo" rows="3" required maxlength="500"></textarea>
           <span class="char-counter" id="descricao-counter" aria-live="polite">0/500</span>
         </div>
         <div class="upload-area">
-          <label class="upload-label">Foto principal (obrigatória)</label>
+          <label class="upload-label" for="car-image">Foto principal (obrigatória)</label>
           <input type="file" id="car-image" accept="image/jpeg,image/png,image/webp" required>
           <small id="upload-principal-info" style="font-size:11px;color:var(--texto-suave);margin-top:4px;display:block;"></small>
         </div>
         <div class="upload-area">
-          <label class="upload-label">Fotos adicionais (até 4)</label>
+          <label class="upload-label" for="car-images-adicionais">Fotos adicionais (até 4)</label>
           <input type="file" id="car-images-adicionais" accept="image/jpeg,image/png,image/webp" multiple>
           <small id="upload-adicionais-info" style="font-size:11px;color:var(--texto-suave);margin-top:4px;display:block;"></small>
         </div>
@@ -241,10 +242,10 @@
 
   <div id="modal-visualizar" class="modal" role="dialog" aria-modal="true" aria-labelledby="viz-titulo">
     <div class="modal-content modal-visualizar">
-      <span id="close-visualizar" class="close">&times;</span>
+      <button type="button" id="close-visualizar" class="close" aria-label="Fechar detalhes do anúncio">&times;</button>
       <div class="visualizar-container">
         <div class="galeria-container">
-          <div class="foto-principal"><img id="viz-foto-principal" src="../imagens/image.webp" alt=""></div>
+          <div class="foto-principal"><img id="viz-foto-principal" src="../imagens/image.webp" alt="" loading="lazy"></div>
           <div class="miniaturas" id="viz-miniaturas"></div>
         </div>
         <div class="info-container">
@@ -262,11 +263,11 @@
           <div class="visualizar-acoes">
             <button class="btn-mensagem-visualizar" id="viz-btn-mensagem"><i data-lucide="message-circle" class="icon-inline"></i> Tenho interesse</button>
             <button class="btn-curtir" id="viz-btn-curtir"><i data-lucide="heart" class="icon-inline"></i> Curtir</button>
-            <a id="viz-whatsapp" href="#" target="_blank" class="btn-whatsapp"><i data-lucide="message-circle" class="icon-inline"></i> WhatsApp</a>
+            <a id="viz-whatsapp" href="#" target="_blank" rel="noopener" class="btn-whatsapp"><i data-lucide="message-circle" class="icon-inline"></i> WhatsApp</a>
           </div>
-          <a id="viz-gps-link" href="#" target="_blank" class="btn-gps-link" style="display:none;"><i data-lucide="map-pin" class="icon-inline"></i> Ver no Google
+          <a id="viz-gps-link" href="#" target="_blank" rel="noopener" class="btn-gps-link" style="display:none;"><i data-lucide="map-pin" class="icon-inline"></i> Ver no Google
             Maps</a>
-          <div class="perfil-link" id="viz-perfil-link"><i data-lucide="user-round" class="icon-inline"></i> Ver perfil do vendedor</div>
+          <div class="perfil-link" id="viz-perfil-link" role="button" tabindex="0"><i data-lucide="user-round" class="icon-inline" aria-hidden="true"></i> Ver perfil do vendedor</div>
           <button class="btn-denunciar-anuncio" id="viz-denunciar"><i data-lucide="flag" class="icon-inline"></i> Denunciar anúncio</button>
         </div>
       </div>
@@ -275,11 +276,11 @@
 
   <div id="modal-denuncia" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-denuncia-titulo">
     <div class="modal-content" style="max-width:460px;">
-      <span id="close-denuncia" class="close">&times;</span>
+      <button type="button" id="close-denuncia" class="close" aria-label="Fechar denúncia">&times;</button>
       <h2 id="modal-denuncia-titulo">Denunciar</h2>
       <p style="color:var(--texto-suave);font-size:14px;margin-bottom:18px;">Selecione o motivo da denúncia.
         Analisaremos em até 24h.</p>
-      <select id="denuncia-motivo" class="modal-select">
+      <select id="denuncia-motivo" class="modal-select" aria-label="Motivo da denúncia">
         <option value="">Selecione o motivo</option>
         <option value="Informações falsas">Informações falsas</option>
         <option value="Golpe ou fraude">Golpe ou fraude</option>
@@ -289,7 +290,7 @@
         <option value="Spam">Spam / anúncio repetido</option>
         <option value="Outro">Outro</option>
       </select>
-      <textarea id="denuncia-descricao" placeholder="Descreva com mais detalhes (opcional)..." rows="4"
+      <textarea id="denuncia-descricao" placeholder="Descreva com mais detalhes (opcional)..." aria-label="Detalhes adicionais da denúncia" rows="4"
         style="width:100%;padding:11px 14px;margin-top:10px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-family:inherit;font-size:14px;resize:vertical;"></textarea>
       <button id="btn-enviar-denuncia" class="btn-submit" style="margin-top:14px;">Enviar Denúncia</button>
     </div>
@@ -403,6 +404,9 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
     const ITENS_POR_PAGINA = 12;
     let paginaAtual = 1;
     let anunciosFiltradosAtual = [];
+    let totalResultados = 0;
+    const seedAleatorio = sessionStorage.getItem("mg_marketplace_seed") || crypto.randomUUID();
+    sessionStorage.setItem("mg_marketplace_seed", seedAleatorio);
 
     async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. Tente novamente.") {
       const { data, error } = await promise;
@@ -434,7 +438,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         .filter(m => (m.categoria || "carro") === tipo)
         .forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; select.appendChild(op); });
       const opOutraMarca = document.createElement("option");
-      opOutraMarca.value = "outro"; opOutraMarca.textContent = "✏️ Não encontrei — escrever a marca";
+      opOutraMarca.value = "outro"; opOutraMarca.textContent = "Não encontrei — escrever a marca";
       select.appendChild(opOutraMarca);
       document.getElementById("select-modelo").innerHTML = "<option value=''>Selecione o modelo</option>";
       document.getElementById("select-modelo").disabled = true;
@@ -487,7 +491,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       const { data } = await supabase.from("modelos").select("*").eq("marca_id", marcaId).order("nome");
       data?.forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; sel.appendChild(op); });
       const opOutroModelo = document.createElement("option");
-      opOutroModelo.value = "outro"; opOutroModelo.textContent = "✏️ Não encontrei — escrever o modelo";
+      opOutroModelo.value = "outro"; opOutroModelo.textContent = "Não encontrei — escrever o modelo";
       sel.appendChild(opOutroModelo);
       sel.disabled = false;
     });
@@ -545,7 +549,10 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("ordenar") === "curtidas") { document.addEventListener("DOMContentLoaded", () => { const s = document.getElementById("ordenar"); if (s) s.value = "curtidas"; }); }
+    if (urlParams.get("ordenar") === "curtidas") {
+      const selectOrdenacao = document.getElementById("ordenar");
+      if (selectOrdenacao) selectOrdenacao.value = "curtidas";
+    }
     const abrirAnuncioAoCarregar = urlParams.get("anunciar") === "1";
     const categoriaSolicitada = (urlParams.get("categoria") || "").trim().toLowerCase();
     let marcaSolicitada = normalizarBusca(urlParams.get("marca") || "");
@@ -578,89 +585,77 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       onibus: ["onibus"]
     };
 
-    async function carregarAnuncios() {
+    async function carregarAnuncios({ resetarPagina = false } = {}) {
+      if (resetarPagina) paginaAtual = 1;
+      let tipoVeiculo = document.getElementById("filtro-tipo-veiculo").value || null;
+      if (categoriaSolicitada) {
+        const tipos = categoriasPorTipoVeiculo[categoriaSolicitada];
+        if (tipos?.length === 1) tipoVeiculo = tipos[0];
+        else if (!tipos && !window.__mgCategoriaAvisada) {
+          window.__mgCategoriaAvisada = true;
+          window.mgToast?.(`A categoria “${categoriaSolicitada}” ainda não possui campo correspondente no cadastro de anúncios.`, "warning");
+        }
+      }
+      const precoBand = document.getElementById("filtro-preco").value;
+      const [precoMin, precoMax] = precoBand ? precoBand.split("-").map(Number) : [null, null];
+      const busca = [marcaSolicitada, modeloSolicitado, filtroTextoAtual]
+        .filter(Boolean).join(" ").trim() || null;
       const { data: anuncios, error } = await supabase.rpc(
-        "get_anuncios_marketplace",
-        { usuario_id_param: usuarioAtual?.id ?? null }
+        "get_anuncios_marketplace_paginado",
+        {
+          p_usuario_id: usuarioAtual?.id ?? null,
+          p_limit: ITENS_POR_PAGINA,
+          p_offset: (paginaAtual - 1) * ITENS_POR_PAGINA,
+          p_tipo_veiculo: tipoVeiculo,
+          p_marca_id: document.getElementById("filtro-marca").value || null,
+          p_estado: document.getElementById("filtro-estado").value || null,
+          p_busca: busca,
+          p_preco_min: precoMin || null,
+          p_preco_max: precoMax || null,
+          p_latitude: userLat,
+          p_longitude: userLng,
+          p_raio_km: userLat !== null && userLng !== null ? raioFiltro : null,
+          p_ordenacao: document.getElementById("ordenar").value,
+          p_seed: seedAleatorio
+        }
       );
-      if (error) { console.error("RPC get_anuncios_marketplace error:", error); return; }
+      if (error) { console.error("RPC get_anuncios_marketplace_paginado error:", error); window.mgToast?.("Não foi possível carregar os anúncios.", "error"); return; }
 
-      for (const a of anuncios) {
+      for (const a of anuncios || []) {
         a.marcas  = { nome: a.marca_nome  || a.marca_texto  || "" };
         a.modelos = { nome: a.modelo_nome || a.modelo_texto || "" };
         a.foto_principal = safeImageUrl(a.foto_principal);
         a.vendedor_foto  = safeImageUrl(a.vendedor_foto, "../imagens/usuario.png");
       }
 
-      todosAnuncios = anuncios;
+      todosAnuncios = anuncios || [];
+      anunciosFiltradosAtual = todosAnuncios;
+      totalResultados = Number(todosAnuncios[0]?.total_count || 0);
       if (modeloSolicitado) {
         const campoBusca = document.getElementById("barra_pesquisa");
         if (campoBusca) campoBusca.value = urlParams.get("modelo");
-        filtroTextoAtual = modeloSolicitado;
       }
-      if (urlParams.get("ordenar")) { const s = document.getElementById("ordenar"); if (s && urlParams.get("ordenar") === "curtidas") s.value = "curtidas"; }
-      aplicarFiltroOrdenacao();
+      const info = document.getElementById("resultados-info");
+      if (info) info.textContent = `${totalResultados} veículo${totalResultados !== 1 ? "s" : ""} encontrado${totalResultados !== 1 ? "s" : ""}`;
+      exibirAnuncios(todosAnuncios);
+      renderPaginacao();
       const carroId = urlParams.get("carro");
-      if (carroId) window.location.href = `anuncio.html?id=${encodeURIComponent(carroId)}`;
+      if (carroId && !window.__mgAnuncioRedirecionado) {
+        window.__mgAnuncioRedirecionado = true;
+        window.location.href = `anuncio.html?id=${encodeURIComponent(carroId)}`;
+      }
     }
 
     function aplicarFiltroOrdenacao() {
-      let filtrados = [...todosAnuncios];
-      if (categoriaSolicitada) {
-        const tipos = categoriasPorTipoVeiculo[categoriaSolicitada];
-        if (tipos) {
-          filtrados = filtrados.filter(a => tipos.includes(a.tipo_veiculo || "carro"));
-        } else if (!window.__mgCategoriaAvisada) {
-          window.__mgCategoriaAvisada = true;
-          window.mgToast?.(`A categoria “${categoriaSolicitada}” ainda não possui campo correspondente no cadastro de anúncios.`, "warning");
-        }
-      }
-      const tipoFiltro = document.getElementById("filtro-tipo-veiculo").value;
-      if (tipoFiltro) filtrados = filtrados.filter(a => (a.tipo_veiculo || "carro") === tipoFiltro);
-      if (marcaSolicitada) {
-        filtrados = filtrados.filter(a => normalizarBusca(a.marcas?.nome || a.marca_texto).includes(marcaSolicitada));
-      }
-      const marcaFiltro = document.getElementById("filtro-marca").value;
-      if (marcaFiltro) filtrados = filtrados.filter(a => a.marca_id === marcaFiltro);
-      const estadoFiltro = document.getElementById("filtro-estado").value;
-      if (estadoFiltro) filtrados = filtrados.filter(a => (a.estado || "").toUpperCase() === estadoFiltro);
-      if (filtroTextoAtual) {
-        const t = filtroTextoAtual.toLowerCase();
-        filtrados = filtrados.filter(a => `${a.marcas?.nome || ""} ${a.modelos?.nome || ""}`.toLowerCase().includes(t));
-      }
-      const precoBand = document.getElementById("filtro-preco").value;
-      if (precoBand) {
-        const [min, max] = precoBand.split("-").map(Number);
-        filtrados = filtrados.filter(a => a.preco >= (min || 0) && (max ? a.preco <= max : true));
-      }
-      if (userLat && userLng) {
-        filtrados = filtrados.filter(a => {
-          if (!a.latitude || !a.longitude) return true;
-          return calcDist(userLat, userLng, a.latitude, a.longitude) <= raioFiltro;
-        });
-      }
-      const ord = document.getElementById("ordenar").value;
-      if (ord === "aleatorio") filtrados = filtrados.sort(() => .5 - Math.random());
-      else if (ord === "curtidas") filtrados = filtrados.sort((a, b) => (b.curtidas || 0) - (a.curtidas || 0));
-      else if (ord === "preco_asc") filtrados = filtrados.sort((a, b) => a.preco - b.preco);
-      else if (ord === "preco_desc") filtrados = filtrados.sort((a, b) => b.preco - a.preco);
-      else if (ord === "recente") filtrados = filtrados.sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
-      const info = document.getElementById("resultados-info");
-      if (info) info.textContent = `${filtrados.length} veículo${filtrados.length !== 1 ? "s" : ""} encontrado${filtrados.length !== 1 ? "s" : ""}`;
-      anunciosFiltradosAtual = filtrados;
-      paginaAtual = 1;
-      exibirPagina();
+      return carregarAnuncios({ resetarPagina: true });
     }
 
     function exibirPagina() {
-      const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
-      const fatia  = anunciosFiltradosAtual.slice(inicio, inicio + ITENS_POR_PAGINA);
-      exibirAnuncios(fatia);
-      renderPaginacao();
+      return carregarAnuncios();
     }
 
     function renderPaginacao() {
-      const total  = anunciosFiltradosAtual.length;
+      const total  = totalResultados;
       const paginas = Math.ceil(total / ITENS_POR_PAGINA);
       const ctrl   = document.getElementById('paginacao');
       ctrl.style.display = paginas > 1 ? 'flex' : 'none';
@@ -673,7 +668,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       if (paginaAtual > 1) { paginaAtual--; exibirPagina(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });
     document.getElementById('btn-pag-proxima').addEventListener('click', () => {
-      const paginas = Math.ceil(anunciosFiltradosAtual.length / ITENS_POR_PAGINA);
+      const paginas = Math.ceil(totalResultados / ITENS_POR_PAGINA);
       if (paginaAtual < paginas) { paginaAtual++; exibirPagina(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });
 
@@ -745,8 +740,8 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         if (btnDenunciar) btnDenunciar.addEventListener('click', e => { e.stopPropagation(); abrirDenuncia(anuncio.id, 'anuncio'); });
 
         cont.appendChild(card);
-        lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
       }
+      lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
     }
 
     function abrirDenuncia(alvoId, tipo) {
@@ -835,18 +830,8 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         }
         window.mgToast?.("Anúncio excluído!", "success"); carregarAnuncios();
 
-        (async () => {
-          try {
-            const { data: fotos } = await supabase.from("fotos_anuncio").select("caminho").eq("anuncio_id", anuncioId);
-            if (fotos) for (const f of fotos) if (f.caminho) await supabase.storage.from("FOTOS-ANUNCIOS").remove([f.caminho]);
-            await supabase.from("fotos_anuncio").delete().eq("anuncio_id", anuncioId);
-            await supabase.from("curtidas_anuncio").delete().eq("anuncio_id", anuncioId);
-            await supabase.from("mensagens").delete().eq("anuncio_id", anuncioId);
-            await supabase.from("anuncios").delete().eq("id", anuncioId);
-          } catch (e) {
-            console.warn("Limpeza em segundo plano do anúncio excluído falhou (sem impacto pro usuário, ele já está oculto):", e);
-          }
-        })();
+        // A exclusão é lógica: mantém mensagens, fotos e referências para
+        // preservar o histórico das duas partes da negociação.
       } catch (excecao) {
         console.error("Erro ao excluir anúncio:", excecao);
         alert("Erro inesperado ao excluir o anúncio:\n\n" + (excecao?.message || excecao));
@@ -873,7 +858,14 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         gpsLink.style.display = "block";
         gpsLink.href = `https://www.google.com/maps?q=${a.latitude},${a.longitude}`;
       } else { document.getElementById("viz-gps-link").style.display = "none"; }
-      document.getElementById("viz-perfil-link").onclick = () => { window.location.href = `../MG-CONTA/conta.html?id=${a.usuario_id}`; };
+      const perfilLink = document.getElementById("viz-perfil-link");
+      perfilLink.onclick = () => { window.location.href = `../MG-CONTA/conta.html?id=${a.usuario_id}`; };
+      perfilLink.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          window.location.href = `../MG-CONTA/conta.html?id=${a.usuario_id}`;
+        }
+      };
       document.getElementById("viz-denunciar").onclick = () => { mgModal.close("modal-visualizar"); abrirDenuncia(anuncioId, 'anuncio'); };
       if (fotos?.length > 0) {
         document.getElementById("viz-foto-principal").src = safeImageUrl(fotos[0].url_foto);
@@ -1015,7 +1007,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
 
     document.getElementById("car-form").addEventListener("submit", async e => {
       e.preventDefault();
-      if (!usuarioAtual) { window.mgToast?.('Faça login para anunciar.', 'warning') || window.mgToast?.("Faça login!", "warning"); return; }
+      if (!usuarioAtual) { window.mgToast?.('Faça login para anunciar.', 'warning'); return; }
       const btnPublicar = document.getElementById('btn-publicar');
       btnPublicar.disabled = true;
       btnPublicar.textContent = 'Publicando...';

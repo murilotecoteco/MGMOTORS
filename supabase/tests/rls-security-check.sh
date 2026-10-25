@@ -2,8 +2,13 @@
 # =============================================================================
 # MGMOTORS — Roteiro de teste de segurança (RLS / Storage / RPC)
 # -----------------------------------------------------------------------------
+# ⚠️  STAGING ONLY. NÃO RODE AS SEÇÕES [5]–[7] CONTRA PRODUÇÃO.
+#     A seção [6] apaga e recria o perfil do usuário de teste; a [7] grava e
+#     apaga um arquivo no Storage. Use um projeto Supabase descartável e uma
+#     conta de teste criada só para isso.
+#
 # Uso:
-#   export SUPABASE_URL="https://SEU-PROJETO.supabase.co"
+#   export SUPABASE_URL="https://SEU-PROJETO-STAGING.supabase.co"
 #   export SUPABASE_ANON_KEY="sb_publishable_..."
 #   ./supabase/tests/rls-security-check.sh
 #
@@ -13,12 +18,30 @@
 #
 # Requer: curl. Por padrão, nenhum dado real é alterado. O teste de escalação
 # de privilégio da seção [6] é destrutivo por desenho e só roda quando
-# ALLOW_DESTRUCTIVE_PROBES=1 for informado explicitamente.
+# ALLOW_DESTRUCTIVE_PROBES=1 E CONFIRM_STAGING=1 forem informados.
 # =============================================================================
 set -uo pipefail
 
-URL="${SUPABASE_URL:-https://ilswwmjojfuvcgyymymb.supabase.co}"
-KEY="${SUPABASE_ANON_KEY:-sb_publishable_0vy8zcMmKEd8oomSUQvJ4Q_SMpqFcxD}"
+# --- trava de segurança: sondas destrutivas só em staging declarado ---------
+if [ "${ALLOW_DESTRUCTIVE_PROBES:-}" = "1" ] && [ "${CONFIRM_STAGING:-}" != "1" ]; then
+  printf '\033[31mABORTADO:\033[0m ALLOW_DESTRUCTIVE_PROBES=1 exige CONFIRM_STAGING=1.\n'
+  printf 'Confirme que SUPABASE_URL aponta para um projeto descartável de staging.\n'
+  exit 2
+fi
+
+URL="${SUPABASE_URL:-}"
+KEY="${SUPABASE_ANON_KEY:-}"
+
+if [ -z "$URL" ] || [ -z "$KEY" ]; then
+  printf '\033[31mABORTADO:\033[0m informe SUPABASE_URL e SUPABASE_ANON_KEY de um projeto de staging.\n'
+  printf 'Exemplo: SUPABASE_URL=https://staging.supabase.co SUPABASE_ANON_KEY=sb_publishable_... ./supabase/tests/rls-security-check.sh\n'
+  exit 2
+fi
+
+if [[ "$URL" == *"ilswwmjojfuvcgyymymb"* ]]; then
+  printf '\033[31mABORTADO:\033[0m o projeto MGMOTORS de produção não pode ser usado neste roteiro.\n'
+  exit 2
+fi
 
 PASS=0; FAIL=0
 VERMELHO=$'\033[31m'; VERDE=$'\033[32m'; AMARELO=$'\033[33m'; RESET=$'\033[0m'
@@ -111,6 +134,40 @@ visible_rows() { # visible_rows <tabela> <colunas>
 
 FAKE="00000000-0000-0000-0000-000000000000"
 
+# --- restauração do perfil de teste (proteção da seção [6]) ------------------
+PERFIL_ANTES=""
+PERFIL_REMOVIDO=0
+
+restaurar_perfil() {
+  [ "$PERFIL_REMOVIDO" = "1" ] || return 0
+  [ -n "$PERFIL_ANTES" ] || return 0
+  local code
+  code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/rest/v1/usuarios" \
+    -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Prefer: return=representation" \
+    -d "$PERFIL_ANTES")
+  case "$code" in
+    200|201|204)
+      PERFIL_REMOVIDO=0
+      printf '  %sINFO%s  perfil de teste restaurado a partir da captura "before".\n' "$VERDE" "$RESET"
+      ;;
+    409)
+      # O DELETE pode ter sido bloqueado pelo RLS; nesse caso o perfil original
+      # continua no lugar e não há nada a restaurar.
+      PERFIL_REMOVIDO=0
+      printf '  %sINFO%s  perfil de teste já existia; nada a restaurar.\n' "$VERDE" "$RESET"
+      ;;
+    *)
+      printf '  %sAVISO%s  não foi possível restaurar o perfil de teste (HTTP %s).\n' "$AMARELO" "$RESET" "$code"
+      printf '         Recrie manualmente a conta de teste antes de usá-la novamente.\n'
+      ;;
+  esac
+}
+
+cleanup() { restaurar_perfil; }
+trap cleanup EXIT INT TERM
+
 cat <<'BANNER'
 ================================================================================
  MGMOTORS — Teste de segurança (RLS / Storage / RPC)
@@ -173,52 +230,63 @@ if [ -n "${AUTH_TOKEN:-}" ] && [ -n "${AUTH_UID:-}" ]; then
   if [ "${ALLOW_DESTRUCTIVE_PROBES:-}" = "1" ]; then
     echo
     echo "[6] ESCALAÇÃO DE PRIVILÉGIO (deve FALHAR)"
+    echo "      (capturando perfil, executando carga e restaurando ao final...)"
 
-  # O par DELETE+INSERT é o vetor de escalação. Em ambiente corrigido, o INSERT
-  # com moderador=true deve ser barrado pelo trigger BEFORE INSERT.
-  # Usa um UUID de probe e restaura o perfil ao final.
-  echo "      (executando carga e restauração do perfil de teste...)"
-  before=$(body "/rest/v1/usuarios?select=id&limit=1" auth)
-  curl -s -o /dev/null -X DELETE "$URL/rest/v1/usuarios?id=eq.$AUTH_UID" \
-    -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN"
-  admin_code=$(auth POST "/rest/v1/usuarios" "{\"id\":\"$AUTH_UID\",\"email\":\"probe@test.invalid\",\"nome\":\"probe\",\"moderador\":true,\"is_admin\":true}")
-  is_admin=$(body "/rest/v1/rpc/is_admin" auth)
-  curl -s -o /dev/null -X DELETE "$URL/rest/v1/usuarios?id=eq.$AUTH_UID" \
-    -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN"
+    # Captura o perfil COMPLETO para restaurar exatamente o que existia.
+    # Só use uma conta descartável: se ela for admin, as flags voltam false.
+    PERFIL_ANTES=$(body "/rest/v1/usuarios?select=*&id=eq.$AUTH_UID" auth)
+    PERFIL_REMOVIDO=1
 
-  if [ "$is_admin" = "true" ]; then
-    printf '  %sFAIL%s  %-58s (%s)\n' "$VERMELHO" "$RESET" "INSERT moderador=true nao pode conceder admin" "is_admin=true"
-    FAIL=$((FAIL+1))
-  else
-    printf '  %sPASS%s  %-58s (is_admin=%s)\n' "$VERDE" "$RESET" "INSERT moderador=true nao pode conceder admin" "$is_admin"
-    PASS=$((PASS+1))
-  fi
+    curl -s -o /dev/null -X DELETE "$URL/rest/v1/usuarios?id=eq.$AUTH_UID" \
+      -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN"
+
+    admin_code=$(auth POST "/rest/v1/usuarios" "{\"id\":\"$AUTH_UID\",\"email\":\"probe@test.invalid\",\"nome\":\"probe\",\"moderador\":true,\"is_admin\":true}")
+    is_admin=$(body "/rest/v1/rpc/is_admin" auth)
+
+    curl -s -o /dev/null -X DELETE "$URL/rest/v1/usuarios?id=eq.$AUTH_UID" \
+      -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN"
+
+    if [ "$is_admin" = "true" ]; then
+      printf '  %sFAIL%s  %-58s (%s)\n' "$VERMELHO" "$RESET" "INSERT moderador=true nao pode conceder admin" "is_admin=true"
+      FAIL=$((FAIL+1))
+    else
+      printf '  %sPASS%s  %-58s (is_admin=%s)\n' "$VERDE" "$RESET" "INSERT moderador=true nao pode conceder admin" "$is_admin"
+      PASS=$((PASS+1))
+    fi
     check "INSERT usuarios com moderador=true bloqueado" "$admin_code" 400 401 403 409
+
+    # A restauração real acontece no trap de EXIT/INT/TERM.
+    restaurar_perfil
   else
-    printf '%s[6] Escalação de privilégio ignorada: requer ALLOW_DESTRUCTIVE_PROBES=1.%s\n' "$AMARELO" "$RESET"
+    printf '%s[6] Escalação de privilégio ignorada: requer ALLOW_DESTRUCTIVE_PROBES=1 e CONFIRM_STAGING=1.%s\n' "$AMARELO" "$RESET"
   fi
 
-  echo
-  echo "[7] STORAGE COM SESSAO AUTENTICADA (dono do path)"
-  probe="perfil/$AUTH_UID/probe_rls_check.jpg"
-  up=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/storage/v1/object/fotos-perfil/$probe" \
-        -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: image/jpeg" --data-binary "probe")
-  check "auth POST no proprio path" "$up" 200 201
-  rm=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "$URL/storage/v1/object/fotos-perfil/$probe" \
-        -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN")
-  check "auth DELETE no proprio path" "$rm" 200 204
+  if [ "${ALLOW_DESTRUCTIVE_PROBES:-}" = "1" ]; then
+    echo
+    echo "[7] STORAGE COM SESSAO AUTENTICADA (dono do path)"
+    probe="perfil/$AUTH_UID/probe_rls_check.jpg"
+    up=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/storage/v1/object/fotos-perfil/$probe" \
+          -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: image/jpeg" --data-binary "probe")
+    check "auth POST no proprio path" "$up" 200 201
+    rm=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "$URL/storage/v1/object/fotos-perfil/$probe" \
+          -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN")
+    check "auth DELETE no proprio path" "$rm" 200 204
 
-  # Alheio: caminho de outro usuário (inexistente) não pode ser escrito
-  up2=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/storage/v1/object/fotos-perfil/perfil/$FAKE/probe_alheio.jpg" \
-        -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: image/jpeg" --data-binary "probe")
-  check "auth POST em path de TERCEIRO bloqueado" "$up2" 400 401 403
-  curl -s -o /dev/null -X DELETE "$URL/storage/v1/object/fotos-perfil/perfil/$FAKE/probe_alheio.jpg" \
-    -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" >/dev/null 2>&1
+    # Alheio: caminho de outro usuário (inexistente) não pode ser escrito
+    up2=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/storage/v1/object/fotos-perfil/perfil/$FAKE/probe_alheio.jpg" \
+          -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: image/jpeg" --data-binary "probe")
+    check "auth POST em path de TERCEIRO bloqueado" "$up2" 400 401 403
+    curl -s -o /dev/null -X DELETE "$URL/storage/v1/object/fotos-perfil/perfil/$FAKE/probe_alheio.jpg" \
+      -H "apikey: $KEY" -H "Authorization: Bearer $AUTH_TOKEN" >/dev/null 2>&1
+  else
+    printf '%s[7] Storage autenticado ignorado: requer ALLOW_DESTRUCTIVE_PROBES=1 e CONFIRM_STAGING=1.%s\n' "$AMARELO" "$RESET"
+  fi
 else
   echo
   printf '%s[5-7] Testes autenticados ignorados. Para rodar:%s\n' "$AMARELO" "$RESET"
   echo "    export AUTH_TOKEN=\"<access_token JWT>\""
   echo "    export AUTH_UID=\"<uuid do usuario>\""
+  echo "    Somente em staging. [6]-[7] exigem ALLOW_DESTRUCTIVE_PROBES=1 e CONFIRM_STAGING=1."
 fi
 
 echo

@@ -5,6 +5,19 @@
   --mg-focus: #93c5fd;
 }
 
+/* Texto disponível a leitores de tela, sem ocupar espaço visual. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Impede scroll horizontal em qualquer pagina.
    Importante: isso fica só no body, nunca no html — ter overflow-x:hidden
    nos dois ao mesmo tempo é um bug conhecido do Safari/iOS que quebra
@@ -33,6 +46,15 @@ body > * {
 }
 body > footer {
   margin-top: auto;
+}
+
+/* Paginas com breadcrumb precisam reservar o espaco do header fixo. */
+body:has(.mg-breadcrumb) {
+  padding-top: var(--mg-header-height, 76px);
+}
+
+body.mg-tem-breadcrumb {
+  padding-top: var(--mg-header-height, 76px);
 }
 
 #header-global {
@@ -244,7 +266,22 @@ body > footer {
   outline-offset: 3px;
 }
 
-@media (max-width: 900px) {
+/* Foco visível também fora do header (teclado e leitores de tela). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--mg-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --mg-header-height: 68px;
+  }
+
   #header-global {
     min-height: 68px;
     gap: 12px;
@@ -321,6 +358,30 @@ body > footer {
   /* engrenagem visivel no mobile — acessivel via header */
 }
 
+/* Em celulares estreitos o header global quebra em duas linhas. As paginas
+   com breadcrumb precisam de um respiro extra para ele nao ficar sob o header. */
+@media (max-width: 416px) {
+  :root {
+    --mg-header-height: 118px;
+  }
+
+  body:has(.mg-breadcrumb) {
+    padding-top: 118px;
+  }
+
+  body.mg-tem-breadcrumb {
+    padding-top: 118px;
+  }
+
+  body:has(.mg-breadcrumb) #header-global {
+    min-height: 110px;
+  }
+
+  body.mg-tem-breadcrumb #header-global {
+    min-height: 110px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -373,11 +434,11 @@ body > footer {
 }
 
 .mg-toast-icon {
-  font-size: 18px;
   line-height: 1;
   flex-shrink: 0;
   margin-top: 1px;
 }
+.mg-toast-icon svg { width: 19px; height: 19px; stroke-width: 2.4; }
 
 .mg-toast-body { flex: 1; }
 .mg-toast-title {
@@ -389,16 +450,16 @@ body > footer {
 .mg-toast-msg { font-size: 13px; opacity: 0.88; }
 
 .mg-toast.success { border-left: 3px solid #10b981; }
-.mg-toast.success .mg-toast-icon::before { content: "✅"; }
+.mg-toast.success .mg-toast-icon { color: #34d399; }
 
 .mg-toast.error { border-left: 3px solid #ef4444; }
-.mg-toast.error .mg-toast-icon::before { content: "❌"; }
+.mg-toast.error .mg-toast-icon { color: #f87171; }
 
 .mg-toast.info { border-left: 3px solid #3b82f6; }
-.mg-toast.info .mg-toast-icon::before { content: "ℹ️"; }
+.mg-toast.info .mg-toast-icon { color: #60a5fa; }
 
 .mg-toast.warning { border-left: 3px solid #f59e0b; }
-.mg-toast.warning .mg-toast-icon::before { content: "⚠️"; }
+.mg-toast.warning .mg-toast-icon { color: #fbbf24; }
 
 @keyframes mg-toast-in {
   from { opacity: 0; transform: translateY(20px) scale(0.94); }
@@ -510,3 +571,325 @@ body > footer {
   color: #60a5fa;
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   MG MODERN UI — camada visual compartilhada (2026)
+   Tokens, microinterações e animações discretas.
+   Nenhuma regra aqui altera conteúdo ou estrutura das páginas.
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  --mg-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --mg-ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --mg-blue: #2563eb;
+  --mg-blue-strong: #1d4ed8;
+  --mg-cyan: #38bdf8;
+  --mg-radius: 14px;
+  --mg-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 2px 8px rgba(16, 24, 40, 0.04);
+  --mg-shadow-md: 0 12px 28px -12px rgba(16, 24, 40, 0.2), 0 4px 12px rgba(16, 24, 40, 0.06);
+  --mg-shadow-lg: 0 28px 60px -24px rgba(16, 24, 40, 0.3), 0 10px 26px rgba(16, 24, 40, 0.08);
+  --mg-gradient-blue: linear-gradient(135deg, #2563eb 0%, #1d4ed8 58%, #0ea5e9 135%);
+}
+
+/* Seleção de texto e barra de rolagem com a identidade da marca */
+::selection {
+  background: rgba(37, 99, 235, 0.22);
+  color: inherit;
+}
+
+@supports (scrollbar-width: thin) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(100, 116, 139, 0.55), rgba(100, 116, 139, 0.32));
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.65), rgba(37, 99, 235, 0.4));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Entrada suave da página (só opacidade: não quebra position: fixed) */
+@keyframes mg-page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+body {
+  animation: mg-page-in 0.45s ease both;
+}
+
+/* Cabeçalho: profundidade, linha de acento e links com sublinhado animado */
+#header-global {
+  background: linear-gradient(180deg, rgba(18, 18, 21, 0.98), rgba(11, 12, 15, 0.95));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 12px 34px rgba(0, 0, 0, 0.22);
+}
+#header-global::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.7), rgba(56, 189, 248, 0.55), transparent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+#header-global .logo-img {
+  transition: transform 0.35s var(--mg-ease), box-shadow 0.35s var(--mg-ease);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+}
+#header-global .logo-link:hover .logo-img {
+  transform: rotate(-4deg) scale(1.06);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  #header-global .logo-text {
+    background: linear-gradient(92deg, #ffffff 0%, #ffffff 45%, #c7d7ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+#header-global .nav a::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #60a5fa, #38bdf8);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s var(--mg-ease);
+  pointer-events: none;
+}
+#header-global .nav a:hover::after,
+#header-global .nav a.ativo::after {
+  transform: scaleX(1);
+}
+#header-global .nav a.nav-marketplace {
+  background: var(--mg-gradient-blue);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+  transition: transform 0.22s var(--mg-ease), box-shadow 0.22s var(--mg-ease), background 0.22s var(--mg-ease);
+}
+#header-global .nav a.nav-marketplace::after {
+  display: none;
+}
+#header-global .nav a.nav-marketplace:hover {
+  background: var(--mg-gradient-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.45);
+}
+#header-global .icone-link:hover,
+#header-global .icone-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* O cabeçalho ganha mais contraste ao rolar (aprimoramento progressivo) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    #header-global {
+      animation: mg-header-scroll linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 160px;
+    }
+    @keyframes mg-header-scroll {
+      from {
+        background: linear-gradient(180deg, rgba(18, 18, 21, 0.98), rgba(11, 12, 15, 0.95));
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 12px 34px rgba(0, 0, 0, 0.22);
+      }
+      to {
+        background: rgba(9, 10, 13, 0.99);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}
+
+/* Cartões: transições consistentes e elevação discreta */
+.categoria-card,
+.veiculo-card,
+.diferencial-card,
+.avaliacao-card,
+.info-card,
+.plataforma-card,
+.card,
+.anuncio-card,
+.cat-card,
+.faq-item,
+.configs-section,
+.caso,
+.table-wrapper,
+.fluxo-alt,
+.blog-card,
+.box,
+.stat-card,
+.card-dev {
+  transition:
+    transform 0.3s var(--mg-ease),
+    box-shadow 0.3s var(--mg-ease),
+    border-color 0.3s var(--mg-ease),
+    background-color 0.3s var(--mg-ease);
+}
+
+.veiculo-card:hover,
+.diferencial-card:hover,
+.avaliacao-card:hover,
+.info-card:hover,
+.plataforma-card:hover,
+.card:hover,
+.anuncio-card:hover,
+.configs-section:hover {
+  box-shadow: var(--mg-shadow-lg);
+}
+
+/* Imagens de cartões com zoom suave */
+.veiculo-img-wrap img,
+.card-img-wrap img,
+.anuncio-card img,
+.post-card > img,
+.post-card-outro > img {
+  transition: transform 0.55s var(--mg-ease);
+}
+.veiculo-card:hover .veiculo-img-wrap img,
+.anuncio-card:hover img {
+  transform: scale(1.045);
+}
+
+/* Revelação ao rolar — usa a propriedade `translate`, então não briga
+   com os `transform` de hover. Browsers sem suporte apenas não animam. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .categoria-card:not(.reveal),
+    .passo-card:not(.reveal),
+    .diferencial-card:not(.reveal),
+    .avaliacao-card:not(.reveal),
+    .veiculo-card:not(.reveal),
+    .info-card,
+    .plataforma-card,
+    .card,
+    .anuncio-card,
+    .cat-card,
+    .faq-item,
+    .box,
+    .stat-card,
+    .card-dev {
+      animation: mg-rise both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+    @keyframes mg-rise {
+      from {
+        opacity: 0;
+        translate: 0 18px;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+  }
+}
+
+/* Botões de paginação e controles redondos com resposta tátil */
+.btn-pag,
+.seta-galeria,
+.veiculo-favorito,
+.btn-curtir,
+.toggle,
+.social-circle {
+  transition:
+    transform 0.22s var(--mg-ease),
+    box-shadow 0.22s var(--mg-ease),
+    background-color 0.22s var(--mg-ease),
+    border-color 0.22s var(--mg-ease),
+    color 0.22s var(--mg-ease);
+}
+.btn-pag:hover:not(:disabled),
+.veiculo-favorito:hover,
+.social-circle:hover {
+  transform: translateY(-2px);
+}
+
+/* Links de conteúdo com sublinhado que cresce */
+.mg-link-anim {
+  position: relative;
+  text-decoration: none;
+}
+.mg-link-anim::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.25s var(--mg-ease);
+}
+.mg-link-anim:hover::after {
+  transform: scaleX(1);
+}
+
+/* Respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  #header-global,
+  .categoria-card,
+  .passo-card,
+  .diferencial-card,
+  .avaliacao-card,
+  .veiculo-card,
+  .info-card,
+  .plataforma-card,
+  .card,
+  .anuncio-card,
+  .cat-card,
+  .faq-item,
+  .configs-section,
+  .caso,
+  .table-wrapper,
+  .fluxo-alt,
+  .box,
+  .stat-card,
+  .card-dev,
+  .legal-content {
+    animation: none !important;
+    translate: none !important;
+  }
+}
+
+/* Rolagem de âncoras sem esconder o título atrás do header fixo */
+section[id],
+article[id],
+main[id] {
+  scroll-margin-top: calc(var(--mg-header-height, 76px) + 24px);
+}
+
+/* Rodapé: links com deslocamento sutil */
+footer .footer-col a {
+  transition: color 0.2s ease, transform 0.22s var(--mg-ease);
+}
+footer .footer-col a:hover {
+  transform: translateX(3px);
+}
+footer .footer-brand h2 {
+  letter-spacing: -0.03em;
+}

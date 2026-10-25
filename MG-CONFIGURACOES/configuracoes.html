@@ -7,6 +7,7 @@
   <link rel="shortcut icon" href="../imagens/logo-mg.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - MG Motors | Gerencie sua Conta</title>
+    <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Gerencie suas preferências, notificações, privacidade e configurações de conta na MG Motors.">
     <meta property="og:title" content="Configurações - MG Motors">
     <meta property="og:description" content="Personalize sua experiência na MG Motors. Ajuste notificações, privacidade e preferências da sua conta.">
@@ -16,7 +17,7 @@
     <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
 <link rel="canonical" href="https://mgmotorss.vercel.app/MG-CONFIGURACOES/configuracoes.html">
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.468.0"></script>
 </head>
 
 <body>
@@ -45,14 +46,14 @@
                     <h3>Tema Escuro</h3>
                     <p>Alterna entre modo claro e escuro</p>
                 </div>
-                <button class="toggle" id="toggle-tema" onclick="toggleTema()"></button>
+                <button class="toggle" id="toggle-tema" role="switch" aria-checked="false" aria-label="Tema escuro" onclick="toggleTema()"></button>
             </div>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Tamanho da fonte</h3>
                     <p>Ajuste o tamanho do texto na plataforma</p>
                 </div>
-                <select class="select-config" id="tamanho-fonte"
+                <select class="select-config" id="tamanho-fonte" aria-label="Tamanho da fonte"
                     onchange="salvarPreferencia('tamanho_fonte', this.value)">
                     <option value="14">Pequeno</option>
                     <option value="16" selected>Médio</option>
@@ -70,7 +71,7 @@
                         <h3>Mensagens</h3>
                         <p>Novas mensagens recebidas</p>
                     </div>
-                    <button class="toggle on" id="notif-mensagens" onclick="toggleNotif('mensagens',this)"></button>
+                    <button class="toggle on" id="notif-mensagens" role="switch" aria-checked="true" aria-label="Notificar novas mensagens" onclick="toggleNotif('mensagens',this)"></button>
                 </div>
                 <div class="config-item"
                     style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
@@ -78,7 +79,7 @@
                         <h3>Curtidas</h3>
                         <p>Quando curtirem seu anúncio</p>
                     </div>
-                    <button class="toggle on" id="notif-curtidas" onclick="toggleNotif('curtidas',this)"></button>
+                    <button class="toggle on" id="notif-curtidas" role="switch" aria-checked="true" aria-label="Notificar curtidas" onclick="toggleNotif('curtidas',this)"></button>
                 </div>
                 <div class="config-item"
                     style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
@@ -86,7 +87,7 @@
                         <h3>Novos seguidores</h3>
                         <p>Quando alguém te seguir</p>
                     </div>
-                    <button class="toggle on" id="notif-seguidores" onclick="toggleNotif('seguidores',this)"></button>
+                    <button class="toggle on" id="notif-seguidores" role="switch" aria-checked="true" aria-label="Notificar novos seguidores" onclick="toggleNotif('seguidores',this)"></button>
                 </div>
                 <div class="config-item"
                     style="border:1px solid rgba(20,75,113,.08);border-radius:12px;padding:14px;margin:0;">
@@ -94,7 +95,7 @@
                         <h3>Propostas</h3>
                         <p>Novas propostas nos seus anúncios</p>
                     </div>
-                    <button class="toggle on" id="notif-propostas" onclick="toggleNotif('propostas',this)"></button>
+                    <button class="toggle on" id="notif-propostas" role="switch" aria-checked="true" aria-label="Notificar propostas" onclick="toggleNotif('propostas',this)"></button>
                 </div>
             </div>
         </div>
@@ -106,7 +107,7 @@
                     <h3>Perfil público</h3>
                     <p>Permite que outros usuários vejam seu perfil</p>
                 </div>
-                <button class="toggle on" id="toggle-perfil-publico"
+                <button class="toggle on" id="toggle-perfil-publico" role="switch" aria-checked="true" aria-label="Perfil público"
                     onclick="toggleConfig('perfil_publico',this)"></button>
             </div>
             <div class="config-item">
@@ -114,7 +115,7 @@
                     <h3>Mostrar telefone no anúncio</h3>
                     <p>Exibe seu WhatsApp publicamente</p>
                 </div>
-                <button class="toggle on" id="toggle-mostrar-tel"
+                <button class="toggle on" id="toggle-mostrar-tel" role="switch" aria-checked="true" aria-label="Mostrar telefone no anúncio"
                     onclick="toggleConfig('mostrar_telefone',this)"></button>
             </div>
             <div class="config-item">
@@ -122,7 +123,7 @@
                     <h3>Receber mensagens de desconhecidos</h3>
                     <p>Permite que qualquer usuário te envie mensagem</p>
                 </div>
-                <button class="toggle on" id="toggle-msg-desconhecidos"
+                <button class="toggle on" id="toggle-msg-desconhecidos" role="switch" aria-checked="true" aria-label="Receber mensagens de desconhecidos"
                     onclick="toggleConfig('msg_desconhecidos',this)"></button>
             </div>
         </div>
@@ -134,14 +135,14 @@
                     <h3>Compartilhar localização aproximada</h3>
                     <p>Exibe sua cidade nos anúncios automaticamente</p>
                 </div>
-                <button class="toggle" id="toggle-localizacao" onclick="toggleLocalizacao()"></button>
+                <button class="toggle" id="toggle-localizacao" role="switch" aria-checked="false" aria-label="Compartilhar localização aproximada" onclick="toggleLocalizacao()"></button>
             </div>
             <div class="config-item">
                 <div class="config-item-info">
                     <h3>Raio de busca padrão</h3>
                     <p>Distância máxima ao filtrar por localização</p>
                 </div>
-                <select class="select-config" id="raio-busca" onchange="salvarPreferencia('raio_busca', this.value)">
+                <select class="select-config" id="raio-busca" aria-label="Raio de busca padrão" onchange="salvarPreferencia('raio_busca', this.value)">
                     <option value="50">50 km</option>
                     <option value="100" selected>100 km</option>
                     <option value="200">200 km</option>
@@ -158,7 +159,7 @@
                     <h3>Confirmação de leitura</h3>
                     <p>Envia aviso quando você lê uma mensagem</p>
                 </div>
-                <button class="toggle on" id="toggle-leitura"
+                <button class="toggle on" id="toggle-leitura" role="switch" aria-checked="true" aria-label="Confirmação de leitura"
                     onclick="toggleConfig('confirmacao_leitura',this)"></button>
             </div>
             <div class="config-item">
@@ -166,7 +167,7 @@
                     <h3>Som de notificação</h3>
                     <p>Toca som ao receber mensagem</p>
                 </div>
-                <button class="toggle" id="toggle-som" onclick="toggleConfig('som_notificacao',this)"></button>
+                <button class="toggle" id="toggle-som" role="switch" aria-checked="false" aria-label="Som de notificação" onclick="toggleConfig('som_notificacao',this)"></button>
             </div>
         </div>
 
@@ -277,11 +278,20 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
             if (preferencias.som_notificacao === true) document.getElementById("toggle-som")?.classList.add("on");
             if (preferencias.localizacao === true) document.getElementById("toggle-localizacao")?.classList.add("on");
             if (preferencias.raio_busca) document.getElementById("raio-busca").value = preferencias.raio_busca;
+            sincronizarSwitches();
+        }
+
+        // Mantém o estado acessível (aria-checked) alinhado ao visual do toggle.
+        function sincronizarSwitches() {
+            document.querySelectorAll('button.toggle').forEach(btn => {
+                btn.setAttribute('aria-checked', btn.classList.contains('on') ? 'true' : 'false');
+            });
         }
 
         window.toggleTema = function () {
             const btn = document.getElementById("toggle-tema");
             btn.classList.toggle("on");
+            sincronizarSwitches();
             const escuro = btn.classList.contains("on");
             const tema = escuro ? "escuro" : "claro";
             document.body.setAttribute("data-tema", tema);
@@ -293,12 +303,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
 
         window.toggleNotif = function (tipo, btn) {
             btn.classList.toggle("on");
+            sincronizarSwitches();
             preferencias["notif_" + tipo] = btn.classList.contains("on");
             isDirty = true;
         };
 
         window.toggleConfig = function (chave, btn) {
             btn.classList.toggle("on");
+            sincronizarSwitches();
             preferencias[chave] = btn.classList.contains("on");
             isDirty = true;
         };
@@ -306,13 +318,14 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
         window.toggleLocalizacao = function () {
             const btn = document.getElementById("toggle-localizacao");
             btn.classList.toggle("on");
+            sincronizarSwitches();
             if (btn.classList.contains("on")) {
                 navigator.geolocation?.getCurrentPosition(pos => {
                     preferencias.localizacao = true;
                     preferencias.lat = pos.coords.latitude;
                     preferencias.lng = pos.coords.longitude;
                     window.mgToast?.("Localização salva com sucesso!", "success");
-                }, () => { btn.classList.remove("on"); window.mgToast?.("Não foi possível obter a localização.", "warning"); });
+                }, () => { btn.classList.remove("on"); sincronizarSwitches(); window.mgToast?.("Não foi possível obter a localização.", "warning"); });
             } else { preferencias.localizacao = false; }
         };
 

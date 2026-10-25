@@ -310,9 +310,143 @@
       .categorias-grid { grid-template-columns: 1fr 1fr; }
     }
     .cat-icone [data-lucide] { width: 22px; height: 22px; stroke: var(--azul); stroke-width: 2; display: block; } .faq-grupo-titulo [data-lucide] { width: 16px; height: 16px; vertical-align: -2px; margin-right: 4px; }
+
+    /* ══════════════════════════════════════════════════════════
+       CENTRAL DE AJUDA — acabamento visual moderno
+       ══════════════════════════════════════════════════════════ */
+    .hero {
+      background:
+        radial-gradient(ellipse 70% 100% at 82% 0%, rgba(37,99,235,.32), transparent 62%),
+        radial-gradient(ellipse 50% 60% at 8% 100%, rgba(56,189,248,.12), transparent 60%),
+        linear-gradient(135deg, #0b0d10, #111827 58%, #0d1a2b);
+    }
+    .hero-tag {
+      background: linear-gradient(135deg, rgba(37,99,235,.24), rgba(56,189,248,.12));
+      border-color: rgba(96,165,250,.4);
+      box-shadow: 0 8px 24px rgba(37,99,235,.16);
+    }
+    .hero h1 .destaque {
+      background: linear-gradient(100deg, #60a5fa, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .busca-wrapper input {
+      box-shadow: 0 12px 30px -18px rgba(0,0,0,.5);
+      transition: border-color .2s, background .2s, box-shadow .2s, transform .2s;
+    }
+    .busca-wrapper input:focus {
+      box-shadow: 0 0 0 4px rgba(96,165,250,.18), 0 16px 34px -18px rgba(0,0,0,.55);
+      transform: translateY(-1px);
+    }
+    .stats-bar {
+      box-shadow: 0 14px 30px -26px rgba(16,24,40,.35);
+      position: relative;
+      z-index: 1;
+    }
+    .stat { transition: transform .22s ease; }
+    .stat:hover { transform: translateY(-2px); }
+    .stat strong {
+      background: linear-gradient(100deg, #2563eb, #0ea5e9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .secao-titulo { display: flex; align-items: center; gap: 10px; }
+    .secao-titulo::before {
+      content: "";
+      width: 4px;
+      height: 22px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #2563eb, #0ea5e9);
+    }
+    .cat-card {
+      position: relative;
+      overflow: hidden;
+      transition: border-color .22s, box-shadow .22s, transform .22s cubic-bezier(.16,1,.3,1);
+    }
+    .cat-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0% 0%, rgba(37,99,235,.08), transparent 60%);
+      opacity: 0;
+      transition: opacity .22s;
+      pointer-events: none;
+    }
+    .cat-card:hover::after { opacity: 1; }
+    .cat-card:hover {
+      box-shadow: 0 18px 38px -24px rgba(37,99,235,.45);
+      transform: translateY(-4px);
+    }
+    .cat-icone {
+      transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s;
+    }
+    .cat-card:hover .cat-icone {
+      transform: scale(1.08) rotate(-3deg);
+      box-shadow: 0 8px 18px -10px rgba(37,99,235,.5);
+    }
+    .filtro-btn { transition: background .2s, color .2s, border-color .2s, transform .2s; }
+    .filtro-btn:hover { transform: translateY(-1px); }
+    .faq-item {
+      transition: border-color .22s, box-shadow .22s, transform .22s cubic-bezier(.16,1,.3,1);
+    }
+    .faq-item:hover {
+      box-shadow: 0 16px 34px -26px rgba(16,24,40,.4);
+      transform: translateY(-1px);
+    }
+    .faq-pergunta { transition: background .2s; }
+    .faq-pergunta:hover { background: rgba(37,99,235,.03); }
+    .faq-resposta a {
+      background-image: linear-gradient(currentColor, currentColor);
+      background-position: 0 100%;
+      background-repeat: no-repeat;
+      background-size: 0% 1.5px;
+      transition: background-size .25s ease;
+    }
+    .faq-resposta a:hover { text-decoration: none; background-size: 100% 1.5px; }
+    .cta-contato {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 120% at 50% 0%, rgba(37,99,235,.28), transparent 62%),
+        linear-gradient(135deg, #0b0d10, #111827 60%, #0d1a2b) !important;
+    }
+    .cta-contato a {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9) !important;
+      box-shadow: 0 12px 26px -12px rgba(37,99,235,.55);
+    }
+
+    /* ---- TEMA ESCURO ---- */
+    [data-tema="escuro"] {
+      --cinza-bg: #0b0d10;
+      --branco: #171717;
+      --texto: #e5e7eb;
+      --texto-suave: #a3a3a3;
+      --borda: rgba(255, 255, 255, .1);
+    }
+    [data-tema="escuro"] .stats-bar,
+    [data-tema="escuro"] .cat-card,
+    [data-tema="escuro"] .faq-item,
+    [data-tema="escuro"] .filtro-btn {
+      background: #171717;
+      border-color: rgba(255, 255, 255, .1);
+    }
+    [data-tema="escuro"] .filtro-btn { color: #a3a3a3; }
+    [data-tema="escuro"] .filtro-btn.ativo,
+    [data-tema="escuro"] .filtro-btn:hover {
+      background: var(--azul);
+      border-color: var(--azul);
+      color: #fff;
+    }
+    [data-tema="escuro"] .cat-card:hover { border-color: rgba(96, 165, 250, .45); }
+    [data-tema="escuro"] .faq-item:hover { border-color: rgba(96, 165, 250, .35); }
+    [data-tema="escuro"] .faq-pergunta:hover { background: rgba(96, 165, 250, .08); }
+    [data-tema="escuro"] .faq-pergunta .faq-arrow { background: #262626; }
+    [data-tema="escuro"] .faq-pergunta[aria-expanded="true"] .faq-arrow { background: var(--azul); }
   </style>
 <link rel="canonical" href="https://mgmotorss.vercel.app/MG-AJUDA/ajuda.html">
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.468.0"></script>
 </head>
 <body>
 
@@ -333,6 +467,7 @@
     <p>Encontre respostas rápidas sobre compra, venda, segurança, pagamentos e configurações da sua conta MG Motors.</p>
     <div class="busca-wrapper">
       <svg class="busca-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+      <label for="busca-faq" class="sr-only">Buscar dúvidas frequentes</label>
       <input type="text" id="busca-faq" placeholder="Buscar dúvidas... (ex: como anunciar, pagamento, conta)" autocomplete="off">
     </div>
   </div>

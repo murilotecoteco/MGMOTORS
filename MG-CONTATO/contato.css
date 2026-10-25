@@ -569,3 +569,15 @@ footer {
 [data-tema="escuro"] .hero { background: radial-gradient(ellipse 70% 100% at 80% 0%, rgba(37, 99, 235, 0.24), transparent 62%), linear-gradient(135deg, #050608, #0b1018 58%, #071320) !important; }
 [data-tema="escuro"] .info-card:hover,
 [data-tema="escuro"] .plataforma-card:hover { border-color: rgba(96, 165, 250, 0.3); }
+.form-contato-site { width:min(720px,100%); margin:24px auto 0; text-align:left; display:grid; gap:14px; }
+.form-contato-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-contato-site label { display:grid; gap:6px; color:inherit; font-size:12px; font-weight:800; letter-spacing:.04em; }
+.form-contato-site input, .form-contato-site textarea { width:100%; border:1px solid rgba(20,75,113,.2); border-radius:10px; padding:12px 14px; background:rgba(255,255,255,.92); color:#162433; font:inherit; font-weight:400; letter-spacing:0; outline:none; }
+.form-contato-site textarea { resize:vertical; min-height:120px; }
+.form-contato-site input:focus, .form-contato-site textarea:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+.form-contato-actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.form-contato-actions button:disabled { opacity:.65; cursor:wait; }
+#contato-status { font-size:13px; font-weight:700; }
+#contato-status.sucesso { color:#087443; } #contato-status.erro { color:#b42318; }
+.btn-atendimento-whatsapp { margin-top:18px; }
+@media(max-width:640px){ .form-contato-grid { grid-template-columns:1fr; } }

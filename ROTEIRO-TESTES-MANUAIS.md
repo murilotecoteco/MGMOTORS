@@ -5,10 +5,9 @@
 **Ambiente oficial:** `https://mgmotorss.vercel.app`
 **Referências:** `PROXIMOS-PASSOS-20261022.md`, `AMBIENTE-TESTES-20261022.md`
 
-> Este roteiro cobre **somente o que existe no código**. Não inclua UC09 (editar
-> anúncio), UC15 (gerenciar categorias), UC20 (marcar como vendido), UC24
-> (compartilhar) e UC25 (formulário de contato): essas funções não estão
-> implementadas.
+> Este roteiro cobre somente o que existe no código. Os casos UC09, UC15, UC20,
+> UC24, UC25 e os filtros estendidos foram concluídos na migration
+> `20261025190000_marketplace_completion.sql` e devem ser testados abaixo.
 
 ## 1. Como registrar
 
@@ -70,8 +69,8 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 
 - Buscar por texto, filtrar por tipo, marca, preço e estado, e ordenar.
 - **Aceite:** a lista muda de acordo com cada filtro; a paginação funciona.
-- **Observação:** filtros de ano, modelo, km, combustível, câmbio e cor **não
-  existem**; não os apresente como implementados.
+- **Complemento:** repetir o teste com ano mínimo/máximo, modelo, KM máxima,
+  combustível, câmbio e cor; combinar pelo menos dois filtros e limpar todos.
 
 ### T07 — Detalhe do anúncio
 
@@ -90,8 +89,8 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 - Abrir conversa entre comprador e vendedor, enviar texto e conferir o tempo real.
 - **Aceite:** mensagem aparece nas duas contas; nome e foto do interlocutor
   carregam; contador de não lidas funciona.
-- **Observação:** o envio de foto no chat está **em avaliação de segurança**
-  (bucket público). Não use como prova de privacidade.
+- **Observação:** fotos do chat usam bucket privado e URL assinada; confirme que
+  o destinatário autorizado visualiza e uma sessão sem autorização não visualiza.
 
 ### T10 — Denúncia
 
@@ -123,6 +122,45 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 - **Aceite:** seções `[1]`–`[4]` executam e o resumo é registrado.
 - **Regra:** nunca rodar `[5]`–`[7]` contra produção.
 
+### T15 — Editar anúncio (UC09)
+
+- No anúncio próprio, editar preço, descrição e dados técnicos; salvar sem trocar
+  a foto e repetir trocando a foto principal.
+- **Aceite:** alterações persistem, somente o proprietário consegue editar e
+  anúncio vendido é bloqueado.
+
+### T16 — Categorias (UC15)
+
+- Com admin, cadastrar marca e modelo, alterar a categoria da marca e tentar
+  excluir uma marca em uso.
+- **Aceite:** CRUD autorizado no painel; duplicidade e vínculos são tratados sem
+  quebrar anúncios existentes; usuário comum não possui essas ações.
+
+### T17 — Marcar como vendido (UC20)
+
+- No anúncio próprio, confirmar “Marcar como vendido”.
+- **Aceite:** status vira vendido, data de venda é registrada e o anúncio deixa
+  de aparecer na listagem pública; repetir a ação não altera outro anúncio.
+
+### T18 — Compartilhar (UC24)
+
+- Usar o botão de compartilhar no detalhe em celular e desktop; testar Web Share
+  quando disponível e cópia do link como fallback.
+- **Aceite:** o link abre o detalhe correto sem depender de login.
+
+### T19 — Formulário de contato (UC25)
+
+- Enviar nome, e-mail, assunto e mensagem em `/MG-CONTATO/contato.html`; testar
+  campos vazios e mensagem curta.
+- **Aceite:** validação bloqueia dados inválidos, sucesso limpa o formulário e o
+  contato aparece na caixa de entrada do painel admin.
+
+### T20 — Regressão de permissões
+
+- Tentar editar/vender anúncio de outra conta e acessar CRUD de categorias sem
+  admin.
+- **Aceite:** RLS/RPC recusam as operações e a interface não informa sucesso.
+
 ## 4. Registro
 
 | Caso | Data | Navegador | Resolução | Resultado | Evidência | Observações |
@@ -141,6 +179,12 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 | T12 | | | | | | |
 | T13 | | | | | | |
 | T14 | | | | | | |
+| T15 | | | | | | |
+| T16 | | | | | | |
+| T17 | | | | | | |
+| T18 | | | | | | |
+| T19 | | | | | | |
+| T20 | | | | | | |
 
 ## 5. Critério de saída
 

@@ -5,6 +5,12 @@
 **Base:** `LEVANTAMENTOS-20261022.md`  
 **Relatório completo:** `ANALISE-COMPLETA-20261022.md`
 
+> **Atualização de execução — 25/10/2026:** os itens UC09, UC15, UC20, UC24,
+> UC25 e os filtros estendidos foram implementados em
+> `20261025190000_marketplace_completion.sql`. As seções de diagnóstico abaixo
+> preservam o plano original; para o estado atual, consulte o `README.md` e o
+> `ROTEIRO-TESTES-MANUAIS.md`.
+
 > Este é o documento de execução. Cada item tem prioridade, esforço estimado, critério de aceite e evidência esperada. Marcar a caixa só quando o critério de aceite for cumprido.
 
 ---

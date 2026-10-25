@@ -397,13 +397,24 @@ async function carregarMeusAnuncios() {
     try {
       const foto = safeImageUrl(fotosPorAnuncio.get(a.id));
       const card = document.createElement("div"); card.className = "anuncio-card";
-      const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : '';
+      const statusBadge = a.status === 'pendente' ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Pendente aprovação</span>' : a.status === 'vendido' ? '<span style="background:#d1fae5;color:#065f46;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:800;">Vendido</span>' : '';
       const km = Number(a.quilometragem || 0).toLocaleString();
       // Estrutura estática com <h3> vazio; marca/modelo preenchidos via textContent (sem risco de XSS)
-      card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" loading="lazy"><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div><button class="btn-excluir-anuncio" data-id="${escapeHtml(a.id)}">Excluir</button></div>`;
+      card.innerHTML = `<img src="${escapeHtml(foto)}" alt="" loading="lazy"><div class="anuncio-info"><h3></h3><p>${a.ano_fabricacao ?? '—'} | ${km} km</p>${statusBadge}<div class="anuncio-preco">R$ ${Number(a.preco || 0).toLocaleString("pt-BR")}</div><div class="anuncio-curtidas">${a.curtidas||0} curtidas</div>${a.status !== 'vendido' ? `<button class="btn-editar-conta" data-id="${escapeHtml(a.id)}">Editar</button><button class="btn-vendido-conta" data-id="${escapeHtml(a.id)}">Marcar como vendido</button>` : ''}<button class="btn-excluir-anuncio" data-id="${escapeHtml(a.id)}">Excluir</button></div>`;
       card.querySelector('img').alt = (a.marca_texto || a.marcas?.nome || '');
       card.querySelector('.anuncio-info h3').textContent = `${a.marca_texto || a.marcas?.nome || ''} ${a.modelo_texto || a.modelos?.nome || ''}`.trim();
-      card.addEventListener("click", e => { if (!e.target.matches('.btn-excluir-anuncio')) window.location.href = `../MG-MARKETPLACE/anuncio.html?id=${encodeURIComponent(a.id)}`; });
+      card.addEventListener("click", e => { if (!e.target.closest('.btn-excluir-anuncio,.btn-editar-conta,.btn-vendido-conta')) window.location.href = `../MG-MARKETPLACE/anuncio.html?id=${encodeURIComponent(a.id)}`; });
+
+      const btnEditar = card.querySelector('.btn-editar-conta');
+      if (btnEditar) btnEditar.addEventListener('click', e => { e.stopPropagation(); window.location.href = `../MG-MARKETPLACE/marketplace.html?editar=${encodeURIComponent(a.id)}`; });
+      const btnVendido = card.querySelector('.btn-vendido-conta');
+      if (btnVendido) btnVendido.addEventListener('click', async e => {
+        e.stopPropagation();
+        if (!confirm('Confirmar que este veículo foi vendido?')) return;
+        const { data, error } = await supabase.rpc('marcar_anuncio_vendido', { p_anuncio_id: a.id });
+        if (error || !data) { window.mgToast?.('Não foi possível marcar como vendido.', 'error'); return; }
+        window.mgToast?.('Anúncio marcado como vendido.', 'success'); carregarMeusAnuncios(); carregarPausados();
+      });
 
       const btnExcluir = card.querySelector('.btn-excluir-anuncio');
       btnExcluir.addEventListener("click", async e => {

@@ -110,7 +110,16 @@
     </div>
     <h2>Atendimento Especializado</h2>
     <p>Conte com nossa equipe para dúvidas, propostas e experiências personalizadas. A excelência é apenas o começo.</p>
-    <button class="btn-atendimento" id="btn-falar-now">FALAR COM ESPECIALISTA <i data-lucide="arrow-right" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i></button>
+    <form id="form-contato-site" class="form-contato-site" novalidate>
+      <div class="form-contato-grid">
+        <label>Nome<input id="contato-nome" name="nome" autocomplete="name" minlength="2" maxlength="120" required></label>
+        <label>E-mail<input id="contato-email" name="email" type="email" autocomplete="email" maxlength="254" required></label>
+      </div>
+      <label>Assunto<input id="contato-assunto" name="assunto" maxlength="120" required></label>
+      <label>Mensagem<textarea id="contato-mensagem" name="mensagem" rows="5" minlength="10" maxlength="4000" required></textarea></label>
+      <div class="form-contato-actions"><button class="btn-atendimento" type="submit" id="btn-enviar-contato">ENVIAR MENSAGEM <i data-lucide="send" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i></button><span id="contato-status" role="status" aria-live="polite"></span></div>
+    </form>
+    <button class="btn-atendimento btn-atendimento-whatsapp" id="btn-falar-now" type="button">FALAR COM ESPECIALISTA <i data-lucide="arrow-right" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i></button>
   </div>
 </div>
 
@@ -151,6 +160,36 @@ import { carregarHeaderGlobal } from "../headerGlobal.js";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 let usuarioAtual = await carregarHeaderGlobal(supabase);
+
+const formContato = document.getElementById("form-contato-site");
+const statusContato = document.getElementById("contato-status");
+formContato?.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!formContato.reportValidity()) return;
+  const botao = document.getElementById("btn-enviar-contato");
+  botao.disabled = true; botao.textContent = "ENVIANDO...";
+  statusContato.textContent = "";
+  const payload = {
+    usuario_id: usuarioAtual?.id || null,
+    nome: document.getElementById("contato-nome").value.trim(),
+    email: document.getElementById("contato-email").value.trim(),
+    assunto: document.getElementById("contato-assunto").value.trim(),
+    mensagem: document.getElementById("contato-mensagem").value.trim(),
+    status: "pendente"
+  };
+  const { error } = await supabase.from("contatos_site").insert(payload);
+  botao.disabled = false; botao.innerHTML = 'ENVIAR MENSAGEM <i data-lucide="send" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i>';
+  if (error) {
+    console.error("Falha ao enviar contato:", error);
+    statusContato.textContent = "Não foi possível enviar agora. Tente novamente.";
+    statusContato.className = "erro";
+    return;
+  }
+  formContato.reset();
+  statusContato.textContent = "Mensagem enviada. Nossa equipe retornará em breve.";
+  statusContato.className = "sucesso";
+  lucide.createIcons();
+});
 
 document.getElementById("btn-falar-now")?.addEventListener("click", () => {
   window.open("https://wa.me/5544998381478", "_blank", "noopener");

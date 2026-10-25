@@ -149,15 +149,15 @@ Este projeto foi construído para praticar e demonstrar:
 - ⏳ Comparador de veículos
 - ⏳ Exportação de anúncios em PDF
 
-### Funcionalidades não implementadas (não prometer na banca)
+### Funcionalidades concluídas nesta etapa
 
-- ❌ Editar anúncio (UC09)
-- ❌ Gerenciar categorias (UC15)
-- ❌ Marcar anúncio como vendido (UC20)
-- ❌ Compartilhar anúncio (UC24)
-- ❌ Formulário de contato com envio pelo site (UC25)
+- ✅ Editar anúncio (UC09) — formulário reutilizado com validação de proprietário
+- ✅ Gerenciar categorias (UC15) — marcas/modelos no painel administrativo
+- ✅ Marcar anúncio como vendido (UC20) — RPC protegida e histórico preservado
+- ✅ Compartilhar anúncio (UC24) — Web Share e cópia de link como fallback
+- ✅ Formulário de contato com envio pelo site (UC25) — persistência protegida e caixa de entrada admin
 - ✅ Notificações persistentes (UC21) — mensagem entre contas gerou registro e badge de não lidas
-- ❌ Filtros por ano, modelo, quilometragem, combustível, câmbio e cor
+- ✅ Filtros por ano, modelo, quilometragem, combustível, câmbio e cor
 
 ---
 
@@ -468,13 +468,13 @@ https://mgmotorss.vercel.app
 - [x] Headers de segurança HTTP
 - [x] Row Level Security no banco de dados
 - [x] Design responsivo
-- [ ] Editar anúncio (UC09)
-- [ ] Gerenciar categorias (UC15)
-- [ ] Marcar como vendido (UC20)
-- [ ] Compartilhar anúncio (UC24)
-- [ ] Formulário de contato com envio pelo site (UC25)
+- [x] Editar anúncio (UC09)
+- [x] Gerenciar categorias (UC15)
+- [x] Marcar como vendido (UC20)
+- [x] Compartilhar anúncio (UC24)
+- [x] Formulário de contato com envio pelo site (UC25)
 - [x] Validar notificações persistentes (UC21) entre duas contas
-- [ ] Filtros estendidos (ano, modelo, km, combustível, câmbio, cor)
+- [x] Filtros estendidos (ano, modelo, km, combustível, câmbio, cor)
 - [ ] Simulador de financiamento integrado
 - [ ] Notificações push em tempo real
 - [ ] Comparador de veículos

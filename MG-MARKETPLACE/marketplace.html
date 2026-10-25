@@ -75,6 +75,11 @@
           <option value="">Todas as marcas</option>
         </select>
       </div>
+      <div class="filtro-marca">
+        <select id="filtro-modelo" aria-label="Filtrar por modelo" disabled>
+          <option value="">Todos os modelos</option>
+        </select>
+      </div>
       <div class="filtro-preco">
         <select id="filtro-preco" aria-label="Filtrar por faixa de preço">
           <option value="">Qualquer preço</option>
@@ -97,6 +102,21 @@
           <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
         </select>
       </div>
+      <input id="filtro-ano-min" class="filtro-extra" type="number" min="1900" max="2100" placeholder="Ano mín." aria-label="Ano mínimo">
+      <input id="filtro-ano-max" class="filtro-extra" type="number" min="1900" max="2100" placeholder="Ano máx." aria-label="Ano máximo">
+      <select id="filtro-km" class="filtro-extra" aria-label="Quilometragem máxima">
+        <option value="">KM máxima</option><option value="30000">Até 30 mil km</option>
+        <option value="60000">Até 60 mil km</option><option value="100000">Até 100 mil km</option>
+        <option value="150000">Até 150 mil km</option><option value="250000">Até 250 mil km</option>
+      </select>
+      <select id="filtro-combustivel" class="filtro-extra" aria-label="Filtrar por combustível">
+        <option value="">Qualquer combustível</option><option value="gasolina">Gasolina</option><option value="alcool">Álcool</option>
+        <option value="flex">Flex</option><option value="diesel">Diesel</option><option value="eletrico">Elétrico</option><option value="hibrido">Híbrido</option>
+      </select>
+      <select id="filtro-cambio" class="filtro-extra" aria-label="Filtrar por câmbio">
+        <option value="">Qualquer câmbio</option><option value="manual">Manual</option><option value="automatico">Automático</option><option value="automatizado">Automatizado</option>
+      </select>
+      <input id="filtro-cor" class="filtro-extra" type="search" maxlength="40" placeholder="Cor" aria-label="Filtrar por cor">
       <div class="filtro-localizacao">
         <button id="btn-localizacao" class="btn-loc">Localização</button>
       </div>
@@ -264,6 +284,7 @@
             <button class="btn-mensagem-visualizar" id="viz-btn-mensagem"><i data-lucide="message-circle" class="icon-inline"></i> Tenho interesse</button>
             <button class="btn-curtir" id="viz-btn-curtir"><i data-lucide="heart" class="icon-inline"></i> Curtir</button>
             <a id="viz-whatsapp" href="#" target="_blank" rel="noopener" class="btn-whatsapp"><i data-lucide="message-circle" class="icon-inline"></i> WhatsApp</a>
+            <button type="button" class="btn-curtir" id="viz-btn-compartilhar"><i data-lucide="share-2" class="icon-inline"></i> Compartilhar</button>
           </div>
           <a id="viz-gps-link" href="#" target="_blank" rel="noopener" class="btn-gps-link" style="display:none;"><i data-lucide="map-pin" class="icon-inline"></i> Ver no Google
             Maps</a>
@@ -422,6 +443,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
 
 
     let todasMarcas = [];
+    let modoEdicaoId = null;
 
     async function carregarMarcas() {
       const { data: marcas } = await supabase.from("marcas").select("*").order("nome");
@@ -429,7 +451,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       preencherSelectMarca(document.getElementById("select-tipo-veiculo").value);
       preencherFiltroMarca(document.getElementById("filtro-tipo-veiculo").value);
     }
-    carregarMarcas();
+    const marcasCarregamento = carregarMarcas();
 
     function preencherSelectMarca(tipo) {
       const select = document.getElementById("select-marca");
@@ -452,6 +474,16 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         .filter(m => !tipo || (m.categoria || "carro") === tipo)
         .forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; filtro.appendChild(op); });
       if ([...filtro.options].some(o => o.value === valorAtual)) filtro.value = valorAtual;
+    }
+
+    async function preencherFiltroModelo(marcaId) {
+      const filtro = document.getElementById("filtro-modelo");
+      filtro.innerHTML = "<option value=''>Todos os modelos</option>";
+      filtro.disabled = !marcaId;
+      if (!marcaId) return;
+      const { data, error } = await supabase.from("modelos").select("id,nome").eq("marca_id", marcaId).order("nome");
+      if (error) { console.error("Falha ao carregar modelos do filtro:", error); return; }
+      (data || []).forEach(m => { const op = document.createElement("option"); op.value = m.id; op.textContent = m.nome; filtro.appendChild(op); });
     }
 
     document.getElementById("select-tipo-veiculo").addEventListener("change", function () {
@@ -598,20 +630,28 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       }
       const precoBand = document.getElementById("filtro-preco").value;
       const [precoMin, precoMax] = precoBand ? precoBand.split("-").map(Number) : [null, null];
+      const numeroOuNulo = id => { const valor = document.getElementById(id).value; return valor === "" ? null : Number(valor); };
       const busca = [marcaSolicitada, modeloSolicitado, filtroTextoAtual]
         .filter(Boolean).join(" ").trim() || null;
       const { data: anuncios, error } = await supabase.rpc(
-        "get_anuncios_marketplace_paginado",
+        "get_anuncios_marketplace_paginado_v2",
         {
           p_usuario_id: usuarioAtual?.id ?? null,
           p_limit: ITENS_POR_PAGINA,
           p_offset: (paginaAtual - 1) * ITENS_POR_PAGINA,
           p_tipo_veiculo: tipoVeiculo,
           p_marca_id: document.getElementById("filtro-marca").value || null,
+          p_modelo_id: document.getElementById("filtro-modelo").value || null,
           p_estado: document.getElementById("filtro-estado").value || null,
           p_busca: busca,
           p_preco_min: precoMin || null,
           p_preco_max: precoMax || null,
+          p_ano_min: numeroOuNulo("filtro-ano-min"),
+          p_ano_max: numeroOuNulo("filtro-ano-max"),
+          p_quilometragem_max: numeroOuNulo("filtro-km"),
+          p_combustivel: document.getElementById("filtro-combustivel").value || null,
+          p_cambio: document.getElementById("filtro-cambio").value || null,
+          p_cor: document.getElementById("filtro-cor").value.trim() || null,
           p_latitude: userLat,
           p_longitude: userLng,
           p_raio_km: userLat !== null && userLng !== null ? raioFiltro : null,
@@ -716,7 +756,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
           <button class="btn-curtir ${anuncio.usuario_curtiu ? 'curtido' : ''}" data-id="${anuncio.id}" ${!podeCurtir ? 'disabled' : ''} title="Curtir" aria-label="Curtir anúncio"><i data-lucide="heart" class="heart-icon"></i><span class="curtidas-count">${anuncio.curtidas > 0 ? anuncio.curtidas : ''}</span></button>
           <span class="perfil-link vendedor-link" data-usuario="${escapeHtml(anuncio.usuario_id)}" title="Ver perfil do vendedor"><img src="${escapeHtml(anuncio.vendedor_foto || '../imagens/usuario.png')}" class="vendedor-mini-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy"></span>
           <button class="btn-ver-detalhes" type="button">Ver detalhes</button>
-          ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-excluir" data-id="${anuncio.id}"><i data-lucide="trash-2" class="icon-inline"></i> Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}"><i data-lucide="flag" class="icon-inline"></i> Denunciar</button>`}
+          ${usuarioAtual && usuarioAtual.id === anuncio.usuario_id ? `<button class="btn-editar" data-id="${anuncio.id}"><i data-lucide="pencil" class="icon-inline"></i> Editar</button><button class="btn-vendido" data-id="${anuncio.id}" ${anuncio.status === 'vendido' ? 'disabled' : ''}><i data-lucide="badge-check" class="icon-inline"></i> Vendido</button><button class="btn-excluir" data-id="${anuncio.id}"><i data-lucide="trash-2" class="icon-inline"></i> Excluir</button>` : `<button class="btn-denunciar-card" data-id="${anuncio.id}"><i data-lucide="flag" class="icon-inline"></i> Denunciar</button>`}
         </div>
       </div>`;
 
@@ -730,12 +770,16 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         }
 
         card.querySelector('.perfil-link').addEventListener('click', e => { e.stopPropagation(); window.location.href = `../MG-CONTA/conta.html?id=${anuncio.usuario_id}`; });
-        card.addEventListener('click', e => { if (!e.target.closest('.btn-curtir,.btn-excluir,.perfil-link,.btn-denunciar-card')) window.location.href = `anuncio.html?id=${encodeURIComponent(anuncio.id)}`; });
+        card.addEventListener('click', e => { if (!e.target.closest('.btn-curtir,.btn-excluir,.btn-editar,.btn-vendido,.perfil-link,.btn-denunciar-card')) window.location.href = `anuncio.html?id=${encodeURIComponent(anuncio.id)}`; });
 
         const btnCurtir = card.querySelector('.btn-curtir');
         btnCurtir.addEventListener('click', async e => { e.stopPropagation(); await toggleCurtida(anuncio.id, btnCurtir); });
         const btnExcluir = card.querySelector('.btn-excluir');
         if (btnExcluir) btnExcluir.addEventListener('click', e => { e.stopPropagation(); excluirAnuncio(anuncio.id); });
+        const btnEditar = card.querySelector('.btn-editar');
+        if (btnEditar) btnEditar.addEventListener('click', e => { e.stopPropagation(); abrirEdicao(anuncio.id); });
+        const btnVendido = card.querySelector('.btn-vendido');
+        if (btnVendido) btnVendido.addEventListener('click', e => { e.stopPropagation(); marcarVendido(anuncio.id); });
         const btnDenunciar = card.querySelector('.btn-denunciar-card');
         if (btnDenunciar) btnDenunciar.addEventListener('click', e => { e.stopPropagation(); abrirDenuncia(anuncio.id, 'anuncio'); });
 
@@ -839,6 +883,62 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       }
     }
 
+    async function marcarVendido(anuncioId) {
+      if (!usuarioAtual) { window.mgToast?.("Faça login para continuar.", "warning"); return; }
+      if (!confirm("Confirmar que este veículo foi vendido? Ele deixará de aparecer no marketplace.")) return;
+      const { data, error } = await supabase.rpc("marcar_anuncio_vendido", { p_anuncio_id: anuncioId });
+      if (error) { console.error(error); window.mgToast?.("Não foi possível marcar o anúncio como vendido.", "error"); return; }
+      if (!data) { window.mgToast?.("O anúncio não está ativo ou não pertence à sua conta.", "warning"); return; }
+      window.mgToast?.("Anúncio marcado como vendido.", "success");
+      await carregarAnuncios({ resetarPagina: true });
+    }
+
+    async function compartilharAnuncio(anuncioId, titulo = "Anúncio MG Motors") {
+      const url = `${location.origin}${location.pathname.replace("marketplace.html", "anuncio.html")}?id=${encodeURIComponent(anuncioId)}`;
+      try {
+        if (navigator.share) { await navigator.share({ title: titulo, text: `Confira este veículo na MG Motors: ${titulo}`, url }); return; }
+        await navigator.clipboard.writeText(url);
+        window.mgToast?.("Link do anúncio copiado.", "success");
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+        window.prompt("Copie o link do anúncio:", url);
+      }
+    }
+
+    async function abrirEdicao(anuncioId) {
+      if (!usuarioAtual) { window.mgToast?.("Faça login para editar seu anúncio.", "warning"); return; }
+      const { data: anuncio, error } = await supabase.from("anuncios").select("*").eq("id", anuncioId).eq("usuario_id", usuarioAtual.id).maybeSingle();
+      if (error || !anuncio) { window.mgToast?.("Anúncio não encontrado ou sem permissão.", "error"); return; }
+      if (anuncio.status === "vendido") { window.mgToast?.("Anúncios vendidos não podem ser editados.", "warning"); return; }
+      await marcasCarregamento;
+      modoEdicaoId = anuncio.id;
+      document.getElementById("modal-add-car-titulo").textContent = "Editar anúncio";
+      document.getElementById("btn-publicar").textContent = "Salvar alterações";
+      document.getElementById("car-image").required = false;
+      document.getElementById("upload-principal-info").textContent = "Opcional: selecione uma foto para substituir a principal.";
+      document.getElementById("select-tipo-veiculo").value = anuncio.tipo_veiculo || "carro";
+      preencherSelectMarca(document.getElementById("select-tipo-veiculo").value);
+      const marcaSelect = document.getElementById("select-marca");
+      if (anuncio.marca_id) {
+        marcaSelect.value = anuncio.marca_id;
+        marcaSelect.dispatchEvent(new Event("change"));
+        await new Promise(resolve => setTimeout(resolve, 250));
+        document.getElementById("select-modelo").value = anuncio.modelo_id || "";
+      } else {
+        marcaSelect.value = "outro"; marcaSelect.dispatchEvent(new Event("change"));
+        document.getElementById("car-marca-texto").value = anuncio.marca_texto || "";
+        document.getElementById("car-modelo-texto").value = anuncio.modelo_texto || "";
+      }
+      for (const [id, valor] of Object.entries({
+        "car-whatsapp": anuncio.whatsapp || "", "car-ano": anuncio.ano_fabricacao || "", "car-ano-modelo": anuncio.ano_modelo || "",
+        "car-preco": anuncio.preco || "", "car-km": anuncio.quilometragem || "", "car-cambio": anuncio.cambio || "",
+        "car-combustivel": anuncio.combustivel || "", "car-final-placa": anuncio.final_placa || "", "car-cor": anuncio.cor || "",
+        "car-cidade": anuncio.cidade || "", "car-estado": anuncio.estado || "", "car-descricao": anuncio.descricao || ""
+      })) document.getElementById(id).value = valor;
+      document.getElementById("descricao-counter").textContent = `${(anuncio.descricao || "").length}/500`;
+      mgModal.open("modal-add-car");
+    }
+
     async function abrirVisualizacao(anuncioId) {
       const { data: a } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("id", anuncioId).maybeSingle();
       if (!a) return;
@@ -879,6 +979,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         });
       } else { document.getElementById("viz-foto-principal").src = "../imagens/image.webp"; }
       document.getElementById("viz-btn-mensagem").onclick = () => { window.location.href = `../MG-MENSAGENS/mensagens.html?usuario=${a.usuario_id}&carro=${anuncioId}`; };
+      document.getElementById("viz-btn-compartilhar").onclick = () => compartilharAnuncio(anuncioId, `${marcaExibida} ${modeloExibido}`.trim());
       const vizCurtir = document.getElementById("viz-btn-curtir");
       const podeCurtir = usuarioAtual && usuarioAtual.id !== a.usuario_id;
       if (usuarioAtual) {
@@ -918,12 +1019,34 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
     }
 
     document.getElementById("close-visualizar").onclick = () => mgModal.close("modal-visualizar");
-    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { window.mgToast?.("Faça login para anunciar!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; } mgModal.open("modal-add-car"); };
+    function prepararNovoAnuncio() {
+      modoEdicaoId = null;
+      document.getElementById("car-form").reset();
+      document.getElementById("modal-add-car-titulo").textContent = "Anunciar Veículo";
+      document.getElementById("btn-publicar").textContent = "Publicar Anúncio";
+      document.getElementById("car-image").required = true;
+      document.getElementById("upload-principal-info").textContent = "";
+      document.getElementById("select-marca").style.display = "";
+      document.getElementById("select-marca").required = true;
+      document.getElementById("select-modelo").style.display = "";
+      document.getElementById("select-modelo").required = true;
+      document.getElementById("car-marca-texto").style.display = "none";
+      document.getElementById("car-marca-texto").required = false;
+      document.getElementById("car-modelo-texto").style.display = "none";
+      document.getElementById("car-modelo-texto").required = false;
+      preencherSelectMarca("carro");
+    }
+    document.getElementById("btn-add-car").onclick = () => { if (!usuarioAtual) { window.mgToast?.("Faça login para anunciar!", "warning"); window.location.href = "../MG-LOGIN/login.html"; return; } prepararNovoAnuncio(); mgModal.open("modal-add-car"); };
     document.getElementById("close-modal").onclick = () => mgModal.close("modal-add-car");
-    document.getElementById("filtro-marca").addEventListener("change", () => { marcaSolicitada = ""; aplicarFiltroOrdenacao(); });
+    document.getElementById("filtro-marca").addEventListener("change", async () => { marcaSolicitada = ""; await preencherFiltroModelo(document.getElementById("filtro-marca").value); aplicarFiltroOrdenacao(); });
+    document.getElementById("filtro-modelo").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("ordenar").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-preco").addEventListener("change", () => aplicarFiltroOrdenacao());
     document.getElementById("filtro-estado").addEventListener("change", () => aplicarFiltroOrdenacao());
+    ["filtro-km", "filtro-combustivel", "filtro-cambio"].forEach(id => document.getElementById(id).addEventListener("change", () => aplicarFiltroOrdenacao()));
+    ["filtro-ano-min", "filtro-ano-max", "filtro-cor"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+      clearTimeout(window.__mgFiltroExtraTimer); window.__mgFiltroExtraTimer = setTimeout(() => aplicarFiltroOrdenacao(), 300);
+    }));
     let buscaDebounce;
     document.getElementById("barra_pesquisa").addEventListener("input", e => {
       clearTimeout(buscaDebounce);
@@ -1012,7 +1135,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       const btnPublicar = document.getElementById('btn-publicar');
       btnPublicar.disabled = true;
       btnPublicar.textContent = 'Publicando...';
-      const restaurarBtn = () => { btnPublicar.disabled = false; btnPublicar.textContent = 'Publicar Anúncio'; };
+      const restaurarBtn = () => { btnPublicar.disabled = false; btnPublicar.textContent = modoEdicaoId ? 'Salvar alterações' : 'Publicar Anúncio'; };
 
       const waInput  = document.getElementById("car-whatsapp");
       const waDigits = waInput.value.replace(/\D/g, '');
@@ -1022,9 +1145,9 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       }
 
       const foto = document.getElementById("car-image").files[0];
-      if (!foto) { window.mgToast?.('Selecione uma foto principal.', 'warning'); restaurarBtn(); return; }
-      if (!TIPOS_OK.includes(foto.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); restaurarBtn(); return; }
-      if (foto.size > MAX_BYTES) { window.mgToast?.('Foto principal excede 5 MB.', 'error'); restaurarBtn(); return; }
+      if (!foto && !modoEdicaoId) { window.mgToast?.('Selecione uma foto principal.', 'warning'); restaurarBtn(); return; }
+      if (foto && !TIPOS_OK.includes(foto.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); restaurarBtn(); return; }
+      if (foto && foto.size > MAX_BYTES) { window.mgToast?.('Foto principal excede 5 MB.', 'error'); restaurarBtn(); return; }
       let lat = null, lng = null;
       try {
         const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 3000 }));
@@ -1065,7 +1188,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         document.getElementById("select-modelo").focus(); restaurarBtn(); return;
       }
 
-      const { data: an, error } = await supabase.from("anuncios").insert({
+      const payloadAnuncio = {
         usuario_id: usuarioAtual.id, marca_id: marcaId, modelo_id: modeloId,
         tipo_veiculo: document.getElementById("select-tipo-veiculo").value,
         marca_texto: marcaTexto, modelo_texto: modeloTexto,
@@ -1078,18 +1201,31 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         cor: document.getElementById("car-cor").value, whatsapp: document.getElementById("car-whatsapp").value,
         status: "pendente", cidade: cidade || "Não informada", estado: estado,
         latitude: lat, longitude: lng, cidade_display: cidade && estado ? `${cidade}, ${estado}` : (cidade || null)
-      }).select().single();
+      };
+      let an, error;
+      if (modoEdicaoId) {
+        delete payloadAnuncio.usuario_id;
+        delete payloadAnuncio.status;
+        ({ data: an, error } = await supabase.from("anuncios").update(payloadAnuncio).eq("id", modoEdicaoId).eq("usuario_id", usuarioAtual.id).neq("status", "vendido").select().single());
+      } else {
+        ({ data: an, error } = await supabase.from("anuncios").insert(payloadAnuncio).select().single());
+      }
       if (error) {
-        const msg = /aguarde/i.test(error.message) ? error.message : ('Erro ao publicar: ' + error.message);
+        const msg = /aguarde/i.test(error.message) ? error.message : (modoEdicaoId ? 'Erro ao salvar: ' + error.message : 'Erro ao publicar: ' + error.message);
         window.mgToast?.(msg, 'error'); restaurarBtn(); return;
       }
-      const ext = foto.name.split('.').pop();
-      const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
-      const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
-      if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); restaurarBtn(); return; }
-      const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
-      const resFoto = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
-      if (!resFoto.ok) { restaurarBtn(); return; }
+      if (foto) {
+        const ext = foto.name.split('.').pop();
+        const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
+        const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
+        if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); restaurarBtn(); return; }
+        const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
+        const { data: fotoExistente } = await supabase.from("fotos_anuncio").select("id").eq("anuncio_id", an.id).eq("ordem", 0).maybeSingle();
+        const resFoto = fotoExistente
+          ? await executarOuAvisar(supabase.from("fotos_anuncio").update({ url_foto: url.publicUrl, caminho }).eq("id", fotoExistente.id), "Não foi possível atualizar a foto principal.")
+          : await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: url.publicUrl, caminho, ordem: 0 }), "Não foi possível salvar a foto principal do anúncio.");
+        if (!resFoto.ok) { restaurarBtn(); return; }
+      }
       const extras = document.getElementById("car-images-adicionais").files;
       for (let i = 0; i < Math.min(extras.length, 4); i++) {
         const f = extras[i]; if (f.size > 5 * 1024 * 1024) continue;
@@ -1100,8 +1236,9 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         const resExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");
         if (!resExtra.ok) continue;
       }
-      window.mgMostrarAprovacao?.();
+      if (modoEdicaoId) window.mgToast?.("Anúncio atualizado com sucesso.", "success"); else window.mgMostrarAprovacao?.();
       mgModal.close("modal-add-car");
+      modoEdicaoId = null;
       document.getElementById("car-form").reset();
       if (counterEl) { counterEl.textContent = '0/500'; counterEl.className = 'char-counter'; }
       preencherSelectMarca("carro");
@@ -1128,6 +1265,11 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
     });
 
     carregarAnuncios();
+    const editarAoCarregar = urlParams.get("editar");
+    if (editarAoCarregar && usuarioAtual) {
+      await marcasCarregamento;
+      await abrirEdicao(editarAoCarregar);
+    }
     if (abrirAnuncioAoCarregar) {
       if (usuarioAtual) mgModal.open("modal-add-car");
       else window.mgToast?.("Faça login para publicar um anúncio.", "warning");

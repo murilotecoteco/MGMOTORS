@@ -1084,6 +1084,11 @@ header {
 .heart-icon { width: 16px; height: 16px; stroke-width: 2.2; }
 .btn-curtir.curtido .heart-icon { fill: currentColor; }
 .btn-excluir, .btn-denunciar-card { display: inline-flex; align-items: center; gap: 5px; }
+.btn-editar, .btn-vendido { display:inline-flex; align-items:center; gap:5px; min-height:34px; padding:0 10px; border:0; border-radius:10px; font-size:11px; font-weight:700; cursor:pointer; background:rgba(37,99,235,.10); color:#2563eb; }
+.btn-vendido { background:rgba(16,185,129,.12); color:#087443; }
+.btn-editar:hover, .btn-vendido:hover { filter:brightness(.94); transform:translateY(-1px); }
+.btn-editar:disabled, .btn-vendido:disabled { opacity:.55; cursor:not-allowed; }
+.filtro-extra { min-height:40px; border:1px solid rgba(20,75,113,.16); border-radius:10px; padding:0 10px; background:var(--fundo-card,#fff); color:var(--texto); font:inherit; max-width:150px; }
 #modal-visualizar .visualizar-acoes .icon-inline { width: 17px; height: 17px; }
 #modal-visualizar .btn-whatsapp .icon-inline { color: #fff; }
 #modal-visualizar .btn-gps-link,

@@ -23,14 +23,14 @@
 | 0:40 | Navegação | Menu, busca e cards de categoria | “A navegação é comum a todas as páginas.” |
 | 1:30 | Cadastro/login | Conta de teste já criada | “O aceite legal é obrigatório no cadastro.” |
 | 2:30 | Publicação | Modal de anúncio + upload de foto | “O anúncio entra como pendente.” |
-| 4:00 | Marketplace | Busca, filtros de tipo/marca/preço/estado e ordenação | “Os filtros disponíveis são estes.” |
+| 4:00 | Marketplace | Busca, filtros avançados e ordenação | “Os filtros são aplicados no banco, com paginação.” |
 | 5:30 | Detalhe | Modal com fotos e dados do vendedor | “O vendedor é exibido pelo perfil público.” |
 | 6:30 | Favorito/curtida | Curtir e recarregar | “A curtida persiste no banco.” |
 | 7:15 | Contato | WhatsApp e mensagem interna | “Há dois canais de contato.” |
 | 8:00 | Chat | Conversa entre as duas contas | “As mensagens chegam em tempo real.” |
 | 9:00 | Denúncia | Denunciar um anúncio | “A denúncia vai para a moderação.” |
 | 9:45 | Moderação | Admin aprova/rejeita e mostra o toast | “A aprovação atualiza o marketplace.” |
-| 10:30 | Perfil | Perfil público e edição | “O perfil reúne os anúncios ativos.” |
+| 10:30 | Gestão | Editar, vender e compartilhar anúncio | “O proprietário gerencia o ciclo do anúncio.” |
 | 11:15 | Segurança | Mostrar o script de RLS e o resumo | “As políticas foram testadas com este roteiro.” |
 | 12:00 | Encerramento | Limitações e trabalhos futuros | “Estas são as limitações conhecidas.” |
 
@@ -39,13 +39,9 @@
 
 ## 3. O que não incluir
 
-- Edição de anúncio (UC09) — não implementada.
-- Gerenciamento de categorias (UC15) — não implementado.
-- Marcar como vendido (UC20) — não implementado.
-- Compartilhar anúncio (UC24) — não implementado.
-- Formulário de contato (UC25) — não implementado.
-- Notificações persistentes (UC21) — não demonstrar até validar o fluxo entre duas contas.
-- Envio de foto no chat como prova de privacidade — bucket público em avaliação.
+- Categorias e caixa de contatos exigem a conta admin.
+- Notificações persistentes (UC21) — demonstrar somente com o fluxo entre duas contas já validado.
+- Envio de foto no chat — demonstrar somente com as duas contas autorizadas; o bucket é privado.
 - Toggles de privacidade como controle efetivo — o banco ainda não os aplica.
 
 ## 4. Plano B offline

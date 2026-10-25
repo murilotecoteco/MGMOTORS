@@ -85,6 +85,31 @@ const accountPage = await readFile(join(root, "MG-CONTA/conta.html"), "utf8");
 if (/update\(\{\s*pausado\s*:\s*false\s*,\s*status\s*:\s*["']ativo/.test(accountPage)) {
   failures.push("reativação de anúncio não pode tentar alterar status protegido pelo banco");
 }
+if (!accountPage.includes('.is("excluido_em", null)')) {
+  failures.push("lista de anúncios pausados precisa ocultar exclusões lógicas");
+}
+for (const relative of ["MG-CONTA/conta.html", "MG-MARKETPLACE/marketplace.html"]) {
+  const source = await readFile(join(root, relative), "utf8");
+  if (!source.includes("excluido_em: new Date().toISOString()")) {
+    failures.push(`${relative}: exclusão lógica precisa registrar excluido_em`);
+  }
+}
+
+const anuncioPage = await readFile(join(root, "MG-MARKETPLACE/anuncio.html"), "utf8");
+if (!anuncioPage.includes("anuncio.excluido_em != null")) {
+  failures.push("página de detalhe precisa tratar exclusões lógicas como indisponível");
+}
+
+const devPanelSources = devPanel;
+const desbanirBlock = devPanelSources.match(/async function desbanirUsuario[\s\S]*?^}/m)?.[0] || "";
+if (!desbanirBlock.includes('.is("excluido_em", null)')) {
+  failures.push("desbanirUsuario não pode reativar anúncios removidos logicamente");
+}
+
+const tightenSelect = await readFile(join(root, "supabase/migrations/20261025150000_tighten_anuncios_select.sql"), "utf8");
+if (!/pausado IS NULL OR pausado = false/.test(tightenSelect.replace(/\s*\n\s*/g, " "))) {
+  failures.push("policy anuncios select precisa bloquear leitura de pausados não próprios");
+}
 
 const vercelConfig = JSON.parse(await readFile(join(root, "vercel.json"), "utf8"));
 const csp = vercelConfig.headers?.flatMap(group => group.headers || [])

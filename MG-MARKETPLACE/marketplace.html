@@ -816,7 +816,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       try {
         const { data: anAtualizado, error: erroAn } = await supabase
           .from("anuncios")
-          .update({ status: "expirado", pausado: true })
+          .update({ pausado: true, excluido_em: new Date().toISOString() })
           .eq("id", anuncioId)
           .select();
         if (erroAn) {

@@ -408,23 +408,14 @@ async function carregarMeusAnuncios() {
         e.stopPropagation(); if (!confirm("Excluir anúncio?")) return;
         const anuncioId = a.id;
         try {
-          // MESMA LÓGICA QUE JÁ FUNCIONA NO MG-DEV (botões "Rejeitar" e
-          // "Banir anúncio"): em vez de tentar apagar a linha de verdade
-          // (DELETE), que esbarra em FKs de mensagens/curtidas/denúncias e
-          // podia falhar "em silêncio" via RLS, marcamos status="expirado"
-          // + pausado=true. Isso já basta pra sumir de toda tela, porque:
-          //   - marketplace usa a RPC get_anuncios_marketplace, que só traz
-          //     linhas com status='ativo';
-          //   - esta própria lista (carregarMeusAnuncios) filtra
-          //     .eq("pausado", false).
-          // Sem DELETE de verdade não existe mais o cenário de "fotos somem
-          // mas o anúncio continua aparecendo (sem foto, dando erro)": o
-          // anúncio inteiro desaparece de uma vez, fotos incluídas.
+          // Exclusão lógica preserva mensagens, fotos e denúncias ligadas ao
+          // anúncio. A pausa o remove das listagens públicas e excluido_em
+          // evita que reapareça como uma pausa temporária reativável.
           // .select() no UPDATE detecta "0 linhas afetadas" (RLS filtrando
           // silenciosamente) em vez de assumir sucesso só por não ter erro.
           const { data: anAtualizado, error: erroAn } = await supabase
             .from("anuncios")
-            .update({ status: "expirado", pausado: true })
+            .update({ pausado: true, excluido_em: new Date().toISOString() })
             .eq("id", anuncioId)
             .select();
           if (erroAn) {
@@ -457,7 +448,11 @@ async function carregarMeusAnuncios() {
 
 
 async function carregarPausados() {
-  const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("pausado",true);
+  const { data } = await supabase.from("anuncios")
+    .select("*, marcas(nome), modelos(nome)")
+    .eq("usuario_id", perfilUsuarioId)
+    .eq("pausado", true)
+    .is("excluido_em", null);
   const cont = document.getElementById("pausados-lista");
   if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio pausado.</p>"; return; }
   cont.innerHTML = "";

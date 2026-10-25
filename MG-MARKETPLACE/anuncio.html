@@ -151,6 +151,14 @@
         supabase.from("fotos_anuncio").select("*").eq("anuncio_id", anuncioId).order("ordem")
       ]);
       if (!anuncio) { $("anuncio-loading").hidden = true; $("anuncio-erro").hidden = false; lucide.createIcons(); return; }
+      // Remoção lógica não é um anúncio válido: quem pode ler a linha (dono e
+      // admin) também deve ver "indisponível", e o mesmo vale para pausados
+      // acessados por link direto por quem não é dono — cobre janelas em que
+      // a política endurecida do banco ainda não foi aplicada.
+      const ehDono = usuarioAtual?.id && anuncio.usuario_id === usuarioAtual.id;
+      if (anuncio.excluido_em != null || (anuncio.pausado && !ehDono)) {
+        $("anuncio-loading").hidden = true; $("anuncio-erro").hidden = false; lucide.createIcons(); return;
+      }
       anuncioAtual = anuncio; fotos = fotosAnuncio || [];
       const marca = anuncio.marca_texto || anuncio.marcas?.nome || "Marca";
       const modelo = anuncio.modelo_texto || anuncio.modelos?.nome || "Veículo";

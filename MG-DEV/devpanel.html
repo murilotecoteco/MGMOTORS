@@ -535,12 +535,15 @@ async function desbanirUsuario(uid) {
   const { error } = await db.from("usuarios").update({banido:false}).eq("id", uid);
   if (error) { toast("Erro: " + error.message); return false; }
   // Só reativa anúncios que foram pausados por este fluxo de banimento.
-  // Pausas voluntárias, rejeições e expirações continuam preservadas.
+  // Pausas voluntárias, rejeições, expirações e REMOÇÕES LÓGICAS
+  // (excluido_em preenchido) continuam preservadas: sem o filtro abaixo,
+  // o desbanir ressuscitaria um anúncio que o dono excluiu depois do ban.
   const { error: erroReativacao } = await db.from("anuncios")
     .update({pausado:false, pausado_por_ban:false})
     .eq("usuario_id", uid)
     .eq("status","ativo")
-    .eq("pausado_por_ban", true);
+    .eq("pausado_por_ban", true)
+    .is("excluido_em", null);
   if (erroReativacao) { toast("Usuário desbanido, mas não foi possível reativar os anúncios: " + erroReativacao.message, "error"); }
   await db.from("usuarios_banidos").delete().eq("usuario_id", uid);
   return true;

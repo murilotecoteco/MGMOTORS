@@ -102,8 +102,8 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 
 - Editar nome, bio, cidade, foto e capa; abrir o perfil público em outra conta.
 - **Aceite:** alterações persistem; perfil público mostra apenas dados públicos.
-- **Observação:** os toggles de privacidade ainda não são aplicados pelo banco;
-  não os apresente como controle efetivo.
+- **Observação:** a tela de configurações não exibe mais toggles de privacidade;
+  só restam preferências com efeito real (tema, senha, sessões).
 
 ### T12 — Administração de usuários
 

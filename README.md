@@ -52,7 +52,7 @@
 - A migration de hardening de segurança foi aplicada no projeto conectado. Testes destrutivos de RLS continuam restritos a staging com conta descartável.
 - As fotos enviadas no chat usam um bucket público; a correção para bucket privado com URL assinada está pendente.
 - A paginação do marketplace é feita no banco pela RPC `get_anuncios_marketplace_paginado`; a tela solicita apenas a página atual.
-- Os toggles de privacidade da tela de configurações ainda não são aplicados pelas policies do banco.
+- A tela de configurações mantém apenas preferências com efeito real (tema escuro, senha, sessões). Os toggles de privacidade, notificações, localização e chat foram removidos por não serem aplicados pelo app nem pelo banco.
 
 ## Documentação de apoio
 

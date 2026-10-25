@@ -368,12 +368,6 @@ header {
     font-size: 12px;
 }
 
-.notif-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
 .color-picker-row {
     display: flex;
     align-items: center;
@@ -501,10 +495,6 @@ footer {
 
     .footer-grid {
         grid-template-columns: 1fr 1fr;
-    }
-
-    .notif-grid {
-        grid-template-columns: 1fr;
     }
 }
 

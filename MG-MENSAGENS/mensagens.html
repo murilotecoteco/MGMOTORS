@@ -136,6 +136,7 @@ window.mgModal = mgModal;
 
 let conversaAtual = null;
 let realtimeChannel = null;
+let realtimeFallbackTimer = null;
 const conversasCache = new Map();
 const mensagensRenderizadas = new Set();
 // Cache dos perfis públicos já resolvidos. Evita uma consulta por conversa
@@ -588,6 +589,19 @@ function iniciarRealtime() {
   if (!usuarioAtual) return;
 
   if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+  if (realtimeFallbackTimer) {
+    clearInterval(realtimeFallbackTimer);
+    realtimeFallbackTimer = null;
+  }
+
+  const iniciarFallback = () => {
+    if (realtimeFallbackTimer) return;
+    console.warn('Realtime indisponível; usando atualização periódica das mensagens.');
+    realtimeFallbackTimer = setInterval(async () => {
+      await carregarConversas();
+      if (conversaAtual) await carregarMensagensConversa(conversaAtual);
+    }, 5000);
+  };
 
   realtimeChannel = supabase
     .channel(`mensagens-${usuarioAtual.id}`)
@@ -620,8 +634,14 @@ function iniciarRealtime() {
       }
     })
     .subscribe((status) => {
-      if (status === 'SUBSCRIBED') console.log('Mensagens em tempo real conectadas.');
-      if (status === 'CHANNEL_ERROR') console.error('Não foi possível conectar ao Realtime do Supabase.');
+      if (status === 'SUBSCRIBED') {
+        console.log('Mensagens em tempo real conectadas.');
+        if (realtimeFallbackTimer) {
+          clearInterval(realtimeFallbackTimer);
+          realtimeFallbackTimer = null;
+        }
+      }
+      if (['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'].includes(status)) iniciarFallback();
     });
 }
 
@@ -640,14 +660,16 @@ async function enviarMensagem() {
       conteudo: texto,
       carro_info: carroInfo,
       lida: false
-    }),
+    }).select('*').single(),
     'Não foi possível enviar a mensagem.'
   );
   if (ok === null) return;
   document.getElementById('mensagem-texto').value = '';
 
-  // O INSERT será recebido pelo Realtime e renderizado uma única vez.
-  // Não recarregamos o chat nem a lista de conversas.
+  // Renderiza imediatamente. O Realtime também pode entregar este INSERT,
+  // mas mensagensRenderizadas evita duplicação quando isso acontecer.
+  await adicionarOuAtualizarConversa(ok);
+  if (conversaAtual === getOutroId(ok)) renderizarMensagem(ok);
 }
 
 // ---- Upload de foto ----
@@ -672,12 +694,13 @@ document.getElementById('input-foto-msg').addEventListener('change', async (e) =
       carro_info: carroInfo,
       lida: false,
       tipo: 'foto'
-    }),
+    }).select('*').single(),
     'Não foi possível enviar a foto.'
   );
   if (ok === null) return;
   e.target.value = '';
-  // O Realtime adicionará a foto ao chat sem recarregar tudo.
+  await adicionarOuAtualizarConversa(ok);
+  if (conversaAtual === getOutroId(ok)) renderizarMensagem(ok);
 });
 
 // ---- Denúncia de mensagem/foto ----

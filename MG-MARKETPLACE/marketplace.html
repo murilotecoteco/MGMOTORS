@@ -412,7 +412,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       const { data, error } = await promise;
       if (error) {
         console.error(error);
-        window.mgToast?.(mensagemErroPadrao + (error.message ? ` (${error.message})` : ""), "error");
+        window.mgToast?.(mensagemErroPadrao, "error");
         return { ok: false, data: null };
       }
       return { ok: true, data };
@@ -820,11 +820,12 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
           .eq("id", anuncioId)
           .select();
         if (erroAn) {
-          alert("Não foi possível excluir o anúncio.\n\nErro do banco: " + erroAn.message + (erroAn.details ? ("\nDetalhes: " + erroAn.details) : "") + (erroAn.hint ? ("\nDica: " + erroAn.hint) : ""));
+          console.error("Falha ao excluir anúncio:", erroAn);
+          window.mgToast?.("Não foi possível excluir o anúncio. Tente novamente.", "error");
           return;
         }
         if (!anAtualizado || anAtualizado.length === 0) {
-          alert("O anúncio não foi excluído (sem permissão ou já removido).");
+          window.mgToast?.("O anúncio não está mais disponível para exclusão.", "warning");
           carregarAnuncios();
           return;
         }
@@ -834,7 +835,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         // preservar o histórico das duas partes da negociação.
       } catch (excecao) {
         console.error("Erro ao excluir anúncio:", excecao);
-        alert("Erro inesperado ao excluir o anúncio:\n\n" + (excecao?.message || excecao));
+        window.mgToast?.("Ocorreu um erro ao excluir o anúncio. Tente novamente.", "error");
       }
     }
 

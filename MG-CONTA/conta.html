@@ -275,7 +275,7 @@ async function executarOuAvisar(promise, mensagemErroPadrao = "Algo deu errado. 
   const { data, error } = await promise;
   if (error) {
     console.error(error);
-    window.mgToast?.(mensagemErroPadrao + (error.message ? ` (${error.message})` : ""), "error");
+    window.mgToast?.(mensagemErroPadrao, "error");
     return null;
   }
   return data;
@@ -427,9 +427,13 @@ async function carregarMeusAnuncios() {
             .update({ status: "expirado", pausado: true })
             .eq("id", anuncioId)
             .select();
-          if (erroAn) { alert("Não foi possível excluir o anúncio.\n\nErro do banco: " + erroAn.message + (erroAn.details ? ("\nDetalhes: " + erroAn.details) : "") + (erroAn.hint ? ("\nDica: " + erroAn.hint) : "")); return; }
+          if (erroAn) {
+            console.error("Falha ao excluir anúncio:", erroAn);
+            window.mgToast?.("Não foi possível excluir o anúncio. Tente novamente.", "error");
+            return;
+          }
           if (!anAtualizado || anAtualizado.length === 0) {
-            alert("O anúncio não foi excluído (sem permissão ou já removido).");
+            window.mgToast?.("O anúncio não está mais disponível para exclusão.", "warning");
             carregarMeusAnuncios();
             return;
           }
@@ -439,11 +443,8 @@ async function carregarMeusAnuncios() {
           // A exclusão é lógica: mensagens, fotos e referências ficam
           // preservadas para não apagar o histórico da outra parte.
         } catch (excecao) {
-          // Antes, um erro "de verdade" (jogado, não retornado como {error})
-          // virava um "Uncaught (in promise)" silencioso no console — o
-          // alert() nunca era chamado. Agora qualquer exceção aparece aqui.
           console.error("Erro ao excluir anúncio:", excecao);
-          alert("Erro inesperado ao excluir o anúncio:\n\n" + (excecao?.message || excecao));
+          window.mgToast?.("Ocorreu um erro ao excluir o anúncio. Tente novamente.", "error");
         }
       });
 

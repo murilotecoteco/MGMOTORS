@@ -74,6 +74,13 @@ for (const icon of ["circle-check", "circle-alert", "info", "triangle-alert"]) {
   if (!globalHeader.includes(`'${icon}'`)) failures.push(`toast global sem ícone Lucide: ${icon}`);
 }
 
+for (const relative of ["MG-CONTA/conta.html", "MG-MARKETPLACE/marketplace.html"]) {
+  const source = await readFile(join(root, relative), "utf8");
+  if (/Erro do banco:|Detalhes:\s*"\s*\+|Dica:\s*"\s*\+/.test(source)) {
+    failures.push(`${relative}: não pode expor detalhes internos do banco na interface`);
+  }
+}
+
 const vercelConfig = JSON.parse(await readFile(join(root, "vercel.json"), "utf8"));
 const csp = vercelConfig.headers?.flatMap(group => group.headers || [])
   .find(header => header.key === "Content-Security-Policy")?.value || "";

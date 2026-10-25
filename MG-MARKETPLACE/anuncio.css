@@ -28,7 +28,7 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 .anuncio-detalhes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin: 4px 0 22px; }
 .detalhe-item { display: flex; align-items: center; gap: 10px; min-height: 67px; border-bottom: 1px solid var(--anuncio-linha); }
 .detalhe-item > svg { width: 17px; color: var(--anuncio-azul); }
-.detalhe-item span { display: block; margin-bottom: 5px; color: #7b8490; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.detalhe-item span { display: block; margin-bottom: 5px; color: var(--texto-suave, #6b7280); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .detalhe-item strong { display: block; font-size: 14px; }
 .anuncio-descricao-bloco h2 { margin: 22px 0 7px; font-size: 18px; }
 .anuncio-descricao-bloco p { max-height: 100px; overflow-y: auto; margin: 0 0 20px; color: #5f6b7a; font-size: 13px; line-height: 1.65; }
@@ -62,7 +62,7 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 .anuncio-erro i { width: 44px; height: 44px; color: var(--anuncio-azul); }
 .anuncio-erro h1 { margin: 0; font-size: 24px; }
 .anuncio-erro .acao-principal { display: inline-flex; align-items: center; padding: 0 20px; text-decoration: none; }
-.anuncio-footer { display: flex; justify-content: space-between; gap: 15px; max-width: 1260px; margin: 0 auto; padding: 24px 28px 40px; color: #7b8490; font-size: 12px; }
+.anuncio-footer { display: flex; justify-content: space-between; gap: 15px; max-width: 1260px; margin: 0 auto; padding: 24px 28px 40px; color: var(--texto-suave, #6b7280); font-size: 12px; }
 .anuncio-footer a { color: var(--anuncio-azul); font-weight: 700; text-decoration: none; }
 [data-tema="escuro"] body { background: #101820; }
 [data-tema="escuro"] .anuncio-conteudo, [data-tema="escuro"] .anuncio-resumo, [data-tema="escuro"] .especificacoes { background: #171f28; }

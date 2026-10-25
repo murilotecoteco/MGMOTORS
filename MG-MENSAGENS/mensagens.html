@@ -30,19 +30,29 @@
 
 
 <div class="container">
-    <h1 class="page-title"><i data-lucide="message-circle" style="width:28px;height:28px;vertical-align:-5px;margin-right:8px;"></i> Minhas Mensagens</h1>
-    <div class="conversas-lista" id="conversas-lista"><div class="empty-state"><h3>Carregando conversas...</h3></div></div>
-    <div class="chat-container" id="chat-container">
+    <div class="mensagens-topo">
+        <h1 class="page-title"><i data-lucide="message-circle" aria-hidden="true"></i> Minhas Mensagens</h1>
+        <p class="page-subtitle">Converse com compradores e vendedores com segurança, sem sair da MG Motors.</p>
+    </div>
+    <div class="mensagens-layout">
+    <aside class="conversas-painel" aria-label="Conversas">
+        <div class="conversas-painel-header">
+            <h2><i data-lucide="inbox" aria-hidden="true"></i> Conversas</h2>
+        </div>
+        <div class="conversas-lista" id="conversas-lista"><div class="empty-state"><h3>Carregando conversas...</h3></div></div>
+    </aside>
+    <section class="chat-container" id="chat-container" aria-label="Conversa selecionada">
         <div class="chat-header"><h3 id="chat-titulo">Selecione uma conversa</h3></div>
-        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Mensagens da conversa"><div class="empty-state"><h3>Selecione uma conversa</h3></div></div>
+        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Mensagens da conversa"><div class="empty-state empty-state-chat"><i data-lucide="messages-square" aria-hidden="true"></i><h3>Selecione uma conversa</h3><p>Escolha uma conversa ao lado para ver as mensagens.</p></div></div>
         <div class="chat-input">
             <label id="label-upload-foto" class="btn-upload-foto" title="Enviar foto" aria-label="Enviar foto na conversa" style="display:inline-flex;align-items:center;justify-content:center;">
               <i data-lucide="camera" aria-hidden="true"></i>
               <input type="file" id="input-foto-msg" accept="image/*" aria-label="Selecionar foto para enviar" style="display:none;">
             </label>
             <textarea id="mensagem-texto" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem" disabled></textarea>
-            <button class="btn-enviar" id="btn-enviar" disabled>Enviar</button>
+            <button class="btn-enviar" id="btn-enviar" disabled><i data-lucide="send" aria-hidden="true"></i><span>Enviar</span></button>
         </div>
+    </section>
     </div>
 </div>
 
@@ -50,7 +60,7 @@
 <!-- Modal Denúncia de mensagem/foto -->
 <div id="modal-denuncia-msg" role="dialog" aria-modal="true" aria-labelledby="denuncia-msg-titulo" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:3000;justify-content:center;align-items:center;">
   <div style="background:var(--branco,#fff);padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.35);">
-    <button type="button" onclick="mgModal.close('modal-denuncia-msg')" aria-label="Fechar denúncia" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:#888;background:none;border:none;line-height:1;">×</button>
+    <button type="button" onclick="mgModal.close('modal-denuncia-msg')" aria-label="Fechar denúncia" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:var(--texto-suave,#6b7280);background:none;border:none;line-height:1;">×</button>
     <h2 id="denuncia-msg-titulo" style="color:#144b71;margin-bottom:6px;font-size:19px;font-weight:900;"><i data-lucide="flag" aria-hidden="true" style="width:18px;height:18px;vertical-align:-2px;margin-right:6px;"></i> Denunciar</h2>
     <p id="denuncia-msg-subtitulo" style="font-size:13px;color:#4a6070;margin-bottom:16px;">Selecione o motivo da denúncia.</p>
     <select id="denuncia-msg-motivo" aria-label="Motivo da denúncia" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;font-family:inherit;background:#f4f8fb;color:#1a2a38;">
@@ -193,18 +203,13 @@ function atualizarItemConversa(outroId) {
   const preview = item.querySelector('.conversa-preview');
   const data = item.querySelector('.conversa-data');
   if (preview) preview.textContent = getPreview(conv.ultimaMsg);
-  if (data) {
-    data.textContent = new Date(conv.ultimaMsg.data_envio).toLocaleDateString();
-    if (conv.naoLidas > 0) {
-      const badge = document.createElement('span');
-      badge.className = 'badge-nao-lida';
-      badge.style.cssText = 'background:#ff4444;color:white;border-radius:50%;padding:2px 6px;margin-left:5px;';
-      badge.textContent = conv.naoLidas;
-      data.appendChild(badge);
-      item.classList.add('nao-lida');
-    } else {
-      item.classList.remove('nao-lida');
-    }
+  if (data) data.textContent = formatarDataConversa(conv.ultimaMsg.data_envio);
+  item.querySelector('.badge-nao-lida')?.remove();
+  if (conv.naoLidas > 0) {
+    item.querySelector('.conversa-linha-preview')?.appendChild(criarBadgeNaoLidas(conv.naoLidas));
+    item.classList.add('nao-lida');
+  } else {
+    item.classList.remove('nao-lida');
   }
 }
 
@@ -219,6 +224,37 @@ function ordenarListaConversas() {
   itens.forEach(item => lista.appendChild(item));
 }
 
+function formatarDataConversa(dataEnvio) {
+  const data = new Date(dataEnvio);
+  const hoje = new Date();
+  if (data.toDateString() === hoje.toDateString()) return formatarHora(dataEnvio);
+  const ontem = new Date(hoje);
+  ontem.setDate(hoje.getDate() - 1);
+  if (data.toDateString() === ontem.toDateString()) return 'Ontem';
+  return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+function formatarHora(dataEnvio) {
+  return new Date(dataEnvio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function criarAvatar(foto, classe) {
+  const img = document.createElement('img');
+  img.className = classe;
+  img.src = foto || '../imagens/usuario.png';
+  img.alt = '';
+  img.onerror = () => { img.onerror = null; img.src = '../imagens/usuario.png'; };
+  return img;
+}
+
+function criarBadgeNaoLidas(total) {
+  const badge = document.createElement('span');
+  badge.className = 'badge-nao-lida';
+  badge.textContent = total > 99 ? '99+' : String(total);
+  badge.setAttribute('aria-label', `${total} mensagens não lidas`);
+  return badge;
+}
+
 function criarItemConversa(outroId, conv, outroUser) {
   const item = document.createElement('div');
   item.className = 'conversa-item' + (conv.naoLidas > 0 ? ' nao-lida' : '');
@@ -228,44 +264,45 @@ function criarItemConversa(outroId, conv, outroUser) {
   const infoDiv = document.createElement('div');
   infoDiv.className = 'conversa-info';
 
+  const linhaTopo = document.createElement('div');
+  linhaTopo.className = 'conversa-linha';
+
   const tituloDiv = document.createElement('div');
   tituloDiv.className = 'conversa-titulo';
+  tituloDiv.textContent = outroUser?.nome || 'Usuário';
 
-  const avatarImg = document.createElement('img');
-  avatarImg.src = outroUser?.foto || '../imagens/usuario.png';
-  avatarImg.style.cssText = 'width:30px;height:30px;border-radius:50%;margin-right:10px;vertical-align:middle;';
+  const dataDiv = document.createElement('div');
+  dataDiv.className = 'conversa-data';
+  dataDiv.textContent = formatarDataConversa(conv.ultimaMsg.data_envio);
 
-  const nomeNode = document.createTextNode((outroUser?.nome || 'Usuário') + ' - ' + (conv.carroInfo || 'Carro não especificado'));
+  linhaTopo.appendChild(tituloDiv);
+  linhaTopo.appendChild(dataDiv);
+
+  const carroDiv = document.createElement('div');
+  carroDiv.className = 'conversa-carro';
+  carroDiv.textContent = conv.carroInfo || 'Carro não especificado';
+
   const perfilSpan = document.createElement('span');
   perfilSpan.className = 'perfil-link';
   perfilSpan.dataset.usuario = outroId;
   perfilSpan.textContent = 'Ver perfil';
+  carroDiv.appendChild(perfilSpan);
 
-  tituloDiv.appendChild(avatarImg);
-  tituloDiv.appendChild(nomeNode);
-  tituloDiv.appendChild(perfilSpan);
+  const linhaPreview = document.createElement('div');
+  linhaPreview.className = 'conversa-linha conversa-linha-preview';
 
   const previewDiv = document.createElement('div');
   previewDiv.className = 'conversa-preview';
   previewDiv.textContent = getPreview(conv.ultimaMsg);
+  linhaPreview.appendChild(previewDiv);
+  if (conv.naoLidas > 0) linhaPreview.appendChild(criarBadgeNaoLidas(conv.naoLidas));
 
-  infoDiv.appendChild(tituloDiv);
-  infoDiv.appendChild(previewDiv);
+  infoDiv.appendChild(linhaTopo);
+  infoDiv.appendChild(carroDiv);
+  infoDiv.appendChild(linhaPreview);
 
-  const dataDiv = document.createElement('div');
-  dataDiv.className = 'conversa-data';
-  dataDiv.textContent = new Date(conv.ultimaMsg.data_envio).toLocaleDateString();
-
-  if (conv.naoLidas > 0) {
-    const badge = document.createElement('span');
-    badge.className = 'badge-nao-lida';
-    badge.style.cssText = 'background:#ff4444;color:white;border-radius:50%;padding:2px 6px;margin-left:5px;';
-    badge.textContent = conv.naoLidas;
-    dataDiv.appendChild(badge);
-  }
-
+  item.appendChild(criarAvatar(outroUser?.foto, 'conversa-avatar'));
   item.appendChild(infoDiv);
-  item.appendChild(dataDiv);
 
   item.addEventListener('click', (e) => {
     if (!e.target.classList.contains('perfil-link')) abrirConversa(item.dataset.userId, item.dataset.carroInfo);
@@ -315,7 +352,7 @@ async function adicionarOuAtualizarConversa(msg) {
 
 async function carregarConversas() {
   if (!usuarioAtual) {
-    document.getElementById('conversas-lista').innerHTML = '<div class="empty-state"><h3>Faça login</h3></div>';
+    document.getElementById('conversas-lista').innerHTML = '<div class="empty-state"><h3>Faça login</h3><p>Entre na sua conta para ver suas conversas.</p><a class="empty-state-btn" href="../MG-LOGIN/login.html">Entrar</a></div>';
     return;
   }
 
@@ -355,7 +392,7 @@ async function carregarConversas() {
   listaEl.innerHTML = '';
 
   if (conversasCache.size === 0) {
-    listaEl.innerHTML = '<div class="empty-state"><h3>Nenhuma mensagem</h3></div>';
+    listaEl.innerHTML = '<div class="empty-state"><h3>Nenhuma conversa ainda</h3><p>Encontre um veículo no marketplace e fale com o vendedor.</p><a class="empty-state-btn" href="../MG-MARKETPLACE/marketplace.html">Ir ao Marketplace</a></div>';
     return;
   }
 
@@ -397,7 +434,7 @@ function renderizarMensagem(msg, rolar = true) {
 
   const horaDiv = document.createElement('div');
   horaDiv.className = 'mensagem-hora';
-  horaDiv.textContent = new Date(msg.data_envio).toLocaleTimeString();
+  horaDiv.textContent = formatarHora(msg.data_envio);
 
   if (!isEnviada) {
     const reportBtn = document.createElement('button');
@@ -439,7 +476,7 @@ async function carregarMensagensConversa(outroUsuarioId) {
   container.innerHTML = '';
 
   if (!mensagens || mensagens.length === 0) {
-    container.innerHTML = '<div class="empty-state"><h3>Nenhuma mensagem</h3></div>';
+    container.innerHTML = '<div class="empty-state empty-state-chat"><h3>Nenhuma mensagem</h3><p>Envie a primeira mensagem para começar a negociação.</p></div>';
     return;
   }
 
@@ -467,7 +504,7 @@ async function carregarMensagensConversa(outroUsuarioId) {
 
     const horaDiv = document.createElement('div');
     horaDiv.className = 'mensagem-hora';
-    horaDiv.textContent = new Date(msg.data_envio).toLocaleTimeString();
+    horaDiv.textContent = formatarHora(msg.data_envio);
 
     if (!isEnviada) {
       const reportBtn = document.createElement('button');
@@ -500,24 +537,31 @@ async function abrirConversa(outroUsuarioId, carroInfo) {
   const chatTitulo = document.getElementById('chat-titulo');
   chatTitulo.innerHTML = '';
 
-  const tituloAvatar = document.createElement('img');
-  tituloAvatar.src = outroUser?.foto || '../imagens/usuario.png';
-  tituloAvatar.style.cssText = 'width:35px;height:35px;border-radius:50%;margin-right:10px;vertical-align:middle;';
+  const tituloTexto = document.createElement('span');
+  tituloTexto.className = 'chat-titulo-texto';
+  const tituloNome = document.createElement('span');
+  tituloNome.className = 'chat-titulo-nome';
+  tituloNome.textContent = outroUser?.nome || 'Usuário';
+  const tituloCarro = document.createElement('span');
+  tituloCarro.className = 'chat-titulo-carro';
+  tituloCarro.textContent = carroInfo || 'Carro não especificado';
+  tituloTexto.appendChild(tituloNome);
+  tituloTexto.appendChild(tituloCarro);
 
-  const tituloNomeNode = document.createTextNode((outroUser?.nome || 'Usuário') + ' - ' + carroInfo);
-  const tituloPerfilSpan = document.createElement('span');
-  tituloPerfilSpan.className = 'perfil-link';
-  tituloPerfilSpan.dataset.usuario = outroUsuarioId;
-  tituloPerfilSpan.style.marginLeft = '15px';
-  tituloPerfilSpan.textContent = 'Ver perfil';
-  tituloPerfilSpan.addEventListener('click', () => {
-    window.location.href = `../MG-CONTA/conta.html?id=${outroUsuarioId}`;
-  });
+  const tituloPerfilLink = document.createElement('a');
+  tituloPerfilLink.className = 'chat-perfil-link';
+  tituloPerfilLink.href = `../MG-CONTA/conta.html?id=${encodeURIComponent(outroUsuarioId)}`;
+  tituloPerfilLink.textContent = 'Ver perfil';
 
-  chatTitulo.appendChild(tituloAvatar);
-  chatTitulo.appendChild(tituloNomeNode);
-  chatTitulo.appendChild(tituloPerfilSpan);
-  document.getElementById('chat-container').style.display = 'flex';
+  chatTitulo.appendChild(criarAvatar(outroUser?.foto, 'chat-avatar'));
+  chatTitulo.appendChild(tituloTexto);
+  chatTitulo.appendChild(tituloPerfilLink);
+  const chatContainer = document.getElementById('chat-container');
+  chatContainer.classList.add('aberto');
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    chatContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.querySelectorAll('.conversa-item').forEach(el => el.classList.toggle('active', el.dataset.userId === outroUsuarioId));
   document.getElementById('mensagem-texto').disabled = false;
   document.getElementById('btn-enviar').disabled = false;
   document.getElementById('label-upload-foto').style.display = 'flex';

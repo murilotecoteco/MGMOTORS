@@ -348,7 +348,7 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
       <h3>Nova marca</h3>
       <form id="form-nova-marca" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
         <input class="motivo-input" id="nova-marca-nome" placeholder="Nome da marca" maxlength="80" required>
-        <select class="motivo-input" id="nova-marca-categoria"><option value="carro">Carro</option><option value="moto">Moto</option><option value="caminhao">Caminhão</option><option value="trator">Trator</option><option value="embarcacao">Embarcação</option></select>
+        <select class="motivo-input" id="nova-marca-categoria"><option value="carro">Carro</option><option value="moto">Moto</option><option value="caminhao">Caminhão</option><option value="utilitario">Utilitário</option><option value="maquina_agricola">Máquina Agrícola / Trator</option><option value="embarcacao">Embarcação</option><option value="onibus">Ônibus</option></select>
         <button class="btn-dev btn-aprovar" type="submit">Adicionar marca</button>
       </form>
     </div>
@@ -775,7 +775,7 @@ async function carregarCategorias() {
   for (const marca of marcas) {
     const card = document.createElement("div"); card.className = "card-dev";
     const filhos = (modelos || []).filter(m => m.marca_id === marca.id);
-    card.innerHTML = `<div class="card-dev-header"><div style="flex:1"><h3></h3><p class="categoria-modelos-resumo"></p><div class="lista-modelos" style="display:grid;gap:8px;margin-top:10px;"></div></div><div style="display:flex;gap:8px;align-items:center"><select class="motivo-input categoria-tipo"><option value="carro">Carro</option><option value="moto">Moto</option><option value="caminhao">Caminhão</option><option value="trator">Trator</option><option value="embarcacao">Embarcação</option></select><button class="btn-dev btn-ver categoria-salvar">Salvar</button><button class="btn-dev btn-rejeitar categoria-excluir">Excluir</button></div></div>`;
+    card.innerHTML = `<div class="card-dev-header"><div style="flex:1"><h3></h3><p class="categoria-modelos-resumo"></p><div class="lista-modelos" style="display:grid;gap:8px;margin-top:10px;"></div></div><div style="display:flex;gap:8px;align-items:center"><select class="motivo-input categoria-tipo"><option value="carro">Carro</option><option value="moto">Moto</option><option value="caminhao">Caminhão</option><option value="utilitario">Utilitário</option><option value="maquina_agricola">Máquina Agrícola / Trator</option><option value="embarcacao">Embarcação</option><option value="onibus">Ônibus</option></select><button class="btn-dev btn-ver categoria-salvar">Salvar</button><button class="btn-dev btn-rejeitar categoria-excluir">Excluir</button></div></div>`;
     card.querySelector("h3").textContent = marca.nome; card.querySelector(".categoria-modelos-resumo").textContent = filhos.length ? `${filhos.length} modelo(s) cadastrado(s)` : "Nenhum modelo cadastrado";
     card.querySelector(".categoria-tipo").value = marca.categoria || "carro";
     card.querySelector(".categoria-salvar").onclick = async () => { const { error } = await db.from("marcas").update({ categoria: card.querySelector(".categoria-tipo").value }).eq("id", marca.id); if (error) toast("Não foi possível atualizar a marca: " + error.message, "error"); else toast("Categoria atualizada", "success"); };

@@ -66,10 +66,10 @@
 
   <div class="tabs-container" id="tabs-proprio">
     <div class="tabs">
-      <button class="tab-btn active" data-tab="dados">Meus Dados</button>
-      <button class="tab-btn" data-tab="anuncios">Meus Anúncios</button>
-      <button class="tab-btn" data-tab="pausados">Pausados</button>
-      <button class="tab-btn" data-tab="fotos"><i data-lucide="image" style="width:14px;height:14px;vertical-align:-1px;margin-right:4px;"></i> Fotos</button>
+      <button class="tab-btn active" data-tab="dados"><i data-lucide="user-round" aria-hidden="true"></i> Meus Dados</button>
+      <button class="tab-btn" data-tab="anuncios"><i data-lucide="car-front" aria-hidden="true"></i> Meus Anúncios</button>
+      <button class="tab-btn" data-tab="pausados"><i data-lucide="circle-pause" aria-hidden="true"></i> Pausados</button>
+      <button class="tab-btn" data-tab="fotos"><i data-lucide="image" aria-hidden="true"></i> Fotos</button>
     </div>
     <div id="tab-dados" class="tab-content active">
       <form id="form-dados">
@@ -128,9 +128,9 @@
 
   <div class="tabs-container" id="tabs-outro" style="display:none;">
     <div class="tabs">
-      <button class="tab-btn active" data-tab-outro="anuncios-outro">Anúncios</button>
-      <button class="tab-btn" data-tab-outro="fotos-outro"><i data-lucide="image" style="width:14px;height:14px;vertical-align:-1px;margin-right:4px;"></i> Fotos</button>
-      <button class="tab-btn" data-tab-outro="avaliacao"><i data-lucide="star" style="width:14px;height:14px;vertical-align:-1px;margin-right:4px;"></i> Avaliar</button>
+      <button class="tab-btn active" data-tab-outro="anuncios-outro"><i data-lucide="car-front" aria-hidden="true"></i> Anúncios</button>
+      <button class="tab-btn" data-tab-outro="fotos-outro"><i data-lucide="image" aria-hidden="true"></i> Fotos</button>
+      <button class="tab-btn" data-tab-outro="avaliacao"><i data-lucide="star" aria-hidden="true"></i> Avaliar</button>
     </div>
     <div id="tab-anuncios-outro" class="tab-content active">
       <div id="anuncios-outro-lista" class="anuncios-grid"></div>
@@ -285,6 +285,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const perfilIdUrl = urlParams.get('id');
 const fotoPerfil = document.getElementById("fotoPerfil");
 const capaFoto = document.getElementById("capaFoto");
+capaFoto.addEventListener("error", () => capaFoto.classList.add("falhou"));
+capaFoto.addEventListener("load", () => capaFoto.classList.remove("falhou"));
 const nomeExibido = document.getElementById("nomeExibido");
 const bioExibido = document.getElementById("bioExibido");
 const redesExibido = document.getElementById("redesExibido");
@@ -381,7 +383,7 @@ async function carregarMeusAnuncios() {
   const { data: anuncios } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("pausado",false).order("criado_em",{ascending:false});
   document.getElementById("anunciosCount").textContent = anuncios?.length || 0;
   const cont = document.getElementById("meus-anuncios-lista");
-  if (!anuncios || anuncios.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
+  if (!anuncios || anuncios.length === 0) { cont.innerHTML = '<div class="conta-empty"><strong>Nenhum anúncio ativo</strong><span>Os anúncios publicados aparecem aqui.</span></div>'; return; }
   cont.innerHTML = "";
   const fotosPorAnuncio = await carregarPrimeirasFotos(anuncios);
   for (const a of anuncios) {
@@ -459,7 +461,7 @@ async function carregarMeusAnuncios() {
 async function carregarPausados() {
   const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("pausado",true);
   const cont = document.getElementById("pausados-lista");
-  if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio pausado.</p>"; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="conta-empty"><strong>Nenhum anúncio pausado</strong><span>Anúncios pausados ficam guardados aqui até você reativá-los.</span></div>'; return; }
   cont.innerHTML = "";
   const fotosPorAnuncio = await carregarPrimeirasFotos(data);
   for (const a of data) {
@@ -502,7 +504,7 @@ async function carregarAnunciosOutro() {
   const { data } = await supabase.from("anuncios").select("*, marcas(nome), modelos(nome)").eq("usuario_id",perfilUsuarioId).eq("status","ativo").neq("pausado",true);
   document.getElementById("anunciosCount").textContent = data?.length || 0;
   const cont = document.getElementById("anuncios-outro-lista");
-  if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align:center;'>Nenhum anúncio ativo.</p>"; return; }
+  if (!data || data.length === 0) { cont.innerHTML = '<div class="conta-empty"><strong>Nenhum anúncio ativo</strong><span>Os anúncios publicados aparecem aqui.</span></div>'; return; }
   cont.innerHTML = "";
   const fotosPorAnuncio = await carregarPrimeirasFotos(data);
   for (const a of data) {
@@ -690,7 +692,7 @@ async function carregarPostsOutro(uid) {
   const grid = document.getElementById("posts-grid-outro"); if (!grid) return;
   grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;">Carregando...</p>';
   const { data } = await supabase.from("posts_usuario").select("*").eq("usuario_id", uid).order("criado_em", {ascending: false});
-  if (!data || data.length === 0) { grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;padding:30px 0;">Nenhuma foto publicada ainda.</p>'; return; }
+  if (!data || data.length === 0) { grid.innerHTML = '<div class="conta-empty"><strong>Nenhuma foto publicada ainda</strong><span>As fotos compartilhadas aparecem nesta galeria.</span></div>'; return; }
   grid.innerHTML = data.map(p => `
     <div class="post-card-outro" data-id="${escapeHtml(p.id)}" data-imagem="${escapeHtml(p.imagem)}" data-legenda="${escapeHtml(p.legenda || '')}" data-curtidas="${Number(p.curtidas || 0)}" style="aspect-ratio:1;overflow:hidden;border-radius:8px;cursor:pointer;background:#eee;">
       <img src="${escapeHtml(safeImageUrl(p.imagem))}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
@@ -740,7 +742,7 @@ async function carregarPostsFotos() {
   grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;">Carregando...</p>';
   const { data } = await supabase.from("posts_usuario").select("*").eq("usuario_id", uid).order("criado_em", {ascending: false});
   if (!data || data.length === 0) {
-    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;padding:30px 0;">Nenhuma foto publicada ainda.</p>'; return;
+    grid.innerHTML = '<div class="conta-empty"><strong>Nenhuma foto publicada ainda</strong><span>As fotos compartilhadas aparecem nesta galeria.</span></div>'; return;
   }
   grid.innerHTML = data.map(p => `
     <div class="post-card" data-id="${escapeHtml(p.id)}" data-imagem="${escapeHtml(p.imagem)}" data-legenda="${escapeHtml(p.legenda || '')}" data-curtidas="${Number(p.curtidas || 0)}" style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:8px;cursor:pointer;background:#eee;">

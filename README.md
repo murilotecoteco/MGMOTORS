@@ -156,7 +156,7 @@ Este projeto foi construído para praticar e demonstrar:
 - ❌ Marcar anúncio como vendido (UC20)
 - ❌ Compartilhar anúncio (UC24)
 - ❌ Formulário de contato com envio pelo site (UC25)
-- ⚠️ Notificações persistentes (UC21) — estrutura no banco aplicada; validação funcional entre duas contas pendente
+- ✅ Notificações persistentes (UC21) — mensagem entre contas gerou registro e badge de não lidas
 - ❌ Filtros por ano, modelo, quilometragem, combustível, câmbio e cor
 
 ---
@@ -473,7 +473,7 @@ https://mgmotorss.vercel.app
 - [ ] Marcar como vendido (UC20)
 - [ ] Compartilhar anúncio (UC24)
 - [ ] Formulário de contato com envio pelo site (UC25)
-- [ ] Validar notificações persistentes (UC21) entre duas contas
+- [x] Validar notificações persistentes (UC21) entre duas contas
 - [ ] Filtros estendidos (ano, modelo, km, combustível, câmbio, cor)
 - [ ] Simulador de financiamento integrado
 - [ ] Notificações push em tempo real

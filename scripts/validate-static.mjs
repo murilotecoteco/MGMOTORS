@@ -81,6 +81,11 @@ for (const relative of ["MG-CONTA/conta.html", "MG-MARKETPLACE/marketplace.html"
   }
 }
 
+const accountPage = await readFile(join(root, "MG-CONTA/conta.html"), "utf8");
+if (/update\(\{\s*pausado\s*:\s*false\s*,\s*status\s*:\s*["']ativo/.test(accountPage)) {
+  failures.push("reativação de anúncio não pode tentar alterar status protegido pelo banco");
+}
+
 const vercelConfig = JSON.parse(await readFile(join(root, "vercel.json"), "utf8"));
 const csp = vercelConfig.headers?.flatMap(group => group.headers || [])
   .find(header => header.key === "Content-Security-Policy")?.value || "";

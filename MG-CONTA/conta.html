@@ -481,8 +481,18 @@ async function carregarPausados() {
   }
   cont.querySelectorAll(".btn-reativar").forEach(btn => btn.addEventListener("click", async e => {
     e.stopPropagation();
-    const ok = await executarOuAvisar(supabase.from("anuncios").update({pausado:false,status:"ativo"}).eq("id",btn.dataset.id), "Não foi possível reativar o anúncio.");
-    if (ok === null) return;
+    const atualizados = await executarOuAvisar(
+      supabase.from("anuncios")
+        .update({ pausado: false })
+        .eq("id", btn.dataset.id)
+        .eq("usuario_id", usuarioAtual.id)
+        .select("id"),
+      "Não foi possível reativar o anúncio."
+    );
+    if (!atualizados?.length) {
+      if (atualizados) window.mgToast?.("O anúncio não está mais disponível para reativação.", "warning");
+      return;
+    }
     window.mgToast?.("Anúncio reativado com sucesso!", "success"); carregarPausados(); carregarMeusAnuncios();
   }));
 }

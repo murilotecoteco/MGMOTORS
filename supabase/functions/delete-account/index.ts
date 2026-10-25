@@ -92,6 +92,9 @@ Deno.serve(async (req: Request) => {
     }
     await removerArquivos(bucketAnuncios, `mensagens/${user.id}`);
 
+    const bucketMensagens = admin.storage.from("FOTOS-MENSAGENS");
+    await removerArquivos(bucketMensagens, `mensagens/${user.id}`);
+
     // 2. Deletar linha do usuário (FKs ON DELETE CASCADE limpam o resto)
     const { error: perfilError } = await admin.from("usuarios").delete().eq("id", user.id);
     if (perfilError) throw perfilError;

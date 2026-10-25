@@ -420,12 +420,25 @@ function renderizarMensagem(msg, rolar = true) {
   div.dataset.messageId = msg.id;
 
   let conteudoEl;
-  if (msg.tipo === 'foto' && typeof msg.conteudo === 'string' && msg.conteudo.startsWith('http')) {
+  if (msg.tipo === 'foto' && typeof msg.conteudo === 'string') {
     const img = document.createElement('img');
-    img.src = msg.conteudo;
     img.className = 'msg-foto';
     img.onerror = () => { img.style.display = 'none'; };
-    img.addEventListener('click', () => window.open(msg.conteudo, '_blank'));
+    const urlFoto = msg.conteudo.startsWith('http')
+      ? Promise.resolve(msg.conteudo)
+      : supabase.storage.from('FOTOS-MENSAGENS').createSignedUrl(msg.conteudo, 3600)
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return data?.signedUrl;
+        });
+    urlFoto.then((url) => {
+      if (!url) throw new Error('URL da foto indisponível');
+      img.src = url;
+      img.addEventListener('click', () => window.open(url, '_blank'));
+    }).catch((error) => {
+      console.warn('Não foi possível carregar a foto da conversa:', error.message);
+      img.style.display = 'none';
+    });
     conteudoEl = img;
   } else {
     const textDiv = document.createElement('div');
@@ -706,17 +719,16 @@ document.getElementById('input-foto-msg').addEventListener('change', async (e) =
 
   const ext = file.name.split('.').pop();
   const caminho = `mensagens/${usuarioAtual.id}/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from('FOTOS-ANUNCIOS').upload(caminho, file);
+  const { error } = await supabase.storage.from('FOTOS-MENSAGENS').upload(caminho, file);
   if (error) { window.mgToast?.('Erro ao enviar foto: ' + error.message, 'error'); return; }
 
-  const { data: urlData } = supabase.storage.from('FOTOS-ANUNCIOS').getPublicUrl(caminho);
   const carroInfo = carroInfoDaConversa();
 
   const ok = await executarOuAvisar(
     supabase.from('mensagens').insert({
       remetente_id: usuarioAtual.id,
       destinatario_id: conversaAtual,
-      conteudo: urlData.publicUrl,
+      conteudo: caminho,
       carro_info: carroInfo,
       lida: false,
       tipo: 'foto'

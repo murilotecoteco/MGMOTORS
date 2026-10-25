@@ -50,7 +50,7 @@
 - A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor. Ela está publicada no Supabase e rejeita requisições sem token ou com token inválido; a exclusão completa deve ser ensaiada apenas com uma conta descartável.
 - O fluxo legal possui páginas públicas, aceite obrigatório no cadastro, versionamento `1.0` e registro no perfil por meio da função protegida `registrar_aceite_legal`. O fluxo ainda deve ser validado no projeto Supabase de demonstração.
 - A migration de hardening de segurança foi aplicada no projeto conectado e o verificador somente leitura confirmou **27 PASS / 0 FAIL** em 25/10/2026. Testes destrutivos de RLS continuam restritos a staging com conta descartável.
-- As fotos enviadas no chat usam um bucket público; a correção para bucket privado com URL assinada está pendente.
+- As fotos enviadas no chat usam o bucket privado `FOTOS-MENSAGENS` e URLs assinadas; fotos antigas permanecem compatíveis.
 - A paginação do marketplace é feita no banco pela RPC `get_anuncios_marketplace_paginado`; a tela solicita apenas a página atual.
 - A tela de configurações mantém apenas preferências com efeito real (tema escuro, senha, sessões). Os toggles de privacidade, notificações, localização e chat foram removidos por não serem aplicados pelo app nem pelo banco.
 
@@ -123,7 +123,7 @@ Este projeto foi construído para praticar e demonstrar:
 - ✅ Sistema de curtidas nos anúncios
 - ✅ Favoritos salvos localmente (localStorage)
 - ✅ Chat interno em tempo real entre comprador e vendedor
-- ⚠️ Envio de fotos no chat — funcional, mas o bucket ainda é público; correção de privacidade pendente
+- ✅ Envio de fotos no chat — bucket privado, políticas por participante e URLs assinadas
 - ✅ Perfil de usuário com bio, foto, capa, redes sociais e anúncios
 - ✅ Feed de fotos estilo galeria no perfil
 - ✅ Sistema de seguir/seguidores entre usuários

@@ -97,7 +97,7 @@ header {
   margin-bottom: 8px;
 }
 .casos-container h1 i {
-  color: var(--dourado);
+  color: #ffffff;
   background: var(--azul);
   padding: 12px;
   border-radius: 20px;

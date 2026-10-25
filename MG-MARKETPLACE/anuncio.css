@@ -37,10 +37,10 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 .acao-principal { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: #ef1742; color: #fff; box-shadow: 0 8px 18px rgba(239,23,66,.2); }
 .acao-principal:hover { background: #d90d35; transform: translateY(-1px); }
 .acao-curtir { display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #d8dee6; background: #fff; color: #6c7684; }
-.acao-curtir:hover { border-color: #ef9dad; color: #e84040; background: #fff8f9; }
+.acao-curtir:hover { border-color: #ef9dad; color: #b42318; background: #fff8f9; }
 .acao-curtir.curtido { border-color: #e84040; background: #fff1f3; color: #e84040; }
-.acao-whatsapp { display: flex; align-items: center; justify-content: center; gap: 7px; background: #20c76a; color: #fff; box-shadow: 0 6px 14px rgba(32,199,106,.16); }
-.acao-whatsapp:hover { background: #16aa58; transform: translateY(-1px); }
+.acao-whatsapp { display: flex; align-items: center; justify-content: center; gap: 7px; background: #087f5b; color: #fff; box-shadow: 0 6px 14px rgba(8,127,91,.16); }
+.acao-whatsapp:hover { background: #066044; transform: translateY(-1px); }
 .acao-whatsapp.desabilitado { opacity: .45; }
 .acao-secundaria { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 9px; padding: 0 12px; border: 0; background: #eef1f4; color: #2563c7; }
 .acao-secundaria:hover { background: #e3e8ee; }

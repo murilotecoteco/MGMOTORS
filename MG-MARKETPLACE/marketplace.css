@@ -1458,7 +1458,7 @@ footer {
   --texto: #1F2937;
   --texto-suave: #6B7280;
   --verde: #047857;
-  --vermelho: #dc2626;
+  --vermelho: #b42318;
 }
 
 body {
@@ -1970,7 +1970,7 @@ footer {
   font-size: 23px;
   box-shadow: 0 5px 14px rgba(0,0,0,.18);
 }
-.modal-visualizar > .close:hover { background: #e84040; color: #fff; }
+.modal-visualizar > .close:hover { background: #b42318; color: #fff; }
 .modal-visualizar .visualizar-container { grid-template-columns: minmax(0, 1.06fr) minmax(350px, .94fr); gap: 28px; }
 .modal-visualizar .galeria-container { position: static; align-self: start; }
 .modal-visualizar .foto-principal { height: clamp(330px, 52vh, 470px); border: 0; border-radius: 18px; background: #0b141d; box-shadow: 0 14px 30px rgba(7,23,35,.16); }

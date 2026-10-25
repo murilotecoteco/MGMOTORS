@@ -566,7 +566,7 @@ header {
 
 .btn-denunciar-perfil {
   background: #fff0f0;
-  color: #e84040;
+  color: #b42318;
   border: 1px solid rgba(232, 64, 64, .3);
   padding: 8px 16px;
   border-radius: 20px;
@@ -576,7 +576,7 @@ header {
 }
 
 .btn-denunciar-perfil:hover {
-  background: #e84040;
+  background: #b42318;
   color: var(--branco);
 }
 
@@ -673,7 +673,7 @@ footer {
   background: transparent;
 }
 [data-tema="escuro"] .tab-btn.active {
-  color: var(--azul);
+  color: #60a5fa;
   background: #171717;
   border-bottom-color: var(--azul);
 }

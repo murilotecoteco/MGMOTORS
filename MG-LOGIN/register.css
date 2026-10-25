@@ -19,7 +19,7 @@
 body {
   min-height: 100vh;
   margin: 0;
-  color: var(--auth-text);
+  color: #f4f6f8;
   background: var(--auth-bg);
   font-family: "Ruda", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -49,6 +49,7 @@ body::before {
   width: min(420px, 100%);
   padding: 32px;
   background: var(--auth-card);
+  color: var(--auth-text);
   border: 1px solid var(--auth-border);
   border-radius: 8px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);

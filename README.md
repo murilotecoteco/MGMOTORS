@@ -49,6 +49,21 @@
 - O schema do banco de dados e as políticas RLS estão versionados em `supabase/migrations/`. A captura inicial está em `20260915145500_remote_schema.sql` e as alterações incrementais, como o consentimento legal, ficam em migrations posteriores. Valide tudo em ambiente de teste antes de aplicar em produção.
 - A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor; ela precisa ser publicada e validada no ambiente Supabase antes da demonstração.
 - O fluxo legal possui páginas públicas, aceite obrigatório no cadastro, versionamento `1.0` e registro no perfil por meio da função protegida `registrar_aceite_legal`. O fluxo ainda deve ser validado no projeto Supabase de demonstração.
+- A migration de hardening de segurança foi aplicada no projeto conectado. Testes destrutivos de RLS continuam restritos a staging com conta descartável.
+- As fotos enviadas no chat usam um bucket público; a correção para bucket privado com URL assinada está pendente.
+- A paginação do marketplace é feita no banco pela RPC `get_anuncios_marketplace_paginado`; a tela solicita apenas a página atual.
+- Os toggles de privacidade da tela de configurações ainda não são aplicados pelas policies do banco.
+
+## Documentação de apoio
+
+| Documento | Conteúdo |
+|---|---|
+| `PROXIMOS-PASSOS-20261022.md` | Plano de execução com prioridades e critérios de aceite |
+| `ROTEIRO-TESTES-MANUAIS.md` | Casos de teste, campos de evidência e critério de saída |
+| `ROTEIRO-DEMO.md` | Roteiro cronometrado da banca e plano B offline |
+| `CHATLING.md` | Plano, limites e pendências do chatbot |
+| `AMBIENTE-TESTES-20261022.md` | Versões de sistema, navegadores e ferramentas |
+| `evidencias/README.md` | Organização e regras das evidências |
 
 ---
 
@@ -102,20 +117,21 @@ Este projeto foi construído para praticar e demonstrar:
 # Funcionalidades
 
 - ✅ Marketplace com listagem e busca de anúncios de veículos
-- ✅ Filtros avançados: marca, modelo, preço, categoria e localização (geolocalização)
+- ✅ Filtros por tipo de veículo, marca, preço e estado, com busca por texto e ordenação
 - ✅ Ordenação: mais curtidos, menor preço, maior preço, mais recentes
 - ✅ Publicação e gerenciamento de anúncios com upload de múltiplas fotos
 - ✅ Sistema de curtidas nos anúncios
 - ✅ Favoritos salvos localmente (localStorage)
 - ✅ Chat interno em tempo real entre comprador e vendedor
-- ✅ Envio de fotos no chat
+- ⚠️ Envio de fotos no chat — funcional, mas o bucket ainda é público; correção de privacidade pendente
 - ✅ Perfil de usuário com bio, foto, capa, redes sociais e anúncios
 - ✅ Feed de fotos estilo galeria no perfil
 - ✅ Sistema de seguir/seguidores entre usuários
 - ✅ Avaliação de usuários com estrelas e comentário
 - ✅ Autenticação completa: cadastro, login e recuperação de senha
 - ✅ Aceite legal obrigatório no cadastro, com versões e registro no Supabase
-- ✅ Configurações da conta: tema escuro/claro, tamanho de fonte, notificações e privacidade
+- ✅ Configurações da conta: tema escuro/claro, tamanho de fonte e preferências de interface
+- ⚠️ Toggles de privacidade — a interface existe, mas o banco ainda não aplica todas as preferências
 - ✅ Sistema de denúncias de anúncios, mensagens e perfis
 - ✅ Painel administrativo (Dev Panel) com moderação de anúncios, denúncias e usuários
 - ✅ Banimento e desbanimento de usuários
@@ -127,11 +143,21 @@ Este projeto foi construído para praticar e demonstrar:
 - ✅ Estatísticas animadas em tempo real (total de anúncios, marcas, usuários)
 - ✅ Microanimações e revelação de elementos ao rolar a página
 - ✅ SEO otimizado com meta tags, Open Graph e canonical URLs
-- ✅ Segurança com headers HTTP via Vercel (DENY iframes, nosniff, referrer policy)
+- ✅ Segurança com headers HTTP via Vercel (CSP, DENY iframes, nosniff, referrer policy)
 - ⏳ Simulador de financiamento integrado
 - ⏳ Notificações push em tempo real
 - ⏳ Comparador de veículos
 - ⏳ Exportação de anúncios em PDF
+
+### Funcionalidades não implementadas (não prometer na banca)
+
+- ❌ Editar anúncio (UC09)
+- ❌ Gerenciar categorias (UC15)
+- ❌ Marcar anúncio como vendido (UC20)
+- ❌ Compartilhar anúncio (UC24)
+- ❌ Formulário de contato com envio pelo site (UC25)
+- ⚠️ Notificações persistentes (UC21) — estrutura no banco aplicada; validação funcional entre duas contas pendente
+- ❌ Filtros por ano, modelo, quilometragem, combustível, câmbio e cor
 
 ---
 
@@ -339,16 +365,18 @@ O banco de dados é gerenciado pelo Supabase. O schema e as políticas RLS são 
 
 - **Row Level Security (RLS)** ativado em todas as tabelas — dados privados ficam restritos ao próprio usuário/admin e a interface pública usa a view `usuarios_publicos`
 - **Escape de HTML** (`escapeHtml()` em `mgConfig.js`) aplicado em toda interpolação de dados do usuário em `innerHTML`, prevenindo XSS
+- **Validação de URLs de imagem** (`safeImageUrl()` em `mgConfig.js`): aceita apenas `http:`/`https:` e cai no fallback em caso de payload malicioso
 - **Construção via DOM API** nas telas críticas (chat, perfil): dados do usuário são inseridos via `textContent` e `dataset`, nunca via `innerHTML` direto
 - **Validação de URLs** no campo "Site" do perfil: aceita apenas `http:` e `https:`, bloqueando `javascript:` e outros esquemas perigosos
 - **Validação de username** do Instagram via regex antes de gerar links
 - **Headers HTTP de segurança** configurados no `vercel.json`:
+  - `Content-Security-Policy` com `object-src 'none'` e `base-uri 'self'`
   - `X-Frame-Options: DENY` — impede clickjacking
   - `X-Content-Type-Options: nosniff`
   - `Referrer-Policy: strict-origin-when-cross-origin`
 - **Cache imutável** para assets de imagem (`Cache-Control: public, max-age=31536000, immutable`)
 - **Verificação de banimento** no login: usuários banidos são bloqueados imediatamente
-- **Dev Panel**: possui verificação de email, chamadas de RPC e verificação de campo de moderador no frontend. A autorização definitiva e segura depende exclusivamente das policies RLS e funções do Supabase (como a função `is_admin()`), e não apenas da verificação feita no frontend.
+- **Dev Panel**: a autorização é feita pela função `is_admin()` no Supabase; não há e-mails de administradores nem lista de desenvolvedores no HTML/JS público.
 
 ---
 
@@ -428,10 +456,10 @@ https://mgmotorss.vercel.app
 
 # Roadmap
 
-- [x] Marketplace com filtros avançados e geolocalização
+- [x] Marketplace com busca, filtros por tipo/marca/preço/estado e ordenação
 - [x] Autenticação com Supabase Auth
 - [x] Publicação e gestão de anúncios com fotos
-- [x] Chat em tempo real com envio de fotos
+- [x] Chat em tempo real (envio de fotos em avaliação de privacidade)
 - [x] Perfil de usuário com galeria, seguidores e avaliações
 - [x] Sistema de denúncias e moderação
 - [x] Painel administrativo (Dev Panel)
@@ -440,6 +468,13 @@ https://mgmotorss.vercel.app
 - [x] Headers de segurança HTTP
 - [x] Row Level Security no banco de dados
 - [x] Design responsivo
+- [ ] Editar anúncio (UC09)
+- [ ] Gerenciar categorias (UC15)
+- [ ] Marcar como vendido (UC20)
+- [ ] Compartilhar anúncio (UC24)
+- [ ] Formulário de contato com envio pelo site (UC25)
+- [ ] Validar notificações persistentes (UC21) entre duas contas
+- [ ] Filtros estendidos (ano, modelo, km, combustível, câmbio, cor)
 - [ ] Simulador de financiamento integrado
 - [ ] Notificações push em tempo real
 - [ ] Comparador de veículos

@@ -507,3 +507,106 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   CONFIGURAÇÕES — acabamento visual moderno
+   ══════════════════════════════════════════════════════════════ */
+.configs-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 140% at 88% 0%, rgba(56, 189, 248, 0.38), transparent 60%),
+    linear-gradient(135deg, #1e3a8a, #2563eb 55%, #0ea5e9 130%);
+  box-shadow: 0 24px 54px -28px rgba(37, 99, 235, 0.55);
+}
+.configs-hero > * { position: relative; }
+.configs-hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  animation: mg-gear-float 6s ease-in-out infinite;
+}
+@keyframes mg-gear-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.configs-section {
+  box-shadow: 0 2px 12px rgba(20, 75, 113, 0.05);
+  transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.configs-section:hover {
+  border-color: rgba(37, 99, 235, 0.18);
+  box-shadow: 0 22px 46px -30px rgba(20, 75, 113, 0.4);
+}
+.config-item { transition: background 0.22s ease; }
+.config-item:hover { background: rgba(37, 99, 235, 0.025); }
+.toggle {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.toggle.on {
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.32);
+}
+.toggle::after { transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease; }
+.toggle:hover::after { box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28); }
+.select-config {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.select-config:focus {
+  outline: none;
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+.btn-salvar-configs {
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+}
+.btn-salvar-configs:hover {
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.32);
+}
+.btn-danger { transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.22s ease; }
+.btn-danger:hover { transform: translateY(-1px); }
+.dev-link {
+  background:
+    radial-gradient(ellipse 70% 140% at 90% 0%, rgba(37, 99, 235, 0.35), transparent 60%),
+    linear-gradient(135deg, #0d1b2a, #1a2e44);
+  border-color: rgba(96, 165, 250, 0.22);
+  transition: transform 0.25s var(--mg-ease, ease), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.dev-link:hover {
+  border-color: rgba(96, 165, 250, 0.55);
+  box-shadow: 0 16px 34px -16px rgba(0, 0, 0, 0.5);
+}
+.dev-link-icon { transition: transform 0.25s var(--mg-ease, ease); }
+.dev-link:hover .dev-link-icon { transform: translateY(-2px) scale(1.06); }
+.color-option {
+  transition: transform 0.2s var(--mg-ease, ease), border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.color-option:hover { transform: scale(1.1); }
+.color-option.ativo { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18), 0 4px 12px rgba(0, 0, 0, 0.15); }
+.range-config {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.5), rgba(56, 189, 248, 0.4));
+  height: 6px;
+}
+.range-config::-webkit-slider-thumb {
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  transition: transform 0.2s ease;
+}
+.range-config::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+[data-tema="escuro"] .configs-hero {
+  background: radial-gradient(ellipse 70% 140% at 88% 0%, rgba(37, 99, 235, 0.3), transparent 60%), linear-gradient(135deg, #0b1220, #111827 55%, #071320);
+}
+[data-tema="escuro"] .config-item:hover { background: rgba(96, 165, 250, 0.06); }
+[data-tema="escuro"] .configs-section:hover { border-color: rgba(96, 165, 250, 0.2); }

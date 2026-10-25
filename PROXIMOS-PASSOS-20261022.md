@@ -494,7 +494,7 @@ Atualizar esta seção a cada sessão de trabalho.
 | 22/10/2026 | Auditoria completa | Concluída | `ANALISE-COMPLETA-20261022.md` | — |
 | 22/10/2026 | Levantamentos separados | Concluída | `LEVANTAMENTOS-20261022.md` | — |
 | 22/10/2026 | Plano de ação | Concluída | Este arquivo | — |
-| 22/10/2026 | P0.1 | Implementada no código; staging pendente | Migration de Storage corrigida e validada estaticamente | — |
+| 22/10/2026 | P0.1 | Aplicada no projeto conectado; staging pendente | Migration de Storage corrigida e validada estaticamente | — |
 | | P0.2 | Pendente | | |
 | | P0.3 | Pendente | | |
 | | P0.4 | Pendente | | |
@@ -503,7 +503,7 @@ Atualizar esta seção a cada sessão de trabalho.
 | 22/10/2026 | P0.7 | Concluída no código | 21 canonicals e links públicos padronizados para `mgmotorss.vercel.app` | — |
 | 22/10/2026 | P0.8 | Concluída na versão disponível | Quadros 3 e 6 alinhados ao código; DOCX renderizado em 22 páginas sem defeitos visuais aparentes | — |
 | | P0.9 | Pendente | | |
-| 22/10/2026 | P0.10 | Implementada; execução em staging pendente | Seção destrutiva exige `ALLOW_DESTRUCTIVE_PROBES=1` | — |
+| 22/10/2026 | P0.10 | Implementada; execução em staging pendente | Seção destrutiva exige `ALLOW_DESTRUCTIVE_PROBES=1` + `CONFIRM_STAGING=1`; restauração via `trap` e captura completa do perfil | — |
 | 22/10/2026 | RF14/UC21 | Migration aplicada; teste funcional pendente | `notificacoes` e `trg_notificar_nova_mensagem` confirmados no Supabase remoto | — |
 | 22/10/2026 | P1.1 | Concluída no frontend | Header usa rotas absolutas e funciona em páginas profundas | — |
 | 22/10/2026 | P1.2 | Parcial controlado | `?anunciar=1` abre o modal; `?categoria=` agora filtra tipos presentes no schema e informa quando a categoria editorial não possui campo correspondente | Teste estático + revisão do schema |
@@ -514,5 +514,16 @@ Atualizar esta seção a cada sessão de trabalho.
 | 22/10/2026 | P1.7 | Concluída no frontend | Busca usa debounce de 280 ms | — |
 | 22/10/2026 | P1.8 | Concluída no frontend | Falha de `/api/config` não lança exceção no topo do módulo | — |
 | 22/10/2026 | P1.10 | Concluída no frontend | Quilometragem nula recebe fallback numérico | — |
+| 24/10/2026 | P1.9 | Concluída no frontend | Modais com `role="dialog"`, `aria-modal`, foco preso, ESC e retorno de foco no marketplace, conta e mensagens | — |
+| | P1.11 | Pendente de decisão | Bucket público de fotos do chat; requer decisão entre bucket privado e remoção do upload | — |
+| 25/10/2026 | P1.12 | Concluída | RPC `get_anuncios_marketplace_paginado` pagina e filtra no banco; retorno validado no projeto conectado | — |
+| 24/10/2026 | P2.1 | Roteiro criado; execução pendente | `ROTEIRO-TESTES-MANUAIS.md` com casos, campos e critérios | — |
+| 24/10/2026 | P2.2 | Parcial | `aria-label` em filtros/campos, `role="switch"` + `aria-checked` nos toggles, botões de ícone nomeados; contraste ainda pendente | — |
+| 24/10/2026 | P2.3 | Concluída no frontend | Chat e conta passaram a buscar perfis/fotos em lote (N+1 removido) | — |
+| 22/10/2026 | P2.4 | Concluída | CSP e headers no `vercel.json` | — |
+| 24/10/2026 | P2.5 | Documento criado; retenção a confirmar | `CHATLING.md` com plano, limites e pendências | — |
+| 24/10/2026 | P2.6 | Concluída | README alinhado ao código e às limitações reais | — |
+| 24/10/2026 | P2.7 | Roteiro pronto; ensaio pendente | `ROTEIRO-DEMO.md` cronometrado | — |
+| 24/10/2026 | P2.8 | Checklist pronto; vídeo pendente | Plano B offline documentado | — |
 
 **Legenda:** Pendente · Em andamento · Bloqueada · Concluída

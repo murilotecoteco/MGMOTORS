@@ -73,6 +73,12 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 @media (max-width: 850px) { .anuncio-topo { grid-template-columns: 1fr; } .foto-principal-pagina { height: min(500px, 64vw); } .anuncio-resumo { padding: 30px 26px; } .especificacoes { padding-left: 26px; padding-right: 26px; } }
 @media (max-width: 520px) { body { padding-top: 76px; } .anuncio-page { padding: 0 12px 45px; } .anuncio-breadcrumb { padding: 17px 2px; } .anuncio-galeria { padding: 16px 14px 18px; } .foto-principal-pagina { min-height: 250px; height: 66vw; border-radius: 12px; } .anuncio-resumo { padding: 25px 18px; } .anuncio-resumo h1 { font-size: 30px; } .anuncio-preco-pagina { font-size: 26px; } .anuncio-detalhes { gap: 0 12px; } .detalhe-item { min-height: 61px; } .spec-itens { grid-template-columns: 1fr; gap: 0; } .especificacoes { padding: 32px 18px 18px; } .anuncio-footer { padding: 20px 18px 32px; flex-direction: column; } }
 
+/* Em celulares estreitos o header global quebra em duas linhas. */
+@media (max-width: 416px) {
+  body { padding-top: 118px; }
+  #header-global { min-height: 110px; }
+}
+
 /* Barra de ações do anúncio */
 .anuncio-acoes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 4px; }
 .anuncio-acoes .acao-principal { min-height: 50px; font-size: 13px; letter-spacing: .01em; }
@@ -80,3 +86,71 @@ body { margin: 0; padding-top: 94px; background: var(--anuncio-fundo); color: va
 .anuncio-acoes svg { width: 17px; height: 17px; stroke-width: 2.2; }
 [data-tema="escuro"] .acao-curtir { border-color: #3a4653; background: #202a35; color: #c2ccd7; }
 [data-tema="escuro"] .acao-curtir:hover { border-color: #ef9dad; background: #32232a; color: #ff9bad; }
+
+/* ══════════════════════════════════════════════════════════════
+   ANÚNCIO — acabamento visual moderno
+   ══════════════════════════════════════════════════════════════ */
+.anuncio-conteudo {
+  border-radius: 18px;
+  overflow: hidden;
+  border-color: rgba(19, 45, 67, 0.08);
+  box-shadow: 0 30px 70px -42px rgba(19, 45, 67, 0.45);
+  animation: mg-fade-up 0.45s var(--mg-ease, ease) both;
+}
+@keyframes mg-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anuncio-galeria {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(37, 99, 235, 0.08), transparent 45%),
+    #edf1f4;
+}
+.foto-principal-pagina img { transition: transform 0.5s var(--mg-ease, ease); }
+.foto-principal-pagina:hover img { transform: scale(1.015); }
+.seta-galeria { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: transform 0.22s ease, background 0.22s ease; }
+.miniatura-pagina { transition: transform 0.22s var(--mg-ease, ease), opacity 0.22s ease, border-color 0.22s ease; }
+.miniatura-pagina:hover { transform: translateY(-2px); }
+.anuncio-resumo h1 { letter-spacing: -0.045em; }
+.anuncio-preco-pagina {
+  background: linear-gradient(100deg, #144b71, #2563eb 55%, #0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.detalhe-item { transition: background 0.2s ease, transform 0.2s ease; }
+.detalhe-item:hover { background: rgba(37, 99, 235, 0.035); transform: translateX(2px); }
+.anuncio-acoes .acao-principal,
+.anuncio-acoes .acao-curtir,
+.anuncio-acoes .acao-whatsapp,
+.acao-secundaria {
+  transition: transform 0.22s var(--mg-ease, ease), box-shadow 0.22s ease, background 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+}
+.anuncio-acoes .acao-principal { box-shadow: 0 12px 26px -10px rgba(239, 23, 66, 0.5); }
+.anuncio-acoes .acao-principal:hover { transform: translateY(-2px); box-shadow: 0 16px 32px -12px rgba(239, 23, 66, 0.6); }
+.anuncio-acoes .acao-whatsapp { box-shadow: 0 10px 24px -12px rgba(32, 199, 106, 0.55); }
+.anuncio-acoes .acao-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(32, 199, 106, 0.65); }
+.acao-secundaria:hover { background: rgba(37, 99, 235, 0.08); }
+.spec-grupo summary { transition: background 0.2s ease, padding-left 0.2s ease; }
+.spec-grupo summary:hover { background: rgba(37, 99, 235, 0.035); padding-left: 8px; border-radius: 8px; }
+.spec-itens div { transition: background 0.2s ease; }
+.spec-itens div:hover { background: rgba(37, 99, 235, 0.03); }
+.anuncio-footer a { transition: color 0.2s ease; }
+.anuncio-footer a:hover { color: #2563eb; }
+
+[data-tema="escuro"] .anuncio-conteudo { border-color: rgba(255, 255, 255, 0.08); }
+[data-tema="escuro"] .detalhe-item:hover { background: rgba(96, 165, 250, 0.08); }
+[data-tema="escuro"] .spec-grupo summary:hover,
+[data-tema="escuro"] .spec-itens div:hover { background: rgba(96, 165, 250, 0.08); }
+[data-tema="escuro"] .anuncio-galeria { background: radial-gradient(circle at 20% 10%, rgba(96, 165, 250, 0.1), transparent 45%), #0d151e; }
+
+/* Contraste do estado vazio, breadcrumb e rodapé no tema escuro. */
+[data-tema="escuro"] .anuncio-breadcrumb { color: #aeb8c4; }
+[data-tema="escuro"] .anuncio-breadcrumb a { color: #60a5fa; }
+[data-tema="escuro"] .anuncio-loading p,
+[data-tema="escuro"] .anuncio-erro p { color: #aeb8c4; }
+[data-tema="escuro"] .anuncio-erro h1 { color: #f1f5f9; }
+[data-tema="escuro"] .anuncio-erro i { color: #60a5fa; }
+[data-tema="escuro"] .anuncio-footer { color: #aeb8c4; }
+[data-tema="escuro"] .anuncio-footer a { color: #60a5fa; }
+[data-tema="escuro"] .anuncio-footer a:hover { color: #93c5fd; }

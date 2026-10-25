@@ -860,3 +860,191 @@ footer {
     padding: 12px 8px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   CONTA / PERFIL — acabamento visual moderno
+   ══════════════════════════════════════════════════════════════ */
+.perfil-header {
+  border: 1px solid rgba(20, 75, 113, 0.08);
+  box-shadow: 0 24px 54px -30px rgba(15, 54, 82, 0.35);
+}
+.capa-container {
+  background:
+    radial-gradient(ellipse 70% 120% at 80% 0%, rgba(56, 189, 248, 0.45), transparent 60%),
+    linear-gradient(135deg, #1e3a8a, #2563eb 55%, #0ea5e9 130%);
+  overflow: hidden;
+}
+.capa-imagem { position: relative; z-index: 1; }
+.btn-editar-capa {
+  z-index: 2;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.22s ease, transform 0.22s ease;
+}
+.btn-editar-capa:hover { background: rgba(0, 0, 0, 0.8); transform: translateY(-1px); }
+.foto-perfil {
+  border-color: #fff;
+  box-shadow: 0 12px 30px -10px rgba(15, 54, 82, 0.45), 0 0 0 5px rgba(37, 99, 235, 0.12);
+  transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease;
+}
+.foto-container:hover .foto-perfil {
+  transform: scale(1.02);
+  box-shadow: 0 18px 38px -12px rgba(15, 54, 82, 0.5), 0 0 0 6px rgba(37, 99, 235, 0.16);
+}
+.btn-editar-foto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.32);
+  transition: transform 0.22s var(--mg-ease, ease), box-shadow 0.22s ease;
+}
+.btn-editar-foto:hover { transform: scale(1.08); box-shadow: 0 10px 22px rgba(37, 99, 235, 0.42); }
+.nome-usuario { letter-spacing: -0.02em; }
+.stat-item {
+  padding: 4px 10px;
+  border-radius: 12px;
+  transition: background 0.22s ease, transform 0.22s var(--mg-ease, ease);
+}
+.stat-item:hover { background: rgba(37, 99, 235, 0.07); transform: translateY(-2px); }
+.stat-number { font-variant-numeric: tabular-nums; }
+.redes-link {
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.redes-link:hover { transform: translateY(-1px); text-decoration: none; }
+
+/* Abas com indicador animado */
+.tabs-container {
+  border: 1px solid rgba(20, 75, 113, 0.08);
+  box-shadow: 0 18px 44px -30px rgba(15, 54, 82, 0.3);
+}
+.tabs { position: relative; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.22s ease, background 0.22s ease;
+}
+.tab-btn::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -2px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.28s var(--mg-ease, ease);
+}
+.tab-btn:hover { color: var(--azul); background: rgba(37, 99, 235, 0.04); }
+.tab-btn.active { border-bottom-color: transparent; }
+.tab-btn.active::after { transform: scaleX(1); }
+.tab-content.active { animation: mg-fade-up 0.35s var(--mg-ease, ease) both; }
+@keyframes mg-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Formulário */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+.btn-salvar {
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+}
+.btn-salvar:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.32);
+}
+.btn-salvar:active { transform: translateY(0) scale(0.985); }
+.btn-danger { transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease; }
+.btn-danger:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(220, 53, 69, 0.28); }
+.btn-seguir,
+.btn-denunciar-perfil {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+.btn-seguir:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28); }
+
+/* Anúncios e fotos */
+.anuncio-card {
+  border: 1px solid rgba(20, 75, 113, 0.08);
+  box-shadow: 0 2px 10px rgba(20, 75, 113, 0.06);
+  transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.anuncio-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(37, 99, 235, 0.24);
+  box-shadow: 0 28px 56px -26px rgba(15, 54, 82, 0.42);
+}
+.anuncio-card img { transition: transform 0.55s var(--mg-ease, ease); }
+.anuncio-card:hover img { transform: scale(1.04); }
+.anuncio-preco {
+  background: linear-gradient(100deg, #16a34a, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.btn-excluir-anuncio { transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease; }
+.btn-excluir-anuncio:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 8px 18px rgba(220, 53, 69, 0.26); }
+.fotos-toolbar { border-radius: 14px; }
+.post-card, .post-card-outro { transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease; }
+.post-card:hover, .post-card-outro:hover { transform: translateY(-4px); box-shadow: 0 18px 38px -18px rgba(16, 40, 60, 0.4); }
+
+/* Modais da conta */
+.modal-conteudo,
+.modal-foto-post-conteudo {
+  animation: mg-fade-up 0.3s var(--mg-ease, ease) both;
+  box-shadow: 0 34px 80px -24px rgba(2, 8, 23, 0.5);
+}
+
+/* Modo escuro */
+[data-tema="escuro"] .perfil-header,
+[data-tema="escuro"] .tabs-container { border-color: rgba(255, 255, 255, 0.08); }
+[data-tema="escuro"] .stat-item:hover { background: rgba(96, 165, 250, 0.1); }
+[data-tema="escuro"] .tab-btn:hover { background: rgba(96, 165, 250, 0.08); }
+[data-tema="escuro"] .form-group input,
+[data-tema="escuro"] .form-group textarea,
+[data-tema="escuro"] .form-group select {
+  background: #111;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--texto);
+}
+[data-tema="escuro"] .anuncio-card { background: var(--branco); border-color: rgba(255, 255, 255, 0.08); }
+[data-tema="escuro"] .anuncio-card:hover { border-color: rgba(96, 165, 250, 0.35); }
+
+/* As regras responsivas do rodapé acima ficam antes das regras base do
+   rodapé e acabavam sendo sobrescritas. Reaplicamos aqui, no fim do arquivo,
+   para o rodapé não estourar a largura no celular. */
+@media (max-width: 768px) {
+  footer {
+    padding: 30px 16px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

@@ -78,7 +78,7 @@ body {
     width: auto;
 }
 
-h1 {
+main > h1, main > h2 {
     text-align: center;
     margin-top: 3%;
     color: var(--azul);
@@ -131,4 +131,66 @@ footer {
     padding: 20px;
     margin-top: 2%;
     color: white;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BLOG (páginas de marca) — acabamento visual moderno
+   ══════════════════════════════════════════════════════════════ */
+body {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(37, 99, 235, 0.06), transparent 32%),
+    radial-gradient(circle at 88% 100%, rgba(56, 189, 248, 0.05), transparent 34%),
+    var(--fundo);
+}
+main > h1, main > h2 {
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -0.02em;
+  background: linear-gradient(100deg, #1d4ed8, #2563eb 55%, #0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0 20px;
+}
+.box {
+  position: relative;
+  border: 1px solid rgba(20, 75, 113, 0.07);
+  border-radius: 20px;
+  box-shadow: 0 18px 44px -32px rgba(20, 75, 113, 0.4);
+  transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  opacity: 0.9;
+}
+.box:hover {
+  transform: translateY(-4px);
+  border-color: rgba(37, 99, 235, 0.18);
+  box-shadow: 0 30px 60px -32px rgba(20, 75, 113, 0.45);
+}
+.text { line-height: 1.75; }
+.pic { overflow: hidden; border-radius: 12px; }
+.pic img {
+  border-radius: 12px;
+  transition: transform 0.55s var(--mg-ease, ease), box-shadow 0.3s ease;
+  box-shadow: 0 14px 30px -16px rgba(20, 75, 113, 0.35);
+}
+.box:hover .pic img { transform: scale(1.035); }
+footer {
+  margin-top: 60px;
+  background:
+    radial-gradient(ellipse 60% 120% at 50% 0%, rgba(37, 99, 235, 0.22), transparent 62%),
+    linear-gradient(135deg, #0b0d10, #111827 60%, #0d1a2b);
+}
+.logotipo { letter-spacing: -0.02em; }
+
+@media (max-width: 760px) {
+  .box { flex-direction: column; gap: 28px; padding: 32px 24px; }
+  .pic img { max-width: 100%; }
+  .box::before { width: 100%; height: 4px; }
 }

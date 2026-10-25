@@ -4,3 +4,7 @@ backups/
 # Arquivos temporários de renderização/testes locais.
 .tmp/
 *.log
+
+# Evidências podem conter dados pessoais. Versionar apenas as instruções da pasta.
+evidencias/*
+!evidencias/README.md

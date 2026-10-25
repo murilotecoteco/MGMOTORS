@@ -14,6 +14,11 @@
 | `PROXIMOS-PASSOS-20261022.md` | O que fazer, em que ordem, com critério de aceite e cronograma. | Usar no dia a dia; marcar checkboxes. |
 | `ANALISE-COMPLETA-20261022.md` | Relatório completo, com análise estendida e patches de código/SQL. | Consultar para implementar ou defender decisões. |
 | `ANALISE-BANCA.md` | Auditoria anterior (697 linhas), preservada como histórico. | Comparar evolução; não editar. |
+| `ROTEIRO-TESTES-MANUAIS.md` | Casos de teste manuais, campos de evidência e critério de saída. | Executar antes da banca. |
+| `ROTEIRO-DEMO.md` | Roteiro cronometrado da demonstração e plano B offline. | Ensaiar e usar no dia. |
+| `CHATLING.md` | Plano, limites, retenção e pendências do chatbot. | Antes de prometer algo sobre o chatbot. |
+| `AMBIENTE-TESTES-20261022.md` | Versões de sistema, navegadores e ferramentas. | Preencher a coluna de ambiente nos testes. |
+| `evidencias/README.md` | Organização e regras das evidências. | Guardar logs, prints e vídeos. |
 
 **Ordem de leitura recomendada:** Índice → Levantamentos → Próximos passos → relatório completo apenas nas partes necessárias.
 
@@ -24,11 +29,10 @@
 ### Situação
 
 - Aplicativo real: `https://mgmotorss.vercel.app`.
-- Domínio antigo `mgmotors.vercel.app` serve **outro** aplicativo.
-- 21 canonicals apontam para o domínio errado.
-- Teste de RLS em produção: **17 PASS / 4 FAIL**.
-- Migration de hardening: **não versionada e não aplicada**.
-- Artigo afirma UCs que não existem: **09, 15, 20, 24, 25**.
+- Canonicals padronizados para `mgmotorss.vercel.app` (21 arquivos).
+- Teste de RLS em produção: **17 PASS / 4 FAIL** até a migration ser aplicada.
+- Migration de hardening: **versionada e aplicada** no projeto conectado; validação destrutiva permanece pendente em staging.
+- Artigo afirma UCs que não existem: **09, 15, 20, 24, 25** — ajustar antes da banca.
 
 ### As quatro falhas de segurança
 
@@ -37,17 +41,19 @@
 3. `anon` executa `promover_moderador` (HTTP 204).
 4. `anon` executa `criar_tabela_carrinho` (HTTP 204).
 
-### O bug dentro da correção
+### O bug que havia dentro da correção
 
-A migration tenta remover `fc_insert`/`fg_insert`, mas as policies reais são `fc_upload`/`fg_upload`. Os `DROP` não fazem nada.
+A migration tentava remover `fc_insert`/`fg_insert`, mas as policies reais são `fc_upload`/`fg_upload`. Os `DROP` eram no-ops. **Corrigido e aplicado**; falta a validação destrutiva em staging.
 
-### Os cinco bugs que mais atrapalham a demo
+### Os cinco bugs de demo já corrigidos no frontend
 
 1. Links do header quebram nos blogs.
 2. `?categoria=` e `?anunciar=1` são ignorados.
 3. Aba “Pausados” não tem botão.
 4. Aprovação de anúncio ignora erro.
 5. Toast de moderação é invisível.
+
+Correções implementadas no commit de 22/10/2026; falta validar no domínio oficial.
 
 ### A recomendação
 
@@ -62,11 +68,12 @@ Corrigir P0, consertar P1 e **reduzir as alegações do artigo**. Não implement
 | Auditoria técnica | Concluída | 22/10/2026 |
 | Levantamentos | Concluídos | `LEVANTAMENTOS-20261022.md` |
 | Plano de ação | Concluído | `PROXIMOS-PASSOS-20261022.md` |
-| Correções de segurança | Pendentes | Migration não aplicada |
-| Correções de demo | Pendentes | P1 não iniciado |
-| Correções do artigo | Pendentes | Quadros 3 e 6 |
-| Figuras reais | Pendentes | Figuras 6–8 são mockups |
-| Evidências para a banca | Pendentes | Ainda não coletadas |
+| Correções de segurança | Parcial | Migration aplicada; falta validar as sondas destrutivas em staging |
+| Correções de demo | Concluídas no frontend | P1 implementado; falta teste no domínio oficial |
+| Correções do artigo | Parcial | Quadros 3 e 6 ajustados na versão disponível; Figuras 6–8 pendentes |
+| Figuras reais | Pendentes | Figuras 6–8 ainda são mockups |
+| Evidências para a banca | Roteiro pronto; coleta pendente | `ROTEIRO-TESTES-MANUAIS.md` e `evidencias/` |
+| Documentação de apoio | Concluída | README, roteiro de demo e Chatling |
 
 ---
 
@@ -95,10 +102,11 @@ Detalhes em `PROXIMOS-PASSOS-20261022.md`, seção 6.
 
 ## 6. Evidências sugeridas
 
-Criar uma pasta `evidencias/` (fora do controle de versão, se contiver dados pessoais) com:
+Criar uma pasta `evidencias/` (com `README.md` versionado; arquivos com dados pessoais ficam fora do controle de versão) com:
 
 ```
 evidencias/
+├── README.md
 ├── rls-antes.txt
 ├── rls-depois.txt
 ├── xss-teste.png

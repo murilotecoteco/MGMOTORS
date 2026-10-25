@@ -189,7 +189,7 @@ header {
 /* ===================== MENU SUMÁRIO (Navegação de Página) ===================== */
 .sumario {
   position: sticky;
-  top: 70px; /* Logo abaixo do header */
+  top: var(--mg-header-height, 76px); /* Logo abaixo do header */
   z-index: 900;
   background: var(--branco);
   border-bottom: 1px solid var(--cinza);
@@ -434,3 +434,93 @@ footer {
 [data-tema="escuro"] .bloco-header h2, [data-tema="escuro"] .card h3, [data-tema="escuro"] .passo h3, [data-tema="escuro"] .col-doc h3, [data-tema="escuro"] .col-doc ul li strong { color: var(--texto); }
 [data-tema="escuro"] .passo, [data-tema="escuro"] .col-doc h3 { border-color: var(--cinza); }
 [data-tema="escuro"] .aviso-doc { background-color: var(--fundo); border-color: var(--cinza); }
+
+/* ══════════════════════════════════════════════════════════════
+   DICAS — acabamento visual moderno
+   ══════════════════════════════════════════════════════════════ */
+.hero {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 100% at 82% 0%, rgba(37, 99, 235, 0.3), transparent 62%),
+    radial-gradient(ellipse 50% 60% at 8% 100%, rgba(56, 189, 248, 0.12), transparent 60%),
+    linear-gradient(135deg, #0b0d10, #111827 58%, #0d1a2b);
+}
+.hero-tag {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.24), rgba(56, 189, 248, 0.12));
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  color: #93c5fd;
+}
+.hero h1 .destaque {
+  background: linear-gradient(100deg, #60a5fa, #38bdf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sumario {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px -20px rgba(16, 24, 40, 0.3);
+}
+.sumario a { position: relative; }
+.sumario a::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s var(--mg-ease, ease);
+}
+.sumario a:hover::after,
+.sumario a.ativo::after { transform: scaleX(1); }
+.sumario a.ativo { border-bottom-color: transparent; }
+.bloco-icone {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(56, 189, 248, 0.08));
+  transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease;
+}
+.bloco:hover .bloco-icone {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 22px -12px rgba(37, 99, 235, 0.45);
+}
+.card {
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.04);
+  transition: transform 0.3s var(--mg-ease, ease), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 28px 56px -28px rgba(16, 24, 40, 0.35);
+  border-color: rgba(37, 99, 235, 0.28);
+}
+.card-alerta { position: relative; overflow: hidden; }
+.card-alerta::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--mg-gradient-blue, linear-gradient(135deg, #2563eb, #0ea5e9));
+}
+.num {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(56, 189, 248, 0.08));
+  color: var(--azul);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+}
+.passo { transition: background 0.22s ease, padding-left 0.22s var(--mg-ease, ease); }
+.passo:hover { background: rgba(37, 99, 235, 0.035); padding-left: 10px; border-radius: 10px; }
+.aviso-doc {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(56, 189, 248, 0.05));
+  border-color: rgba(37, 99, 235, 0.18);
+}
+
+[data-tema="escuro"] .hero {
+  background: radial-gradient(ellipse 70% 100% at 82% 0%, rgba(37, 99, 235, 0.22), transparent 62%), linear-gradient(135deg, #050608, #0b1018 58%, #071320) !important;
+}
+[data-tema="escuro"] .sumario { background: rgba(17, 17, 17, 0.92); }
+[data-tema="escuro"] .card:hover { border-color: rgba(96, 165, 250, 0.3); }
+[data-tema="escuro"] .passo:hover { background: rgba(96, 165, 250, 0.06); }

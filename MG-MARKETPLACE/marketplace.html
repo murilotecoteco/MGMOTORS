@@ -659,7 +659,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
           p_seed: seedAleatorio
         }
       );
-      if (error) { console.error("RPC get_anuncios_marketplace_paginado error:", error); window.mgToast?.("Não foi possível carregar os anúncios.", "error"); return; }
+      if (error) { console.error("RPC get_anuncios_marketplace_paginado_v2 error:", error); window.mgToast?.("Não foi possível carregar os anúncios.", "error"); return; }
 
       for (const a of anuncios || []) {
         a.marcas  = { nome: a.marca_nome  || a.marca_texto  || "" };

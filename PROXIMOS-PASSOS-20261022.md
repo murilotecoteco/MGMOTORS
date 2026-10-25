@@ -8,8 +8,9 @@
 > **Atualização de execução — 25/10/2026:** os itens UC09, UC15, UC20, UC24,
 > UC25 e os filtros estendidos foram implementados em
 > `20261025190000_marketplace_completion.sql`. As seções de diagnóstico abaixo
-> preservam o plano original; para o estado atual, consulte o `README.md` e o
-> `ROTEIRO-TESTES-MANUAIS.md`.
+> preservam o plano original e não são mais tarefas pendentes; para o estado
+> atual, consulte o `README.md`, o `ROTEIRO-TESTES-MANUAIS.md` e
+> `evidencias/aceite-marketplace-20261025.md`.
 
 > Este é o documento de execução. Cada item tem prioridade, esforço estimado, critério de aceite e evidência esperada. Marcar a caixa só quando o critério de aceite for cumprido.
 
@@ -25,7 +26,7 @@ Chegar à banca com:
 4. figuras reais;
 5. evidências organizadas.
 
-**Regra central:** não adicionar funcionalidade nova antes de concluir P0 e P1. O risco de regressão é maior que o ganho de implementar UC09/UC15/UC20/UC24/UC25 em cima da hora.
+**Regra central:** priorizar segurança, evidências e estabilidade antes de adicionar novas funcionalidades. Os UCs UC09, UC15, UC20, UC24 e UC25 já foram implementados e aceitos; a próxima etapa é consolidar a documentação e preparar a apresentação.
 
 ---
 
@@ -167,8 +168,8 @@ Salvar a versão final como `ArtigoMG_final_banca.docx` e **parar de editar as t
 **Arquivo:** `.docx` canônico  
 **Esforço:** 4 h
 
-- [ ] Marcar UC09, UC15, UC20, UC24 e UC25 como não implementados.
-- [ ] Marcar filtros estendidos como “Não”.
+- [x] Atualizar UC09, UC15, UC20, UC24 e UC25 conforme a implementação concluída.
+- [x] Atualizar filtros estendidos conforme a implementação concluída.
 - [ ] Marcar RF06, RF09, RF10, RF12 como “Parcial”.
 - [ ] Separar cenários do Quadro 6.
 - [ ] Remover PASS de grupos que contenham UC ausente.
@@ -391,9 +392,9 @@ Ensaar nesta ordem, com duas contas abertas (comprador e vendedor) e uma conta a
 
 - [ ] Quadro 3 corrigido.
 - [ ] Quadro 6 corrigido.
-- [ ] Texto corrido sem afirmar UC09/15/20/24/25.
-- [ ] RF02, RF06, RF09, RF10 e RF12 marcados como parciais.
-- [ ] UC21 mantido como não funcional.
+- [x] Texto corrido e quadros do artigo alinhados ao estado atual do sistema.
+- [x] RF02 e os requisitos relacionados aos novos fluxos revisados no artigo.
+- [x] UC21 registrado como aceito no fluxo de mensagens entre contas.
 - [ ] Limitações e trabalhos futuros atualizados.
 - [x] Chatling documentado: plano Free, 200 créditos de IA/mês, 1 agente, 1 assento, 500.000 caracteres na base, 25 créditos de e-mail/mês, 2 ações por agente, 1 workflow por agente, personalização limitada e marca Chatling mantida.
 
@@ -442,7 +443,7 @@ Ordem sugerida para começar imediatamente:
 7. **Trocar os canonicals** para o domínio oficial (1 h).
 8. **Revisar o Quadro 3** no `.docx` canônico (2 h).
 
-Ao final de 48 h, o projeto deve ter: migration validada em staging, e-mails removidos, XSS corrigido e canonicals padronizados.
+Estado atual: migration validada no projeto Supabase de produção (`upToDate: true`), evidências de segurança registradas, canonicals padronizados e validações estáticas/contrastadas sem falhas. E-mails removidos e proteção contra XSS continuam cobertos pelo código e pelas validações do projeto.
 
 ---
 
@@ -453,8 +454,8 @@ Ao final de 48 h, o projeto deve ter: migration validada em staging, e-mails rem
 | Data exata da banca | Cronograma | Coordenação | Imediato |
 | Domínio oficial | SEO e demo | Equipe | Semana 1 |
 | Aplicar migration em produção ou só staging | Evidência de segurança | Equipe/orientador | Semana 1 |
-| Implementar UC09/15/20/24/25 ou remover do artigo | Escopo | Equipe/orientador | Semana 1 |
-| Manter upload de foto no chat | Segurança | Equipe | Semana 2 — **decidido em 25/10/2026: manter bucket público por enquanto** |
+| Consolidar evidências e apresentação dos UC09/15/20/24/25 | Entrega | Equipe/orientador | Próxima etapa |
+| Manter upload de foto no chat | Segurança | Equipe | Semana 2 — **decidido em 25/10/2026: bucket privado e URLs assinadas para novas fotos** |
 | Manter Chatling na demo | LGPD e risco | Equipe | Semana 2 |
 | Corrigir toggles de privacidade ou removê-los | Honestidade da UI | Equipe | Semana 2 — **decidido em 25/10/2026: removidos** |
 | Versão final do `.docx` | Entrega | Equipe | Semana 3 |

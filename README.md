@@ -117,7 +117,7 @@ Este projeto foi construído para praticar e demonstrar:
 # Funcionalidades
 
 - ✅ Marketplace com listagem e busca de anúncios de veículos
-- ✅ Filtros por tipo de veículo, marca, preço e estado, com busca por texto e ordenação
+- ✅ Filtros por tipo de veículo, marca, modelo, preço, estado, ano, quilometragem, combustível, câmbio e cor, com busca por texto e ordenação
 - ✅ Ordenação: mais curtidos, menor preço, maior preço, mais recentes
 - ✅ Publicação e gerenciamento de anúncios com upload de múltiplas fotos
 - ✅ Sistema de curtidas nos anúncios
@@ -166,7 +166,7 @@ Este projeto foi construído para praticar e demonstrar:
 | Página | Rota | Descrição |
 |--------|------|-----------|
 | **Início** | `/MG-INICIO/inicio.html` | Landing page com hero, busca, veículos em destaque, categorias, diferenciais e depoimentos |
-| **Marketplace** | `/MG-MARKETPLACE/marketplace.html` | Listagem completa de anúncios com filtros, busca, modal de detalhes e publicação de anúncio |
+| **Marketplace** | `/MG-MARKETPLACE/marketplace.html` | Listagem completa de anúncios com filtros avançados, busca, modal de detalhes e publicação de anúncio |
 | **Mensagens** | `/MG-MENSAGENS/mensagens.html` | Chat em tempo real com lista de conversas, envio de texto e fotos |
 | **Perfil / Conta** | `/MG-CONTA/conta.html` | Perfil público do usuário com anúncios, galeria de fotos, seguidores, seguindo e avaliações |
 | **Dicas** | `/MG-DICAS/dicas.html` | Guia completo de compra e venda segura: golpes comuns, documentação, inspeção mecânica e negociação |
@@ -456,7 +456,7 @@ https://mgmotorss.vercel.app
 
 # Roadmap
 
-- [x] Marketplace com busca, filtros por tipo/marca/preço/estado e ordenação
+- [x] Marketplace com busca, filtros avançados e ordenação
 - [x] Autenticação com Supabase Auth
 - [x] Publicação e gestão de anúncios com fotos
 - [x] Chat em tempo real (envio de fotos em avaliação de privacidade)

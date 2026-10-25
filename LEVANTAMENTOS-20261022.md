@@ -6,6 +6,8 @@
 **Banco:** Supabase `ilswwmjojfuvcgyymymb.supabase.co`  
 **Natureza:** levantamento técnico e acadêmico. Nenhuma alteração foi feita em código, banco ou produção.
 
+> **Nota de atualização — 25/10/2026:** este arquivo é um retrato histórico da auditoria realizada em 22/10/2026. Os itens apontados como ausentes naquela data foram posteriormente implementados e aceitos; consulte `README.md`, `ROTEIRO-TESTES-MANUAIS.md` e `evidencias/aceite-marketplace-20261025.md` para o estado atual.
+
 > Este documento reúne **o que foi verificado**. O planejamento das correções está em `PROXIMOS-PASSOS-20261022.md`. O relatório completo, com patches e análise estendida, está em `ANALISE-COMPLETA-20261022.md`.
 
 ---

@@ -448,9 +448,9 @@ Ao final de 48 h, o projeto deve ter: migration validada em staging, e-mails rem
 | Domínio oficial | SEO e demo | Equipe | Semana 1 |
 | Aplicar migration em produção ou só staging | Evidência de segurança | Equipe/orientador | Semana 1 |
 | Implementar UC09/15/20/24/25 ou remover do artigo | Escopo | Equipe/orientador | Semana 1 |
-| Manter upload de foto no chat | Segurança | Equipe | Semana 2 |
+| Manter upload de foto no chat | Segurança | Equipe | Semana 2 — **decidido em 25/10/2026: manter bucket público por enquanto** |
 | Manter Chatling na demo | LGPD e risco | Equipe | Semana 2 |
-| Corrigir toggles de privacidade ou removê-los | Honestidade da UI | Equipe | Semana 2 |
+| Corrigir toggles de privacidade ou removê-los | Honestidade da UI | Equipe | Semana 2 — **decidido em 25/10/2026: removidos** |
 | Versão final do `.docx` | Entrega | Equipe | Semana 3 |
 
 ---
@@ -515,10 +515,12 @@ Atualizar esta seção a cada sessão de trabalho.
 | 22/10/2026 | P1.8 | Concluída no frontend | Falha de `/api/config` não lança exceção no topo do módulo | — |
 | 22/10/2026 | P1.10 | Concluída no frontend | Quilometragem nula recebe fallback numérico | — |
 | 24/10/2026 | P1.9 | Concluída no frontend | Modais com `role="dialog"`, `aria-modal`, foco preso, ESC e retorno de foco no marketplace, conta e mensagens | — |
-| | P1.11 | Pendente de decisão | Bucket público de fotos do chat; requer decisão entre bucket privado e remoção do upload | — |
+| 25/10/2026 | P1.11 | Decidida: manter como está | Bucket público de fotos do chat mantido por decisão do time; risco documentado no README | — |
+| 25/10/2026 | Toggles de privacidade | Concluída | Removidos de Configurações os toggles/selects sem efeito (notificações, privacidade, localização, chat, tamanho da fonte); permanecem tema escuro, senha e sessões | `npm test` |
 | 25/10/2026 | P1.12 | Concluída | RPC `get_anuncios_marketplace_paginado` pagina e filtra no banco; retorno validado no projeto conectado | — |
 | 24/10/2026 | P2.1 | Roteiro criado; execução pendente | `ROTEIRO-TESTES-MANUAIS.md` com casos, campos e critérios | — |
 | 24/10/2026 | P2.2 | Parcial | `aria-label` em filtros/campos, `role="switch"` + `aria-checked` nos toggles, botões de ícone nomeados; contraste ainda pendente | — |
+| 25/10/2026 | P2.2 | Contraste revisado | Textos secundários em `#888`/`#999`/`#7b8490`/`#737b88` (3,5–4,3:1 sobre branco) trocados por `var(--texto-suave)` (≥4,8:1) em conta, mensagens, anúncio e marketplace; `:focus-visible` global já existente conferido | Cálculo WCAG das cores + `npm test` |
 | 24/10/2026 | P2.3 | Concluída no frontend | Chat e conta passaram a buscar perfis/fotos em lote (N+1 removido) | — |
 | 22/10/2026 | P2.4 | Concluída | CSP e headers no `vercel.json` | — |
 | 24/10/2026 | P2.5 | Documento criado; retenção a confirmar | `CHATLING.md` com plano, limites e pendências | — |

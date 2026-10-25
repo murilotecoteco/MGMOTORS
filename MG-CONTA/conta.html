@@ -153,7 +153,7 @@
 
 <!-- Modal Seguidores/Seguindo --><div id="modal-seguidores" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;" role="dialog" aria-modal="true" aria-labelledby="modal-seg-titulo">
   <div style="background:var(--branco,#fff);padding:28px;border-radius:20px;width:420px;max-width:96%;position:relative;max-height:80vh;overflow-y:auto;">
-    <button type="button" onclick="mgModal.close('modal-seguidores')" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:#888;background:none;border:none;padding:0;line-height:1;" aria-label="Fechar seguidores">×</button>
+    <button type="button" onclick="mgModal.close('modal-seguidores')" style="position:absolute;top:14px;right:18px;font-size:26px;cursor:pointer;color:var(--texto-suave,#6b7280);background:none;border:none;padding:0;line-height:1;" aria-label="Fechar seguidores">×</button>
     <h2 id="modal-seg-titulo" style="color:#144b71;margin-bottom:16px;font-size:18px;font-weight:900;"></h2>
     <div id="modal-seg-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
@@ -162,7 +162,7 @@
 <!-- Modal denúncia -->
 <div id="modal-denuncia" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:2000;justify-content:center;align-items:center;" role="dialog" aria-modal="true" aria-labelledby="modal-denuncia-conta-titulo">
   <div style="background:white;padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;">
-    <button type="button" onclick="mgModal.close('modal-denuncia')" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:#888;background:none;border:none;padding:0;line-height:1;" aria-label="Fechar denúncia">×</button>
+    <button type="button" onclick="mgModal.close('modal-denuncia')" style="position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:var(--texto-suave,#6b7280);background:none;border:none;padding:0;line-height:1;" aria-label="Fechar denúncia">×</button>
     <h2 id="modal-denuncia-conta-titulo" style="color:#144b71;margin-bottom:16px;"><i data-lucide="flag" aria-hidden="true" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i> Denunciar Perfil</h2>
     <select id="denuncia-motivo" aria-label="Motivo da denúncia" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;">
       <option value="">Selecione o motivo</option>
@@ -690,7 +690,7 @@ document.querySelectorAll(".tab-btn[data-tab-outro]").forEach(btn => {
 
 async function carregarPostsOutro(uid) {
   const grid = document.getElementById("posts-grid-outro"); if (!grid) return;
-  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;">Carregando...</p>';
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--texto-suave,#6b7280);font-size:13px;">Carregando...</p>';
   const { data } = await supabase.from("posts_usuario").select("*").eq("usuario_id", uid).order("criado_em", {ascending: false});
   if (!data || data.length === 0) { grid.innerHTML = '<div class="conta-empty"><strong>Nenhuma foto publicada ainda</strong><span>As fotos compartilhadas aparecem nesta galeria.</span></div>'; return; }
   grid.innerHTML = data.map(p => `
@@ -710,7 +710,7 @@ async function abrirModalSeguidores(tipo) {
   const lista = document.getElementById("modal-seg-lista");
   const titulo = document.getElementById("modal-seg-titulo");
   titulo.textContent = tipo === 'seguidores' ? 'Seguidores' : 'Seguindo';
-  lista.innerHTML = '<p style="text-align:center;color:#888;">Carregando...</p>';
+  lista.innerHTML = '<p style="text-align:center;color:var(--texto-suave,#6b7280);">Carregando...</p>';
   mgModal.open("modal-seguidores");
   let users = [];
   const coluna = tipo === 'seguidores' ? 'seguidor_id' : 'seguido_id';
@@ -721,11 +721,11 @@ async function abrirModalSeguidores(tipo) {
     const { data: perfisPublicos } = await supabase.from("usuarios_publicos").select("id,nome,foto,cidade").in("id", ids);
     users = perfisPublicos || [];
   }
-  if (!users.length) { lista.innerHTML = '<p style="text-align:center;color:#888;">Nenhum usuário aqui ainda.</p>'; return; }
+  if (!users.length) { lista.innerHTML = '<p style="text-align:center;color:var(--texto-suave,#6b7280);">Nenhum usuário aqui ainda.</p>'; return; }
   lista.innerHTML = users.map(u => `
     <a href="conta.html?id=${u.id}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1.5px solid rgba(20,75,113,.1);text-decoration:none;color:inherit;transition:background .2s;" onmouseover="this.style.background='rgba(20,75,113,.05)'" onmouseout="this.style.background=''">
       <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'">
-      <div><div style="font-weight:800;font-size:14px;color:#144b71;">${escapeHtml(u.nome)||'Usuário'}</div>${u.cidade?`<div style="font-size:12px;color:#888;">${escapeHtml(u.cidade)}</div>`:''}</div>
+      <div><div style="font-weight:800;font-size:14px;color:#144b71;">${escapeHtml(u.nome)||'Usuário'}</div>${u.cidade?`<div style="font-size:12px;color:var(--texto-suave,#6b7280);">${escapeHtml(u.cidade)}</div>`:''}</div>
     </a>
   `).join('');
 }
@@ -739,7 +739,7 @@ async function carregarPostsFotos() {
   if (!uid) return;
   const grid = document.getElementById("posts-grid");
   if (!grid) return;
-  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#888;font-size:13px;">Carregando...</p>';
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--texto-suave,#6b7280);font-size:13px;">Carregando...</p>';
   const { data } = await supabase.from("posts_usuario").select("*").eq("usuario_id", uid).order("criado_em", {ascending: false});
   if (!data || data.length === 0) {
     grid.innerHTML = '<div class="conta-empty"><strong>Nenhuma foto publicada ainda</strong><span>As fotos compartilhadas aparecem nesta galeria.</span></div>'; return;

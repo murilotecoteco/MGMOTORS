@@ -60,7 +60,7 @@
 <!-- Modal Denúncia de mensagem/foto -->
 <div id="modal-denuncia-msg" role="dialog" aria-modal="true" aria-labelledby="denuncia-msg-titulo" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:3000;justify-content:center;align-items:center;">
   <div style="background:var(--branco,#fff);padding:32px;border-radius:20px;width:460px;max-width:96%;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.35);">
-    <button type="button" onclick="mgModal.close('modal-denuncia-msg')" aria-label="Fechar denúncia" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:#888;background:none;border:none;line-height:1;">×</button>
+    <button type="button" onclick="mgModal.close('modal-denuncia-msg')" aria-label="Fechar denúncia" style="position:absolute;top:16px;right:20px;font-size:26px;cursor:pointer;color:var(--texto-suave,#6b7280);background:none;border:none;line-height:1;">×</button>
     <h2 id="denuncia-msg-titulo" style="color:#144b71;margin-bottom:6px;font-size:19px;font-weight:900;"><i data-lucide="flag" aria-hidden="true" style="width:18px;height:18px;vertical-align:-2px;margin-right:6px;"></i> Denunciar</h2>
     <p id="denuncia-msg-subtitulo" style="font-size:13px;color:#4a6070;margin-bottom:16px;">Selecione o motivo da denúncia.</p>
     <select id="denuncia-msg-motivo" aria-label="Motivo da denúncia" style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(20,75,113,.15);font-size:14px;margin-bottom:10px;font-family:inherit;background:#f4f8fb;color:#1a2a38;">

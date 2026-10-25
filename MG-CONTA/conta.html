@@ -38,7 +38,7 @@
     </div>
     <div class="perfil-info">
       <div class="foto-container">
-        <img id="fotoPerfil" class="foto-perfil" src="https://via.placeholder.com/150" alt="Foto" loading="lazy">
+        <img id="fotoPerfil" class="foto-perfil" src="../imagens/usuario.png" alt="Foto" loading="lazy">
         <button id="btnEditarFoto" class="btn-editar-foto" aria-label="Editar foto de perfil"><i data-lucide="pencil" aria-hidden="true" style="width:14px;height:14px;"></i></button>
         <input type="file" id="uploadFoto" accept="image/*" style="display:none">
       </div>
@@ -313,7 +313,7 @@ async function carregarPerfil() {
     return;
   }
   nomeExibido.textContent = perfil.nome || "Usuário";
-  fotoPerfil.src = safeImageUrl(perfil.foto, "https://via.placeholder.com/150");
+  fotoPerfil.src = safeImageUrl(perfil.foto, "../imagens/usuario.png");
   capaFoto.src = safeImageUrl(perfil.capa_foto, "https://images.unsplash.com/photo-1503376780359-7e1a0b6e3b6c?w=1200&h=200&fit=crop");
   bioExibido.textContent = perfil.bio || "Sem biografia";
   document.getElementById("seguidoresCount").textContent = Math.max(0, Number(perfil.seguidores) || 0);

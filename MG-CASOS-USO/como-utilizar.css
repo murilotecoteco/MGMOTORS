@@ -26,7 +26,6 @@
 body {
   font-family: 'Ruda', sans-serif;
   background-color: var(--fundo);
-  padding-top: 95px;
   color: var(--texto);
   line-height: 1.6;
 }
@@ -337,7 +336,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-  body { padding-top: 85px; }
   .footer-grid { grid-template-columns: 1fr; }
   .caso h2 { font-size: 18px; }
 }

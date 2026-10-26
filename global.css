@@ -1,6 +1,6 @@
 :root {
   --mg-header-height: 76px;
-  --mg-header-bg: rgba(17, 17, 17, 0.96);
+  --mg-header-bg: rgba(17, 17, 17, 1);
   --mg-header-border: rgba(255, 255, 255, 0.1);
   --mg-focus: #93c5fd;
 }
@@ -734,11 +734,11 @@ body {
     }
     @keyframes mg-header-scroll {
       from {
-        background: linear-gradient(180deg, rgba(18, 18, 21, 0.98), rgba(11, 12, 15, 0.95));
+        background: linear-gradient(180deg, rgba(18, 18, 21, 1), rgba(11, 12, 15, 1));
         box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 12px 34px rgba(0, 0, 0, 0.22);
       }
       to {
-        background: rgba(9, 10, 13, 0.99);
+        background: rgba(9, 10, 13, 1);
         box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.4);
       }
     }

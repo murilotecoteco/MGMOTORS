@@ -45,6 +45,10 @@ for (const fragment of [
   if (!privilegeMigration.includes(fragment)) failures.push(`migration de privilégios ausente: ${fragment}`);
 }
 
+const contactPage = await readFile(join(root, "MG-CONTATO/contato.html"), "utf8");
+if (!contactPage.includes('supabase.rpc("enviar_contato"')) failures.push("formulário de contato deve usar a RPC com rate limit");
+if (/from\(["']contatos_site["']\)\.insert/.test(contactPage)) failures.push("formulário de contato não pode inserir diretamente em contatos_site");
+
 for (const path of htmlFiles) {
   const html = await readFile(path, "utf8");
   if (/src=["']https:\/\/chatling\.ai\/js\/embed\.js/i.test(html)) {

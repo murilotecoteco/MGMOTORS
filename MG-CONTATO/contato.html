@@ -189,19 +189,24 @@ formContato?.addEventListener("submit", async event => {
   const botao = document.getElementById("btn-enviar-contato");
   botao.disabled = true; botao.textContent = "ENVIANDO...";
   statusContato.textContent = "";
-  const payload = {
-    usuario_id: usuarioAtual?.id || null,
-    nome: document.getElementById("contato-nome").value.trim(),
-    email: document.getElementById("contato-email").value.trim(),
-    assunto: document.getElementById("contato-assunto").value.trim(),
-    mensagem: document.getElementById("contato-mensagem").value.trim(),
-    status: "pendente"
-  };
-  const { error } = await supabase.from("contatos_site").insert(payload);
+  const { data, error } = await supabase.rpc("enviar_contato", {
+    p_nome: document.getElementById("contato-nome").value.trim(),
+    p_email: document.getElementById("contato-email").value.trim(),
+    p_assunto: document.getElementById("contato-assunto").value.trim(),
+    p_mensagem: document.getElementById("contato-mensagem").value.trim(),
+    p_website: document.getElementById("contato-website").value.trim()
+  });
   botao.disabled = false; botao.innerHTML = 'ENVIAR MENSAGEM <i data-lucide="send" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i>';
   if (error) {
     console.error("Falha ao enviar contato:", error);
     statusContato.textContent = "Não foi possível enviar agora. Tente novamente.";
+    statusContato.className = "erro";
+    return;
+  }
+  if (!data?.accepted) {
+    statusContato.textContent = data?.reason === "rate_limited"
+      ? "Muitas tentativas. Tente novamente em alguns minutos."
+      : "Não foi possível validar o envio.";
     statusContato.className = "erro";
     return;
   }

@@ -1117,6 +1117,32 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
 
     function formatBytes(b) { return b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB'; }
 
+    async function otimizarImagem(file, maxDimensao = 1600, qualidade = 0.82) {
+      if (!file || !file.type.startsWith('image/')) return file;
+      const url = URL.createObjectURL(file);
+      try {
+        const imagem = await new Promise((resolve, reject) => {
+          const el = new Image();
+          el.onload = () => resolve(el);
+          el.onerror = () => reject(new Error('Não foi possível ler a imagem.'));
+          el.src = url;
+        });
+        const escala = Math.min(1, maxDimensao / Math.max(imagem.naturalWidth, imagem.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(imagem.naturalWidth * escala));
+        canvas.height = Math.max(1, Math.round(imagem.naturalHeight * escala));
+        canvas.getContext('2d').drawImage(imagem, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', qualidade));
+        if (!blob) throw new Error('Não foi possível comprimir a imagem.');
+        return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.webp', {
+          type: 'image/webp',
+          lastModified: Date.now()
+        });
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
     function validarArquivos(files, infoEl) {
       if (!files || files.length === 0) { infoEl.textContent = ''; infoEl.style.color = 'var(--texto-suave)'; return true; }
       const invalidos = [];
@@ -1166,10 +1192,15 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         waInput.focus(); restaurarBtn(); return;
       }
 
-      const foto = document.getElementById("car-image").files[0];
-      if (!foto && !modoEdicaoId) { window.mgToast?.('Selecione uma foto principal.', 'warning'); restaurarBtn(); return; }
-      if (foto && !TIPOS_OK.includes(foto.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); restaurarBtn(); return; }
-      if (foto && foto.size > MAX_BYTES) { window.mgToast?.('Foto principal excede 5 MB.', 'error'); restaurarBtn(); return; }
+      const fotoOriginal = document.getElementById("car-image").files[0];
+      if (!fotoOriginal && !modoEdicaoId) { window.mgToast?.('Selecione uma foto principal.', 'warning'); restaurarBtn(); return; }
+      if (fotoOriginal && !TIPOS_OK.includes(fotoOriginal.type)) { window.mgToast?.('Tipo de arquivo inválido. Use JPG, PNG ou WEBP.', 'error'); restaurarBtn(); return; }
+      let foto = fotoOriginal;
+      if (fotoOriginal) {
+        try { foto = await otimizarImagem(fotoOriginal); }
+        catch (error) { window.mgToast?.(error.message, 'error'); restaurarBtn(); return; }
+        if (foto.size > MAX_BYTES) { window.mgToast?.('A foto continua excedendo 5 MB após a compressão.', 'error'); restaurarBtn(); return; }
+      }
       let lat = null, lng = null;
       try {
         const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 3000 }));
@@ -1239,7 +1270,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       if (foto) {
         const ext = foto.name.split('.').pop();
         const caminho = `anuncios/${an.id}/principal_${Date.now()}.${ext}`;
-        const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto);
+        const { error: errUpload } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(caminho, foto, { contentType: 'image/webp' });
         if (errUpload) { window.mgToast?.("Erro ao enviar a foto principal: " + errUpload.message, "error"); restaurarBtn(); return; }
         const { data: url } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(caminho);
         const { data: fotoExistente } = await supabase.from("fotos_anuncio").select("id").eq("anuncio_id", an.id).eq("ordem", 0).maybeSingle();
@@ -1250,9 +1281,12 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       }
       const extras = document.getElementById("car-images-adicionais").files;
       for (let i = 0; i < Math.min(extras.length, 4); i++) {
-        const f = extras[i]; if (f.size > 5 * 1024 * 1024) continue;
-        const c2 = `anuncios/${an.id}/adicional_${i}_${Date.now()}.${f.name.split('.').pop()}`;
-        const { error: errUp2 } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(c2, f);
+        let f;
+        try { f = await otimizarImagem(extras[i]); }
+        catch (error) { console.error("Falha ao comprimir foto adicional:", error); continue; }
+        if (f.size > 5 * 1024 * 1024) continue;
+        const c2 = `anuncios/${an.id}/adicional_${i}_${Date.now()}.webp`;
+        const { error: errUp2 } = await supabase.storage.from("FOTOS-ANUNCIOS").upload(c2, f, { contentType: 'image/webp' });
         if (errUp2) { console.error("Falha em foto adicional:", errUp2.message); continue; }
         const { data: u2 } = supabase.storage.from("FOTOS-ANUNCIOS").getPublicUrl(c2);
         const resExtra = await executarOuAvisar(supabase.from("fotos_anuncio").insert({ anuncio_id: an.id, url_foto: u2.publicUrl, caminho: c2, ordem: i + 1 }), "Não foi possível salvar uma foto adicional.");

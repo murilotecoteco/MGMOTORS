@@ -523,7 +523,7 @@ async function carregarPendentes() {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        ${foto ? `<img src="${escapeHtml(safeImageUrl(foto))}" class="anuncio-img" loading="lazy">` : ""}
+        ${foto ? `<img src="${escapeHtml(safeImageUrl(foto))}" class="anuncio-img" alt="Foto do anúncio ${escapeHtml(a.marcas?.nome || '')} ${escapeHtml(a.modelos?.nome || '')}" loading="lazy">` : ""}
         <div style="flex:1;">
           <h3>${escapeHtml(a.marcas?.nome)} ${escapeHtml(a.modelos?.nome)} — ${a.ano_fabricacao}/${a.ano_modelo}</h3>
           <p>R$ ${Number(a.preco).toLocaleString("pt-BR")} · ${Number(a.quilometragem).toLocaleString()} km · ${escapeHtml(a.cidade) || "Cidade não informada"}</p>
@@ -602,7 +602,7 @@ async function carregarDenuncias() {
     const denunciante = usuariosPorId.get(den.denunciante_id);
     if (denunciante) {
       denuncianteInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:10px;">
-      <img src="${escapeHtml(safeImageUrl(denunciante.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'" loading="lazy">
+      <img src="${escapeHtml(safeImageUrl(denunciante.foto, '../imagens/usuario.png'))}" alt="Foto de ${escapeHtml(denunciante.nome || denunciante.email || 'denunciante')}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'" loading="lazy">
         <div><div style="font-size:12px;font-weight:800;">Denunciado por: ${escapeHtml(denunciante.nome || denunciante.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(denunciante.email)}</div></div>
         <a href="../MG-CONTA/conta.html?id=${den.denunciante_id}" target="_blank" rel="noopener" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver</a>
       </div>`;
@@ -612,7 +612,7 @@ async function carregarDenuncias() {
       const alvo = usuariosPorId.get(den.alvo_id);
       if (alvo) {
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(239,68,68,.06);border-radius:10px;border:1px solid rgba(239,68,68,.15);">
-          <img src="${escapeHtml(safeImageUrl(alvo.foto, '../imagens/usuario.png'))}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'" loading="lazy">
+          <img src="${escapeHtml(safeImageUrl(alvo.foto, '../imagens/usuario.png'))}" alt="Foto de ${escapeHtml(alvo.nome || alvo.email || 'usuário denunciado')}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" onerror="this.src='../imagens/usuario.png'" loading="lazy">
           <div><div style="font-size:12px;font-weight:800;color:var(--red);">Denunciado: ${escapeHtml(alvo.nome || alvo.email)}</div><div style="font-size:11px;color:var(--text-muted);">${escapeHtml(alvo.email)}</div></div>
           <a href="../MG-CONTA/conta.html?id=${den.alvo_id}" target="_blank" rel="noopener" class="btn-dev btn-ver" style="padding:4px 10px;font-size:11px;">Ver perfil</a>
         </div>`;
@@ -622,7 +622,7 @@ async function carregarDenuncias() {
       if (anuncio) {
         const fotoAnuncio = fotosPorAnuncio.get(den.alvo_id) || '';
         alvoInfo = `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.15);">
-          ${fotoAnuncio ? `<img src="${escapeHtml(safeImageUrl(fotoAnuncio))}" style="width:55px;height:38px;border-radius:8px;object-fit:cover;" loading="lazy">` : ''}
+          ${fotoAnuncio ? `<img src="${escapeHtml(safeImageUrl(fotoAnuncio))}" alt="Foto do anúncio denunciado" style="width:55px;height:38px;border-radius:8px;object-fit:cover;" loading="lazy">` : ''}
           <div style="flex:1;"><div style="font-size:12px;font-weight:800;color:var(--orange);">Anúncio: ${escapeHtml(anuncio.marcas?.nome)} ${escapeHtml(anuncio.modelos?.nome)} (${anuncio.ano_fabricacao})</div>
           <div style="font-size:11px;color:var(--text-muted);">R$ ${Number(anuncio.preco).toLocaleString('pt-BR')} · ${escapeHtml(anuncio.cidade)}</div></div>
         </div>`;
@@ -699,7 +699,7 @@ async function carregarUsuarios(busca = "") {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" class="user-foto" onerror="this.src='../imagens/usuario.png'" loading="lazy">
+        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" class="user-foto" alt="Foto de ${escapeHtml(u.nome || u.email || 'usuário')}" onerror="this.src='../imagens/usuario.png'" loading="lazy">
         <div style="flex:1;">
           <h3>${escapeHtml(u.nome) || "Sem nome"} ${u.banido ? '<span class="badge badge-ban" style="margin-left:8px;">Banido</span>' : ''}</h3>
           <p>${escapeHtml(u.email)} ${u.cidade ? `· ${escapeHtml(u.cidade)}` : ""}</p>
@@ -742,7 +742,7 @@ async function carregarBanidos() {
     d.className = "card-dev";
     d.innerHTML = `
       <div class="card-dev-header">
-        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'" loading="lazy">
+        <img src="${escapeHtml(safeImageUrl(u.foto, '../imagens/usuario.png'))}" alt="Foto de ${escapeHtml(u.nome || u.email || 'usuário banido')}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(239,68,68,.4);" onerror="this.src='../imagens/usuario.png'" loading="lazy">
         <div style="flex:1;">
           <h3 style="color:var(--red);">${escapeHtml(u.nome)||'Sem nome'} <span class="badge badge-ban">Banido</span></h3>
           <p>${escapeHtml(u.email)} ${u.cidade?'· '+escapeHtml(u.cidade)+'/'+escapeHtml(u.estado):''}</p>

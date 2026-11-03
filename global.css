@@ -29,6 +29,28 @@ body {
   max-width: 100%;
 }
 
+.mg-skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 10000;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #fff;
+  width: auto;
+  transform: translateY(-160%);
+  transition: transform 0.18s ease;
+}
+
+.mg-skip-link:focus {
+  transform: translateY(0);
+}
+
+body.mg-modal-aberto {
+  overflow: hidden;
+}
+
 /* Footer sempre colado na base, mesmo em paginas com pouco conteudo */
 html {
   height: 100%;

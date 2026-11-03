@@ -130,7 +130,7 @@ Este projeto foi construído para praticar e demonstrar:
 - ✅ Avaliação de usuários com estrelas e comentário
 - ✅ Autenticação completa: cadastro, login e recuperação de senha
 - ✅ Aceite legal obrigatório no cadastro, com versões e registro no Supabase
-- ✅ Configurações da conta: tema escuro/claro, tamanho de fonte e preferências de interface
+- ✅ Configurações da conta: tema escuro/claro e gerenciamento de senha/sessões
 - ⚠️ Toggles de privacidade — a interface existe, mas o banco ainda não aplica todas as preferências
 - ✅ Sistema de denúncias de anúncios, mensagens e perfis
 - ✅ Painel administrativo (Dev Panel) com moderação de anúncios, denúncias e usuários
@@ -173,7 +173,7 @@ Este projeto foi construído para praticar e demonstrar:
 | **Central de Ajuda** | `/MG-AJUDA/ajuda.html` | FAQ com acordeão por categoria (anúncios, pagamentos, conta, segurança) |
 | **Contato** | `/MG-CONTATO/contato.html` | Página de contato com atendimento via WhatsApp e chatbot |
 | **Como Utilizar** | `/MG-CASOS-USO/como-utilizar.html` | Documentação dos casos de uso da plataforma (UC01–UC25) |
-| **Configurações** | `/MG-CONFIGURACOES/configuracoes.html` | Preferências de aparência, notificações, privacidade e conta |
+| **Configurações** | `/MG-CONFIGURACOES/configuracoes.html` | Aparência, senha e sessões da conta |
 | **Login** | `/MG-LOGIN/login.html` | Autenticação com email e senha via Supabase Auth |
 | **Cadastro** | `/MG-LOGIN/register.html` | Criação de conta com nome, email e senha |
 | **Recuperação de senha** | `/MG-LOGIN/recuperar-senha.html` | Solicitação de link e redefinição segura de senha |

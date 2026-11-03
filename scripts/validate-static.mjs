@@ -36,6 +36,25 @@ for (const relative of requiredFiles) {
   if (!files.some(path => path.slice(root.length + 1) === relative)) failures.push(`arquivo obrigatório ausente: ${relative}`);
 }
 
+const privilegeMigration = await readFile(join(root, "supabase/migrations/20261103000000_fix_usuarios_publicos_privileges.sql"), "utf8");
+for (const fragment of [
+  "REVOKE ALL ON TABLE public.usuarios_publicos FROM anon, authenticated",
+  "GRANT SELECT ON TABLE public.usuarios_publicos TO anon, authenticated, service_role",
+  "has_table_privilege('anon', 'public.usuarios_publicos', 'UPDATE')",
+]) {
+  if (!privilegeMigration.includes(fragment)) failures.push(`migration de privilégios ausente: ${fragment}`);
+}
+
+for (const path of htmlFiles) {
+  const html = await readFile(path, "utf8");
+  if (/src=["']https:\/\/chatling\.ai\/js\/embed\.js/i.test(html)) {
+    failures.push(`${path.slice(root.length + 1)}: Chatling não pode carregar antes do consentimento`);
+  }
+  if (/property=["']og:image["'][^>]+content=["'](?:\.\.?\/)/i.test(html)) {
+    failures.push(`${path.slice(root.length + 1)}: og:image precisa usar URL absoluta`);
+  }
+}
+
 const rlsScript = await readFile(join(root, "supabase/tests/rls-security-check.sh"), "utf8");
 if (/SUPABASE_URL:-https?:\/\//.test(rlsScript) || /SUPABASE_ANON_KEY:-sb_publishable/.test(rlsScript)) {
   failures.push("o roteiro RLS não pode ter URL ou chave padrão");

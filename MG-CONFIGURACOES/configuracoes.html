@@ -69,6 +69,17 @@
             </div>
         </div>
 
+        <div class="configs-section">
+            <h2><i data-lucide="download" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Seus dados</h2>
+            <div class="config-item">
+                <div class="config-item-info">
+                    <h3>Exportar meus dados</h3>
+                    <p>Baixe uma cópia dos dados associados à sua conta em formato JSON.</p>
+                </div>
+                <button class="btn-config" id="btn-exportar-dados">Baixar dados</button>
+            </div>
+        </div>
+
         <div class="configs-section" id="secao-dev" style="display:none;">
             <h2><i data-lucide="shield-alert" style="width:20px;height:20px;vertical-align:-3px;margin-right:6px;"></i> Área Restrita</h2>
             <a href="../MG-DEV/devpanel.html" class="dev-link">
@@ -192,6 +203,46 @@ import { supabaseUrl, supabaseKey } from "../mgConfig.js";
             const { error } = await supabase.auth.resetPasswordForEmail(usuarioAtual.email);
             if (!error) window.mgToast?.("Email de redefinição enviado para " + usuarioAtual.email, "success");
             else window.mgToast?.("Erro: " + error.message, "error");
+        });
+
+        document.getElementById("btn-exportar-dados")?.addEventListener("click", async () => {
+            if (!usuarioAtual) { window.mgToast?.("Faça login primeiro.", "warning"); return; }
+            const button = document.getElementById("btn-exportar-dados");
+            button.disabled = true;
+            button.textContent = "Preparando...";
+            const id = usuarioAtual.id;
+            const consultas = {
+                perfil: supabase.from("usuarios").select("id,nome,email,cidade,estado,bio,site,instagram,foto,capa_foto,criado_em,atualizado_em").eq("id", id).maybeSingle(),
+                anuncios: supabase.from("anuncios").select("id,titulo,descricao,preco,ano_fabricacao,ano_modelo,quilometragem,cor,cidade,estado,status,criado_em,atualizado_em").eq("usuario_id", id),
+                favoritos: supabase.from("favoritos").select("anuncio_id,criado_em").eq("usuario_id", id),
+                curtidas: supabase.from("curtidas_anuncio").select("anuncio_id,criado_em").eq("usuario_id", id),
+                mensagens_enviadas: supabase.from("mensagens").select("id,destinatario_id,conteudo,carro_info,lida,tipo,criado_em").eq("remetente_id", id),
+                mensagens_recebidas: supabase.from("mensagens").select("id,remetente_id,conteudo,carro_info,lida,tipo,criado_em").eq("destinatario_id", id),
+                posts: supabase.from("posts_usuario").select("id,imagem,legenda,curtidas,criado_em").eq("usuario_id", id),
+                seguidores: supabase.from("seguidores").select("seguidor_id,seguido_id,criado_em").or(`seguidor_id.eq.${id},seguido_id.eq.${id}`),
+                avaliacoes_feitas: supabase.from("avaliacoes").select("avaliado_id,nota,comentario,criado_em").eq("avaliador_id", id),
+                avaliacoes_recebidas: supabase.from("avaliacoes").select("avaliador_id,nota,comentario,criado_em").eq("avaliado_id", id)
+            };
+            const resultados = await Promise.all(Object.entries(consultas).map(async ([nome, consulta]) => {
+                const { data, error } = await consulta;
+                return [nome, error ? [] : data];
+            }));
+            const exportacao = {
+                schema_version: "1.0",
+                exported_at: new Date().toISOString(),
+                account_id: id,
+                data: Object.fromEntries(resultados)
+            };
+            const blob = new Blob([JSON.stringify(exportacao, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `mgmotors-dados-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            button.disabled = false;
+            button.textContent = "Baixar dados";
+            window.mgToast?.("Exportação concluída.", "success");
         });
 
         const temaLocal = localStorage.getItem("mg_tema");

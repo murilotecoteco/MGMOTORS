@@ -1,4 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
+import { existsSync } from "node:fs";
+
+const systemChromium = process.env.CHROMIUM_BIN || "/usr/bin/chromium";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -10,7 +13,7 @@ export default defineConfig({
     baseURL: process.env.E2E_BASE_URL || "http://127.0.0.1:4173",
     browserName: "chromium",
     headless: true,
-    launchOptions: { executablePath: process.env.CHROMIUM_BIN || "/usr/bin/chromium" },
+    launchOptions: existsSync(systemChromium) ? { executablePath: systemChromium } : undefined,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },

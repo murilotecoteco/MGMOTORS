@@ -6,6 +6,10 @@
     "validate": "node scripts/validate-static.mjs",
     "test": "npm run validate",
     "test:a11y": "node scripts/a11y-contrast.mjs",
-    "test:smoke": "node scripts/smoke-browser.mjs"
+    "test:smoke": "node scripts/smoke-browser.mjs",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
   }
 }

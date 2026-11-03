@@ -8,3 +8,7 @@ backups/
 # Evidências podem conter dados pessoais. Versionar apenas as instruções da pasta.
 evidencias/*
 !evidencias/README.md
+
+# Dependências e artefatos gerados pelos testes E2E.
+node_modules/
+test-results/

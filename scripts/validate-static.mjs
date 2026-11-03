@@ -31,7 +31,7 @@ for (const path of htmlFiles) {
   if (/target="_blank"(?![^>]*\brel=)/i.test(html)) failures.push(`${relative}: link externo sem rel="noopener"`);
 }
 
-const requiredFiles = ["robots.txt", "sitemap.xml", "supabase/tests/rls-security-check.sh", "scripts/smoke-browser.mjs"];
+const requiredFiles = ["robots.txt", "sitemap.xml", "supabase/tests/rls-security-check.sh", "scripts/smoke-browser.mjs", "playwright.config.js"];
 for (const relative of requiredFiles) {
   if (!files.some(path => path.slice(root.length + 1) === relative)) failures.push(`arquivo obrigatório ausente: ${relative}`);
 }

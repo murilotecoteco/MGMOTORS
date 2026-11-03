@@ -14,6 +14,15 @@
   <meta property="og:site_name" content="MG Motors">
   <meta property="og:url" content="https://mgmotorss.vercel.app/MG-CONTATO/contato.html">
   <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contato - MG Motors",
+    "url": "https://mgmotorss.vercel.app/MG-CONTATO/contato.html",
+    "isPartOf": { "@type": "WebSite", "name": "MG Motors", "url": "https://mgmotorss.vercel.app/" }
+  }
+  </script>
   <link rel="stylesheet" href="contato.css">
   <link rel="stylesheet" href="../global.css">
 <script src="../tema.js"></script>
@@ -118,6 +127,7 @@
         <label>Nome<input id="contato-nome" name="nome" autocomplete="name" minlength="2" maxlength="120" required></label>
         <label>E-mail<input id="contato-email" name="email" type="email" autocomplete="email" maxlength="254" required></label>
       </div>
+      <label class="campo-website" aria-hidden="true">Website<input id="contato-website" name="website" tabindex="-1" autocomplete="off"></label>
       <label>Assunto<input id="contato-assunto" name="assunto" maxlength="120" required></label>
       <label>Mensagem<textarea id="contato-mensagem" name="mensagem" rows="5" minlength="10" maxlength="4000" required></textarea></label>
       <div class="form-contato-actions"><button class="btn-atendimento" type="submit" id="btn-enviar-contato">ENVIAR MENSAGEM <i data-lucide="send" style="width:16px;height:16px;vertical-align:-2px;margin-left:4px;"></i></button><span id="contato-status" role="status" aria-live="polite"></span></div>
@@ -166,9 +176,16 @@ let usuarioAtual = await carregarHeaderGlobal(supabase);
 
 const formContato = document.getElementById("form-contato-site");
 const statusContato = document.getElementById("contato-status");
+const inicioFormulario = Date.now();
 formContato?.addEventListener("submit", async event => {
   event.preventDefault();
   if (!formContato.reportValidity()) return;
+  const campoWebsite = document.getElementById("contato-website");
+  if (campoWebsite?.value || Date.now() - inicioFormulario < 1800) {
+    statusContato.textContent = "Aguarde alguns segundos e tente novamente.";
+    statusContato.className = "erro";
+    return;
+  }
   const botao = document.getElementById("btn-enviar-contato");
   botao.disabled = true; botao.textContent = "ENVIANDO...";
   statusContato.textContent = "";

@@ -704,6 +704,28 @@ function iniciarRealtime() {
 
 document.getElementById('btn-enviar').addEventListener('click', enviarMensagem);
 
+async function otimizarImagemMensagem(file, maxDimensao = 1600) {
+  const url = URL.createObjectURL(file);
+  try {
+    const imagem = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('Não foi possível ler a imagem.'));
+      el.src = url;
+    });
+    const escala = Math.min(1, maxDimensao / Math.max(imagem.naturalWidth, imagem.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(imagem.naturalWidth * escala));
+    canvas.height = Math.max(1, Math.round(imagem.naturalHeight * escala));
+    canvas.getContext('2d').drawImage(imagem, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.82));
+    if (!blob) throw new Error('Não foi possível comprimir a imagem.');
+    return new File([blob], 'mensagem.webp', { type: 'image/webp', lastModified: Date.now() });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 async function enviarMensagem() {
   const texto = document.getElementById('mensagem-texto').value.trim();
   if (!texto || !conversaAtual || !usuarioAtual) return;
@@ -733,11 +755,12 @@ async function enviarMensagem() {
 document.getElementById('input-foto-msg').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file || !conversaAtual || !usuarioAtual) return;
-  if (file.size > 5 * 1024 * 1024) { window.mgToast?.('Foto máx. 5MB!', 'info'); return; }
+  if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) { window.mgToast?.('Imagem inválida ou > 5MB!', 'info'); return; }
 
-  const ext = file.name.split('.').pop();
-  const caminho = `mensagens/${usuarioAtual.id}/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from('FOTOS-MENSAGENS').upload(caminho, file);
+  let otimizada;
+  try { otimizada = await otimizarImagemMensagem(file); } catch (error) { window.mgToast?.(error.message, 'error'); return; }
+  const caminho = `mensagens/${usuarioAtual.id}/${Date.now()}.webp`;
+  const { error } = await supabase.storage.from('FOTOS-MENSAGENS').upload(caminho, otimizada, { contentType: 'image/webp' });
   if (error) { window.mgToast?.('Erro ao enviar foto: ' + error.message, 'error'); return; }
 
   const carroInfo = carroInfoDaConversa();

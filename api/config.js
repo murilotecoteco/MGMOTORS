@@ -16,6 +16,8 @@ export default async function handler(req, res) {
     });
   }
 
-  res.setHeader("Cache-Control", "no-store");
+  // The values are public client configuration. A short CDN cache avoids a
+  // cold-start round trip on every page without making secret data cacheable.
+  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=600");
   return res.status(200).json({ supabaseUrl, supabaseKey });
 }

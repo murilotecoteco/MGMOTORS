@@ -72,6 +72,16 @@ export async function carregarHeaderGlobal(supabase) {
     </div>
   `;
 
+  const main = document.querySelector("main");
+  if (main && !main.id) main.id = "conteudo-principal";
+  if (main && !document.querySelector(".mg-skip-link")) {
+    const skip = document.createElement("a");
+    skip.className = "mg-skip-link";
+    skip.href = `#${main.id}`;
+    skip.textContent = "Pular para o conteúdo principal";
+    document.body.prepend(skip);
+  }
+
   ativarLinkAtual();
   configurarMenuMobile(headerContainer);
 
@@ -91,9 +101,10 @@ export async function carregarHeaderGlobal(supabase) {
   }
 
   try {
-    const { data, error: authError } = await supabase.auth.getUser();
+    const { data: sessionData, error: authError } = await supabase.auth.getSession();
+    const currentUser = sessionData?.session?.user;
 
-    if (authError || !data?.user) {
+    if (authError || !currentUser) {
       headerNome.textContent = "Entrar";
       headerNome.href = "/MG-LOGIN/login.html";
       headerFoto.src = "/imagens/usuario.png";
@@ -104,7 +115,7 @@ export async function carregarHeaderGlobal(supabase) {
     const { data: perfil, error: dbError } = await supabase
       .from("usuarios")
       .select("nome, foto, banido, terms_accepted_at, privacy_accepted_at, terms_version, privacy_version")
-      .eq("id", data.user.id)
+      .eq("id", currentUser.id)
       .maybeSingle();
 
     if (dbError) {
@@ -119,15 +130,15 @@ export async function carregarHeaderGlobal(supabase) {
       return null;
     }
 
-    headerNome.textContent = perfil?.nome || data.user.email;
+    headerNome.textContent = perfil?.nome || currentUser.email;
     headerNome.href = "/MG-CONTA/conta.html";
     headerFoto.src = perfil?.foto || "/imagens/usuario.png";
-    headerFoto.alt = `Foto de perfil de ${perfil?.nome || data.user.email}`;
+    headerFoto.alt = `Foto de perfil de ${perfil?.nome || currentUser.email}`;
 
     const { count: notificacoesNaoLidas, error: notificacoesError } = await supabase
       .from("notificacoes")
       .select("id", { count: "exact", head: true })
-      .eq("usuario_id", data.user.id)
+      .eq("usuario_id", currentUser.id)
       .eq("lida", false);
     let totalNaoLidas = notificacoesNaoLidas;
     // Compatibilidade durante a implantação da migration: mensagens antigas
@@ -136,7 +147,7 @@ export async function carregarHeaderGlobal(supabase) {
     if (notificacoesError) {
       const { count } = await supabase.from("mensagens")
         .select("id", { count: "exact", head: true })
-        .eq("destinatario_id", data.user.id)
+        .eq("destinatario_id", currentUser.id)
         .eq("lida", false);
       totalNaoLidas = count;
     }
@@ -149,10 +160,10 @@ export async function carregarHeaderGlobal(supabase) {
     }
 
     if (!consentimentoAtual(perfil)) {
-      mostrarBannerTermos({ supabase, usuario: data.user, perfil });
+      mostrarBannerTermos({ supabase, usuario: currentUser, perfil });
     }
 
-    return data.user;
+    return currentUser;
   } catch (error) {
     console.error("Erro inesperado ao carregar header:", error);
     headerNome.textContent = "Entrar";
@@ -323,6 +334,7 @@ function mostrarBannerTermos({ supabase = null, usuario = null, perfil = null } 
       }
     }
     if (aceito && !autenticado) localStorage.setItem("mg_termos_aceitos", "1");
+    if (aceito) window.dispatchEvent(new Event("mg:consent-accepted"));
     banner.classList.remove("visivel");
     banner.classList.add("oculto");
     setTimeout(() => banner.remove(), 450);

@@ -10,8 +10,11 @@
   <meta name="description" content="Encontre carros esportivos, seminovos e importados no marketplace da MG Motors. Filtros avançados, anúncios verificados e negociação segura.">
   <meta property="og:title" content="Marketplace - MG Motors | Compra e Venda de Veículos">
   <meta property="og:description" content="Encontre carros esportivos, seminovos e importados. Filtros avançados e negociação segura na MG Motors.">
-  <meta property="og:image" content="../imagens/logo.webp">
+  <meta property="og:image" content="https://mgmotorss.vercel.app/imagens/logo-mg.png">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MG Motors">
+  <meta property="og:url" content="https://mgmotorss.vercel.app/MG-MARKETPLACE/marketplace.html">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="marketplace.css">
   <link rel="stylesheet" href="../global.css">
   <style>
@@ -177,7 +180,7 @@
     </div>
   </main>
 
-  <div id="modal-add-car" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-add-car-titulo">
+  <div id="modal-add-car" class="modal" role="dialog" aria-modal="true" aria-hidden="true" inert aria-labelledby="modal-add-car-titulo">
     <div class="modal-content">
       <button type="button" id="close-modal" class="close" aria-label="Fechar formulário de anúncio">&times;</button>
       <h2 id="modal-add-car-titulo">Anunciar Veículo</h2>
@@ -264,7 +267,7 @@
     </div>
   </div>
 
-  <div id="modal-visualizar" class="modal" role="dialog" aria-modal="true" aria-labelledby="viz-titulo">
+  <div id="modal-visualizar" class="modal" role="dialog" aria-modal="true" aria-hidden="true" inert aria-labelledby="viz-titulo">
     <div class="modal-content modal-visualizar">
       <button type="button" id="close-visualizar" class="close" aria-label="Fechar detalhes do anúncio">&times;</button>
       <div class="visualizar-container">
@@ -299,7 +302,7 @@
     </div>
   </div>
 
-  <div id="modal-denuncia" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-denuncia-titulo">
+  <div id="modal-denuncia" class="modal" role="dialog" aria-modal="true" aria-hidden="true" inert aria-labelledby="modal-denuncia-titulo">
     <div class="modal-content" style="max-width:460px;">
       <button type="button" id="close-denuncia" class="close" aria-label="Fechar denúncia">&times;</button>
       <h2 id="modal-denuncia-titulo">Denunciar</h2>
@@ -321,7 +324,7 @@
     </div>
   </div>
 
-  <div id="modal-aprovacao" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-aprovacao-titulo">
+  <div id="modal-aprovacao" class="modal" role="dialog" aria-modal="true" aria-hidden="true" inert aria-labelledby="modal-aprovacao-titulo">
     <div class="modal-content mg-aprovacao-content">
       <div class="mg-aprovacao-icone">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -388,6 +391,9 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         origemFoco = document.activeElement;
         modalAtivo = modal;
         modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+        modal.removeAttribute('inert');
+        document.body.classList.add('mg-modal-aberto');
         const focaveis = getFocaveis(modal);
         if (focaveis.length) focaveis[0].focus();
 
@@ -411,9 +417,12 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
         const modal = document.getElementById(id);
         if (!modal) return;
         modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        modal.setAttribute('inert', '');
         if (trapFn) modal.removeEventListener('keydown', trapFn);
         if (escFn) document.removeEventListener('keydown', escFn);
         trapFn = null; escFn = null; modalAtivo = null;
+        if (!document.querySelector('.modal[aria-hidden="false"]')) document.body.classList.remove('mg-modal-aberto');
         if (origemFoco && typeof origemFoco.focus === 'function') origemFoco.focus();
         origemFoco = null;
       }
@@ -1282,8 +1291,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
   </script>
   <script>window.chtlConfig = { chatbotId: "6944231868" }</script>
   <style>#chtl-chat-icon-container{left:auto!important;right:20px!important;width:auto!important;}</style>
-<script async data-id="6944231868" id="chtl-script" type="text/javascript"
-    src="https://chatling.ai/js/embed.js"></script>
+<script type="module" src="/chatlingConsent.js"></script>
 </body>
 
 </html>

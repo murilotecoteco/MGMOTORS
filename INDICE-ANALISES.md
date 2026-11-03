@@ -1,6 +1,6 @@
 # MGMOTORS — Índice das análises e do plano de ação
 
-**Atualizado em:** 22/10/2026  
+**Atualizado em:** 03/11/2026
 **Projeto:** `PROJETOS/MGMOTORS`  
 **Objetivo:** organizar os documentos de diagnóstico, levantamento e execução para a banca.
 
@@ -10,6 +10,7 @@
 
 | Documento | Para que serve | Quando usar |
 |---|---|---|
+| `ANALISE-20261103.md` | Revisão atual e estado de execução: migrations aplicadas, segurança, testes E2E/axe, SEO, performance, LGPD e pendências remanescentes. | **Ler primeiro**; é a análise mais recente. |
 | `LEVANTAMENTOS-20261022.md` | O que foi verificado: segurança, bugs, UCs, artigo, evidências e comandos. | Ler antes de mexer no projeto; base factual. |
 | `PROXIMOS-PASSOS-20261022.md` | O que fazer, em que ordem, com critério de aceite e cronograma. | Usar no dia a dia; marcar checkboxes. |
 | `ANALISE-COMPLETA-20261022.md` | Relatório completo, com análise estendida e patches de código/SQL. | Consultar para implementar ou defender decisões. |
@@ -20,7 +21,7 @@
 | `AMBIENTE-TESTES-20261022.md` | Versões de sistema, navegadores e ferramentas. | Preencher a coluna de ambiente nos testes. |
 | `evidencias/README.md` | Organização e regras das evidências. | Guardar logs, prints e vídeos. |
 
-**Ordem de leitura recomendada:** Índice → Levantamentos → Próximos passos → relatório completo apenas nas partes necessárias.
+**Ordem de leitura recomendada:** Índice → `ANALISE-20261103.md` → Levantamentos → Próximos passos → relatório completo apenas nas partes necessárias.
 
 ---
 

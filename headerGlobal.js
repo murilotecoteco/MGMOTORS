@@ -2,6 +2,9 @@
 
 import { consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
 import { configError } from "./mgConfig.js";
+import { iniciarWebVitals } from "./webVitals.js";
+
+iniciarWebVitals();
 
 /* O header é carregado em todas as páginas. Manter seus ícones inline evita
    que uma falha de CDN bloqueie a montagem inteira da navbar no Firefox. */

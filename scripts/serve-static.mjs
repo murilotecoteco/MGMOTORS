@@ -24,6 +24,11 @@ const server = createServer(async (request, response) => {
     response.end(JSON.stringify({ supabaseUrl: "https://example.supabase.co", supabaseKey: "test-key" }));
     return;
   }
+  if (url.pathname === "/api/web-vitals") {
+    response.writeHead(request.method === "POST" ? 204 : 405, { "content-type": "application/json" });
+    response.end();
+    return;
+  }
 
   const relative = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
   const target = normalize(join(root, relative));

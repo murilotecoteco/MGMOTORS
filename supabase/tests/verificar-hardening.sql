@@ -93,6 +93,20 @@ WITH checks AS (
                    AND column_name IN ('email', 'telefone', 'is_admin', 'moderador',
                                        'bloqueado', 'preferencias', 'data_nascimento')), '')
 
+  UNION ALL
+  SELECT 10.1, 'view usuarios_publicos: anon sem escrita',
+         NOT has_table_privilege('anon', 'public.usuarios_publicos', 'INSERT')
+         AND NOT has_table_privilege('anon', 'public.usuarios_publicos', 'UPDATE')
+         AND NOT has_table_privilege('anon', 'public.usuarios_publicos', 'DELETE'),
+         'INSERT/UPDATE/DELETE devem ser false'
+
+  UNION ALL
+  SELECT 10.2, 'view usuarios_publicos: authenticated sem escrita',
+         NOT has_table_privilege('authenticated', 'public.usuarios_publicos', 'INSERT')
+         AND NOT has_table_privilege('authenticated', 'public.usuarios_publicos', 'UPDATE')
+         AND NOT has_table_privilege('authenticated', 'public.usuarios_publicos', 'DELETE'),
+         'INSERT/UPDATE/DELETE devem ser false'
+
   -- 4. Funções -----------------------------------------------------------------
   UNION ALL
   SELECT 11, 'função is_admin() existe',

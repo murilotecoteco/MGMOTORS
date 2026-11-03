@@ -202,6 +202,8 @@ check_write_blocked "anon DELETE curtidas_anuncio"    "$(affected DELETE "/rest/
 check_write_blocked "anon DELETE projetos_curtidas"   "$(affected DELETE "/rest/v1/projetos_curtidas?user_id=eq.$FAKE")"
 check_write_blocked "anon DELETE comunidade_curtidas" "$(affected DELETE "/rest/v1/comunidade_curtidas?user_id=eq.$FAKE")"
 check_write_blocked "anon DELETE usuarios"            "$(affected DELETE "/rest/v1/usuarios?id=eq.$FAKE")"
+check "anon PATCH usuarios_publicos"                  "$(anon PATCH "/rest/v1/usuarios_publicos?id=eq.$FAKE" '{"bio":"probe"}')" 401 403
+check "anon DELETE usuarios_publicos"                 "$(anon DELETE "/rest/v1/usuarios_publicos?id=eq.$FAKE")" 401 403
 check_write_blocked "anon DELETE fotos_anuncio"       "$(affected DELETE "/rest/v1/fotos_anuncio?id=eq.$FAKE")"
 check_write_blocked "anon UPDATE anuncios"            "$(affected PATCH "/rest/v1/anuncios?id=eq.$FAKE" '{"status":"vendido"}')"
 check_write_blocked "anon UPDATE usuarios"            "$(affected PATCH "/rest/v1/usuarios?id=eq.$FAKE" '{"moderador":true}')"

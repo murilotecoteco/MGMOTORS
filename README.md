@@ -1,255 +1,26 @@
 # MG Motors
 
-<p align="center">
-  Marketplace premium de compra e venda de veículos exclusivos — esportivos, seminovos e importados.
-</p>
+Marketplace web de compra e venda de veículos, construído com HTML, CSS e JavaScript puro no frontend e Supabase no backend.
 
-<p align="center">
+[![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/murilotecoteco/MGMOTORS)
+[![Deploy](https://img.shields.io/badge/deploy-vercel-black)](https://mgmotorss.vercel.app/MG-INICIO/inicio.html)
 
-![Status](https://img.shields.io/badge/status-active-brightgreen)
-![Deploy](https://img.shields.io/badge/deploy-vercel-black)
+[Live Demo](https://mgmotorss.vercel.app/MG-INICIO/inicio.html) · [Código-fonte](https://github.com/murilotecoteco/MGMOTORS)
 
-</p>
+## Visão geral
 
-<p align="center">
+O MGMOTORS conecta compradores e vendedores em uma experiência de marketplace com anúncios, filtros, perfis, favoritos, mensagens e moderação.
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Lucide](https://img.shields.io/badge/Lucide_Icons-f56565?style=for-the-badge&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+O projeto demonstra:
 
-</p>
+- autenticação com Supabase Auth e JWT;
+- PostgreSQL com Row Level Security (RLS);
+- fotos em Supabase Storage;
+- chat em tempo real com Supabase Realtime;
+- Edge Function para operação privilegiada de exclusão de conta;
+- frontend estático e funções serverless no Vercel.
 
-<p align="center">
-  <b>Clique nos botões abaixo para abrir o projeto:</b>
-</p>
-
-<p align="center">
-
-<a href="https://mgmotorss.vercel.app/MG-INICIO/inicio.html">
-<img src="https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge">
-</a>
-
-<a href="https://github.com/murilotecoteco/MGMOTORS">
-<img src="https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge">
-</a>
-
-</p>
-
-# Limitações Conhecidas
-
-- Este projeto utiliza o plano gratuito do Supabase, que pausa o banco de dados automaticamente após um período de inatividade. Se o demo ao vivo parecer sem resposta, o banco pode precisar de alguns segundos para retomar, ou pode ser necessária a reativação manual pelo painel do Supabase.
-
-## Observações da versão atual
-
-- O schema do banco de dados e as políticas RLS estão versionados em `supabase/migrations/`. A captura inicial está em `20260915145500_remote_schema.sql` e as alterações incrementais, como o consentimento legal, ficam em migrations posteriores. Valide tudo em ambiente de teste antes de aplicar em produção.
-- A Edge Function `supabase/functions/delete-account/` mantém a operação privilegiada no servidor. Ela está publicada no Supabase e rejeita requisições sem token ou com token inválido; a exclusão completa deve ser ensaiada apenas com uma conta descartável.
-- O fluxo legal possui páginas públicas, aceite obrigatório no cadastro, versionamento `1.0` e registro no perfil por meio da função protegida `registrar_aceite_legal`. O fluxo ainda deve ser validado no projeto Supabase de demonstração.
-- A migration de hardening de segurança foi aplicada no projeto conectado e o verificador somente leitura confirmou **27 PASS / 0 FAIL** em 25/10/2026. Testes destrutivos de RLS continuam restritos a staging com conta descartável.
-- As fotos enviadas no chat usam o bucket privado `FOTOS-MENSAGENS` e URLs assinadas; fotos antigas permanecem compatíveis.
-- A paginação do marketplace é feita no banco pela RPC `get_anuncios_marketplace_paginado`; a tela solicita apenas a página atual.
-- A tela de configurações mantém apenas preferências com efeito real (tema escuro, senha, sessões). Os toggles de privacidade, notificações, localização e chat foram removidos por não serem aplicados pelo app nem pelo banco.
-
-## Documentação de apoio
-
-| Documento | Conteúdo |
-|---|---|
-| `PROXIMOS-PASSOS-20261022.md` | Plano de execução com prioridades e critérios de aceite |
-| `ROTEIRO-TESTES-MANUAIS.md` | Casos de teste, campos de evidência e critério de saída |
-| `ROTEIRO-DEMO.md` | Roteiro cronometrado da banca e plano B offline |
-| `CHATLING.md` | Plano, limites e pendências do chatbot |
-| `AMBIENTE-TESTES-20261022.md` | Versões de sistema, navegadores e ferramentas |
-| `evidencias/README.md` | Organização e regras das evidências |
-
----
-
-# Sumário
-
-- [Sobre](#sobre)
-- [Por que este projeto](#por-que-este-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Páginas do Site](#páginas-do-site)
-- [Stack de Tecnologias](#stack-de-tecnologias)
-- [Arquitetura](#arquitetura)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Banco de Dados](#banco-de-dados)
-- [Segurança](#segurança)
-- [Como Rodar Localmente](#como-rodar-localmente)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
-- [Deploy](#deploy)
-- [Roadmap](#roadmap)
-- [Licença](#licença)
-
----
-
-# Sobre
-
-**MG Motors** é um marketplace web premium focado na compra e venda de veículos exclusivos no Brasil. A plataforma conecta compradores e vendedores de carros esportivos, seminovos e importados em um ambiente seguro, moderno e sem burocracia.
-
-O projeto foi construído inteiramente com **HTML, CSS e JavaScript puro** (sem frameworks de frontend), utilizando o **Supabase** como backend completo — autenticação JWT, banco de dados PostgreSQL, storage de arquivos e Row Level Security (RLS).
-
-O frontend é servido como site **completamente estático** pelo Vercel, sem necessidade de servidor de aplicação.
-
----
-
-# Por que este projeto
-
-Este projeto foi construído para praticar e demonstrar:
-
-- Arquitetura de aplicação web multi-página sem framework
-- Integração com APIs REST e Backend-as-a-Service (Supabase)
-- Autenticação segura com JWT
-- Design de banco de dados relacional com PostgreSQL
-- Políticas de Row Level Security (RLS)
-- Upload e gestão de arquivos com Supabase Storage
-- Chat em tempo real com Supabase Realtime
-- Interface responsiva e acessível
-- Boas práticas de segurança no frontend (XSS, clickjacking, headers HTTP)
-- SEO com meta tags, Open Graph e canonical URLs
-- Deploy com Vercel
-
----
-
-# Funcionalidades
-
-- ✅ Marketplace com listagem e busca de anúncios de veículos
-- ✅ Filtros por tipo de veículo, marca, modelo, preço, estado, ano, quilometragem, combustível, câmbio e cor, com busca por texto e ordenação
-- ✅ Ordenação: mais curtidos, menor preço, maior preço, mais recentes
-- ✅ Publicação e gerenciamento de anúncios com upload de múltiplas fotos
-- ✅ Sistema de curtidas nos anúncios
-- ✅ Favoritos salvos localmente (localStorage)
-- ✅ Chat interno em tempo real entre comprador e vendedor
-- ✅ Envio de fotos no chat — bucket privado, políticas por participante e URLs assinadas
-- ✅ Perfil de usuário com bio, foto, capa, redes sociais e anúncios
-- ✅ Feed de fotos estilo galeria no perfil
-- ✅ Sistema de seguir/seguidores entre usuários
-- ✅ Avaliação de usuários com estrelas e comentário
-- ✅ Autenticação completa: cadastro, login e recuperação de senha
-- ✅ Aceite legal obrigatório no cadastro, com versões e registro no Supabase
-- ✅ Configurações da conta: tema escuro/claro e gerenciamento de senha/sessões
-- ⚠️ Toggles de privacidade — a interface existe, mas o banco ainda não aplica todas as preferências
-- ✅ Sistema de denúncias de anúncios, mensagens e perfis
-- ✅ Painel administrativo (Dev Panel) com moderação de anúncios, denúncias e usuários
-- ✅ Banimento e desbanimento de usuários
-- ✅ Central de Ajuda com perguntas frequentes (FAQ)
-- ✅ Blog com dicas de compra/venda segura e artigos sobre marcas de luxo
-- ✅ Chatbot de atendimento integrado (Chatling)
-- ✅ Tema escuro e claro com persistência
-- ✅ Design responsivo para mobile e desktop
-- ✅ Estatísticas animadas em tempo real (total de anúncios, marcas, usuários)
-- ✅ Microanimações e revelação de elementos ao rolar a página
-- ✅ SEO otimizado com meta tags, Open Graph e canonical URLs
-- ✅ Segurança com headers HTTP via Vercel (CSP, DENY iframes, nosniff, referrer policy)
-- ⏳ Simulador de financiamento integrado
-- ⏳ Notificações push em tempo real
-- ⏳ Comparador de veículos
-- ⏳ Exportação de anúncios em PDF
-
-### Funcionalidades concluídas nesta etapa
-
-- ✅ Editar anúncio (UC09) — formulário reutilizado com validação de proprietário
-- ✅ Gerenciar categorias (UC15) — marcas/modelos no painel administrativo
-- ✅ Marcar anúncio como vendido (UC20) — RPC protegida e histórico preservado
-- ✅ Compartilhar anúncio (UC24) — Web Share e cópia de link como fallback
-- ✅ Formulário de contato com envio pelo site (UC25) — persistência protegida e caixa de entrada admin
-- ✅ Notificações persistentes (UC21) — mensagem entre contas gerou registro e badge de não lidas
-- ✅ Filtros por ano, modelo, quilometragem, combustível, câmbio e cor
-
----
-
-# Páginas do Site
-
-| Página | Rota | Descrição |
-|--------|------|-----------|
-| **Início** | `/MG-INICIO/inicio.html` | Landing page com hero, busca, veículos em destaque, categorias, diferenciais e depoimentos |
-| **Marketplace** | `/MG-MARKETPLACE/marketplace.html` | Listagem completa de anúncios com filtros avançados, busca, modal de detalhes e publicação de anúncio |
-| **Mensagens** | `/MG-MENSAGENS/mensagens.html` | Chat em tempo real com lista de conversas, envio de texto e fotos |
-| **Perfil / Conta** | `/MG-CONTA/conta.html` | Perfil público do usuário com anúncios, galeria de fotos, seguidores, seguindo e avaliações |
-| **Dicas** | `/MG-DICAS/dicas.html` | Guia completo de compra e venda segura: golpes comuns, documentação, inspeção mecânica e negociação |
-| **Central de Ajuda** | `/MG-AJUDA/ajuda.html` | FAQ com acordeão por categoria (anúncios, pagamentos, conta, segurança) |
-| **Contato** | `/MG-CONTATO/contato.html` | Página de contato com atendimento via WhatsApp e chatbot |
-| **Como Utilizar** | `/MG-CASOS-USO/como-utilizar.html` | Documentação dos casos de uso da plataforma (UC01–UC25) |
-| **Configurações** | `/MG-CONFIGURACOES/configuracoes.html` | Aparência, senha e sessões da conta |
-| **Login** | `/MG-LOGIN/login.html` | Autenticação com email e senha via Supabase Auth |
-| **Cadastro** | `/MG-LOGIN/register.html` | Criação de conta com nome, email e senha |
-| **Recuperação de senha** | `/MG-LOGIN/recuperar-senha.html` | Solicitação de link e redefinição segura de senha |
-| **Dev Panel** | `/MG-DEV/devpanel.html` | Painel restrito para desenvolvedores: métricas, moderação de anúncios, denúncias e gestão de usuários |
-
-### Blog — Artigos sobre Marcas de Luxo
-
-| Artigo | Rota |
-|--------|------|
-| Aston Martin | `/MG-DICAS/blogs/astonmartin/astonmartin.html` |
-| BMW | `/MG-DICAS/blogs/bmw/bmw.html` |
-| Bugatti | `/MG-DICAS/blogs/bugatti/bugatti.html` |
-| Ferrari | `/MG-DICAS/blogs/ferrari/ferrari.html` |
-| Lamborghini | `/MG-DICAS/blogs/lamborghini/lamborghini.html` |
-| McLaren | `/MG-DICAS/blogs/mclaren/mclaren.html` |
-| Pagani | `/MG-DICAS/blogs/pagani/pagani.html` |
-| Porsche | `/MG-DICAS/blogs/porsche/porsche.html` |
-
----
-
-# Stack de Tecnologias
-
-| Camada | Tecnologia |
-|--------|------------|
-| Frontend | HTML5, CSS3 Vanilla, JavaScript ES2022 (módulos) |
-| Ícones | Lucide Icons (via CDN) |
-| Backend / Auth | Supabase (PostgreSQL + Auth + Storage + Realtime) |
-| Banco de Dados | PostgreSQL (gerenciado pelo Supabase) |
-| Deploy | Vercel |
-| Chatbot | Chatling AI |
-| Tipografia | Inter, Segoe UI (system fonts) |
-| Versionamento | Git & GitHub |
-
----
-
-# Arquitetura
-
-```
-Navegador do Usuário
-        │
-        ▼
-  HTML + CSS + JS
-  (sem framework)
-        │
-   ┌────┴────┐
-   │         │
-   ▼         ▼
-Supabase  localStorage
-   │         │
- ┌─┴──────┐  └── Favoritos
- │        │
- ▼        ▼
-Auth    PostgreSQL
-(JWT)   (anuncios, usuarios,
-         mensagens, denuncias,
-         marcas, modelos,
-         fotos_anuncio, etc.)
-         │
-         ▼
-      Storage
-  (fotos de perfil,
-   capa e anúncios)
-```
-
-Toda a lógica de backend é gerenciada pelo **Supabase**:
-- **Auth**: autenticação JWT com email/senha e recuperação de senha
-- **Database**: queries diretas ao PostgreSQL usando a client lib `@supabase/supabase-js`
-- **RLS (Row Level Security)**: políticas no banco garantem que cada usuário só acessa e modifica seus próprios dados
-- **Storage**: upload e gestão de fotos de perfil, capa e anúncios
-- **Realtime**: subscriptions para o chat em tempo real entre usuários
-
-O frontend é servido como **HTML estático** pelo Vercel, sem necessidade de servidor de aplicação.
-
----
-
-## Resumo arquitetural visual
+## Arquitetura
 
 ```mermaid
 flowchart LR
@@ -261,255 +32,109 @@ flowchart LR
     R --> DB[(PostgreSQL)]
     A -->|JWT + auth.uid()| R
     DB --> F[Edge Function<br/>delete-account]
-    G[GitHub<br/>branch main] -->|deploy| V
+    G[GitHub<br/>main] -->|deploy| V
 ```
 
 ### Fluxos principais
 
-1. **Autenticação:** o usuário entra ou se cadastra pelo frontend; o Supabase Auth emite um JWT.
-2. **Acesso aos dados:** o frontend envia o JWT nas requisições; as policies RLS usam `auth.uid()` para limitar leitura e escrita.
-3. **Persistência:** anúncios, perfis, mensagens e demais entidades ficam no PostgreSQL; fotos são armazenadas no Supabase Storage.
-4. **Operações privilegiadas:** a exclusão completa de conta passa pela Edge Function `delete-account`, mantendo credenciais sensíveis fora do navegador.
-5. **Entrega:** o repositório GitHub publica o frontend estático no Vercel.
+1. **Autenticação:** o frontend envia as credenciais ao Supabase Auth, que emite um JWT.
+2. **Acesso aos dados:** as requisições carregam o JWT; as policies RLS usam `auth.uid()` para limitar leitura e escrita.
+3. **Persistência:** anúncios, perfis e mensagens ficam no PostgreSQL; arquivos ficam no Storage.
+4. **Operação privilegiada:** a exclusão completa de conta passa pela Edge Function `delete-account`.
+5. **Entrega:** pushes no branch `main` podem acionar o deploy no Vercel.
 
----
+## Funcionalidades
 
-# Estrutura do Projeto
+- Marketplace com busca, filtros e ordenação
+- Publicação e edição de anúncios com múltiplas fotos
+- Perfis, seguidores, curtidas e avaliações
+- Chat em tempo real com envio de fotos
+- Autenticação, recuperação de senha e aceite legal
+- Denúncias, moderação e painel administrativo
+- Tema claro/escuro e layout responsivo
+- Headers HTTP de segurança, SEO e acessibilidade
 
-```
-MGMOTORS/
-│
-├── MG-INICIO/
-│   ├── inicio.html          # Landing page
-│   └── inicio.css
-│
-├── MG-MARKETPLACE/
-│   ├── marketplace.html     # Listagem + publicação de anúncios
-│   └── marketplace.css
-│
-├── MG-MENSAGENS/
-│   ├── mensagens.html       # Chat em tempo real
-│   └── mensagens.css
-│
-├── MG-CONTA/
-│   ├── conta.html           # Perfil do usuário
-│   └── conta.css
-│
-├── MG-LOGIN/
-│   ├── login.html           # Autenticação
-│   ├── login.css
-│   ├── register.html        # Cadastro
-│   └── register.css
-│
-├── MG-CONFIGURACOES/
-│   ├── configuracoes.html   # Preferências do usuário
-│   └── configuracoes.css
-│
-├── MG-DICAS/
-│   ├── dicas.html           # Guia de segurança
-│   ├── dicas.css
-│   └── blogs/               # Artigos sobre marcas
-│       ├── astonmartin/
-│       ├── bmw/
-│       ├── bugatti/
-│       ├── ferrari/
-│       ├── lamborghini/
-│       ├── mclaren/
-│       ├── pagani/
-│       └── porsche/
-│
-├── MG-AJUDA/
-│   └── ajuda.html           # FAQ / Central de ajuda
-│
-├── MG-CONTATO/
-│   ├── contato.html         # Página de contato
-│   └── contato.css
-│
-├── MG-CASOS-USO/
-│   ├── como-utilizar.html   # Casos de uso documentados
-│   └── como-utilizar.css
-│
-├── MG-DEV/
-│   ├── devpanel.html        # Painel admin (restrito)
-│   └── devpanel.css
-│
-├── api/                     # Funções serverless (Vercel)
-│   ├── config.js            # Entrega as credenciais do Supabase (env vars)
-│   └── carros-ia.js         # Listagem em texto puro para o chatbot de IA
-│
-├── imagens/                 # Assets estáticos
-├── global.css               # Estilos globais + header + toast
-├── headerGlobal.js          # Header injetado dinamicamente em todas as páginas
-├── mgConfig.js              # Configuração central do Supabase + escapeHtml()
-├── tema.js                  # Tema escuro/claro aplicado antes do render
-├── vercel.json              # Headers de segurança HTTP
-├── supabase/
-│   ├── config.toml          # Configuração local do Supabase
-│   ├── migrations/          # Schema e políticas versionadas
-│   │   └── 20260915145500_remote_schema.sql
-│   └── functions/
-│       └── delete-account/  # Exclusão de conta no servidor
-└── index.html               # Redirect para MG-INICIO
-```
+## Stack
 
----
+| Camada | Tecnologia |
+| --- | --- |
+| Frontend | HTML5, CSS3 e JavaScript ES2022 |
+| Backend/Auth | Supabase Auth, Edge Functions e Realtime |
+| Banco | PostgreSQL |
+| Segurança de dados | RLS |
+| Arquivos | Supabase Storage |
+| Deploy | Vercel |
+| Ícones | Lucide Icons |
 
-# Banco de Dados
+## Segurança e limitações
 
-O banco de dados é gerenciado pelo Supabase. O schema e as políticas RLS são versionados em `supabase/migrations/`. A migration [20260915145500_remote_schema.sql](./supabase/migrations/20260915145500_remote_schema.sql) contém a estrutura atual capturada do projeto Supabase, incluindo tabelas, funções, triggers, relacionamentos e policies.
+- As políticas RLS limitam o acesso aos dados por usuário e função.
+- Fotos privadas usam políticas por participante e URLs assinadas.
+- A chave pública do Supabase não substitui as políticas RLS.
+- A Edge Function mantém a operação privilegiada fora do navegador.
+- O projeto usa o plano gratuito do Supabase; o banco pode pausar após inatividade e possui limites de quota.
+- Testes destrutivos de RLS devem usar staging e contas descartáveis.
+- O projeto é educacional/portfolio e não deve ser tratado como serviço de produção sem monitoramento, backups, rotação de segredos e controles operacionais adicionais.
 
-### Configurar outro projeto
+## Como executar
 
-1. Criar um projeto no Supabase.
-2. Instalar e configurar o Supabase CLI.
-3. Vincular o projeto com: `supabase link --project-ref SEU_PROJECT_REF`
-4. Aplicar as migrations com: `supabase db push`
-5. Configurar `SUPABASE_URL` e `SUPABASE_KEY`.
-6. Configurar e publicar as Edge Functions de `supabase/functions/`.
-
-### Tabelas principais
-
-| Tabela | Descrição |
-|--------|-----------|
-| `usuarios` | Perfil estendido: nome, bio, foto, capa, cidade, UF, instagram, nota_media, seguidores, seguindo, banido |
-| `anuncios` | Anúncios de veículos: marca, modelo, ano, preço, quilometragem, categoria, cidade, UF, status, curtidas |
-| `marcas` | Marcas de veículos cadastradas |
-| `modelos` | Modelos vinculados a marcas |
-| `fotos_anuncio` | Fotos dos anúncios (múltiplas por anúncio, com ordem) |
-| `mensagens` | Mensagens do chat: conteúdo, tipo (texto/foto), lida, timestamps |
-| `denuncias` | Denúncias de anúncios, mensagens ou perfis: motivo, status, alvo, denunciante |
-| `avaliacoes` | Avaliações entre usuários: nota (1 a 5) e comentário |
-| `seguidores` | Relação seguidor para seguido |
-| `curtidas_anuncio` | Curtidas de usuários em anúncios |
-| `posts_usuario` | Fotos do feed do perfil do usuário |
-| `usuarios_banidos` | Registro de banimentos com motivo e responsável |
-
----
-
-# Segurança
-
-- **Row Level Security (RLS)** ativado em todas as tabelas — dados privados ficam restritos ao próprio usuário/admin e a interface pública usa a view `usuarios_publicos`
-- **Escape de HTML** (`escapeHtml()` em `mgConfig.js`) aplicado em toda interpolação de dados do usuário em `innerHTML`, prevenindo XSS
-- **Validação de URLs de imagem** (`safeImageUrl()` em `mgConfig.js`): aceita apenas `http:`/`https:` e cai no fallback em caso de payload malicioso
-- **Construção via DOM API** nas telas críticas (chat, perfil): dados do usuário são inseridos via `textContent` e `dataset`, nunca via `innerHTML` direto
-- **Validação de URLs** no campo "Site" do perfil: aceita apenas `http:` e `https:`, bloqueando `javascript:` e outros esquemas perigosos
-- **Validação de username** do Instagram via regex antes de gerar links
-- **Headers HTTP de segurança** configurados no `vercel.json`:
-  - `Content-Security-Policy` com `object-src 'none'` e `base-uri 'self'`
-  - `X-Frame-Options: DENY` — impede clickjacking
-  - `X-Content-Type-Options: nosniff`
-  - `Referrer-Policy: strict-origin-when-cross-origin`
-- **Cache imutável** para assets de imagem (`Cache-Control: public, max-age=31536000, immutable`)
-- **Verificação de banimento** no login: usuários banidos são bloqueados imediatamente
-- **Dev Panel**: a autorização é feita pela função `is_admin()` no Supabase; não há e-mails de administradores nem lista de desenvolvedores no HTML/JS público.
-
----
-
-# Como Rodar Localmente
-
-As páginas públicas são HTML/CSS/JS estáticos, mas os recursos integrados dependem das funções serverless da Vercel e do Supabase. Para testar apenas o layout, o Live Server é suficiente; para autenticação, banco e `/api/config`, use a Vercel local ou o deploy de demonstração.
-
-## Pré-requisitos
+### Pré-requisitos
 
 - Node.js 18+
-- Projeto no Supabase configurado
+- Projeto Supabase configurado
+- Vercel CLI, para testar as funções serverless localmente
 
-## Com Vercel local
+### Instalação
 
 ```bash
-# Clone o repositório
 git clone https://github.com/murilotecoteco/MGMOTORS.git
 cd MGMOTORS
-
-# Instale a CLI, caso ainda não tenha
 npm install -g vercel
-
-# Configure SUPABASE_URL e SUPABASE_KEY no ambiente local e suba o projeto
 vercel dev
 ```
 
-O site ficará disponível em `http://localhost:3000`. Acesse:
+O site local ficará disponível em `http://localhost:3000`.
 
-```
-http://localhost:3000/MG-INICIO/inicio.html
-```
+### Variáveis de ambiente
 
-## Com VS Code Live Server (somente layout)
+Configure no ambiente local ou no Vercel:
 
-1. Instale a extensão **Live Server** (Ritwick Dey)
-2. Clique com o botão direito em `MG-INICIO/inicio.html`
-3. Selecione **"Open with Live Server"**
-
-> **Atenção:** O Live Server não executa `api/config.js`. Portanto, autenticação, anúncios, chat e recuperação de senha devem ser testados com `vercel dev` ou no deploy da Vercel.
-
----
-
-# Variáveis de Ambiente
-
-As credenciais do Supabase **não ficam no código** — são variáveis de ambiente definidas na Vercel:
-
-| Variável | Descrição |
-|----------|-----------|
-| `SUPABASE_URL` | URL do projeto Supabase |
-| `SUPABASE_KEY` | Chave pública (publishable/anon) |
-
-Como o front-end é estático, elas são entregues pelo endpoint serverless [`api/config.js`](./api/config.js) (`/api/config`), e o [`mgConfig.js`](./mgConfig.js) as obtém no carregamento — nenhuma página referencia credenciais diretamente.
-
-Para rodar com seu próprio projeto Supabase:
-
-1. Crie um projeto em [supabase.com](https://supabase.com)
-2. Aplique as migrations (incluindo o schema e RLS) utilizando o Supabase CLI com o comando: `supabase db push`
-3. Defina `SUPABASE_URL` e `SUPABASE_KEY` nas variáveis de ambiente (Vercel → Settings → Environment Variables)
-
-> A chave usada é pública por natureza (anon/publishable) — a segurança real está nas políticas de **RLS** do banco, que impedem qualquer acesso indevido mesmo com a chave em mãos.
-
----
-
-# Deploy
-
-O projeto é hospedado no **Vercel** como site estático.
-
-Quando o projeto Vercel está conectado ao repositório, pushes para o branch `main` podem acionar automaticamente novos deploys de produção. Essa configuração depende do ambiente externo da Vercel.
-
-URL de produção:
-
-```
-https://mgmotorss.vercel.app
+```env
+SUPABASE_URL=
+SUPABASE_KEY=
 ```
 
----
+A chave usada pelo frontend é pública; a proteção dos dados depende das policies RLS.
 
-# Roadmap
+## Estrutura principal
 
-- [x] Marketplace com busca, filtros avançados e ordenação
-- [x] Autenticação com Supabase Auth
-- [x] Publicação e gestão de anúncios com fotos
-- [x] Chat em tempo real (envio de fotos em avaliação de privacidade)
-- [x] Perfil de usuário com galeria, seguidores e avaliações
-- [x] Sistema de denúncias e moderação
-- [x] Painel administrativo (Dev Panel)
-- [x] Tema escuro/claro
-- [x] Central de Ajuda e blog de dicas
-- [x] Headers de segurança HTTP
-- [x] Row Level Security no banco de dados
-- [x] Design responsivo
-- [x] Editar anúncio (UC09)
-- [x] Gerenciar categorias (UC15)
-- [x] Marcar como vendido (UC20)
-- [x] Compartilhar anúncio (UC24)
-- [x] Formulário de contato com envio pelo site (UC25)
-- [x] Validar notificações persistentes (UC21) entre duas contas
-- [x] Filtros estendidos (ano, modelo, km, combustível, câmbio, cor)
-- [ ] Simulador de financiamento integrado
-- [ ] Notificações push em tempo real
+```text
+MGMOTORS/
+├── MG-INICIO/              # Landing page
+├── MG-MARKETPLACE/         # Anúncios e filtros
+├── MG-MENSAGENS/           # Chat
+├── MG-CONTA/               # Perfil e conta
+├── MG-LOGIN/               # Autenticação
+├── MG-DEV/                 # Painel administrativo
+├── api/                    # Funções serverless
+├── supabase/migrations/    # Schema e RLS
+├── supabase/functions/     # Edge Functions
+├── vercel.json             # Headers de segurança
+└── index.html
+```
+
+## Roadmap
+
+- [x] Marketplace, filtros e ordenação
+- [x] Autenticação e recuperação de senha
+- [x] Anúncios com fotos
+- [x] Chat em tempo real
+- [x] RLS, Storage e Realtime
+- [x] Painel administrativo
+- [ ] Simulador de financiamento
 - [ ] Comparador de veículos
-- [ ] Exportação de anúncios em PDF
-- [ ] Verificação de identidade de vendedores
+- [ ] Exportação em PDF
 
----
+## Licença
 
-# Licença
-
-Este projeto foi desenvolvido para fins educacionais e de portfólio.
-
-Nenhuma licença foi aplicada.
+Projeto desenvolvido para fins educacionais e de portfólio. Nenhuma licença foi aplicada.

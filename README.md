@@ -24,15 +24,15 @@ O projeto demonstra:
 
 ```mermaid
 flowchart LR
-    U[Usuário] --> V[Vercel<br/>HTML + CSS + JS]
-    V --> A[Supabase Auth<br/>JWT]
-    V --> R[RLS<br/>políticas por usuário]
-    V --> S[Supabase Storage<br/>fotos e arquivos]
-    V --> RT[Supabase Realtime<br/>chat]
+    U[Usuario] --> V[Vercel HTML CSS JS]
+    V --> A[Supabase Auth JWT]
+    V --> R[RLS policies]
+    V --> S[Supabase Storage]
+    V --> RT[Supabase Realtime chat]
     R --> DB[(PostgreSQL)]
-    A -->|JWT + auth.uid()| R
-    DB --> F[Edge Function<br/>delete-account]
-    G[GitHub<br/>main] -->|deploy| V
+    A -->|JWT and auth uid| R
+    DB --> F[Edge Function delete account]
+    G[GitHub main] -->|deploy| V
 ```
 
 ### Fluxos principais

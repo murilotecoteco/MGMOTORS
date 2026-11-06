@@ -1,6 +1,6 @@
 # MG Motors
 
-Marketplace web de compra e venda de veículos, construído com HTML, CSS e JavaScript puro no frontend e Supabase no backend.
+Projeto prático de portfólio: marketplace web de compra e venda de veículos, construído com HTML, CSS e JavaScript no frontend e Supabase no backend.
 
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/murilotecoteco/MGMOTORS)
 [![Deploy](https://img.shields.io/badge/deploy-vercel-black)](https://mgmotorss.vercel.app/MG-INICIO/inicio.html)
@@ -11,7 +11,7 @@ Marketplace web de compra e venda de veículos, construído com HTML, CSS e Java
 
 O MGMOTORS conecta compradores e vendedores em uma experiência de marketplace com anúncios, filtros, perfis, favoritos, mensagens e moderação.
 
-O projeto demonstra:
+O projeto foi construído para praticar:
 
 - autenticação com Supabase Auth e JWT;
 - PostgreSQL com Row Level Security (RLS);
@@ -65,6 +65,11 @@ flowchart LR
 | Arquivos | Supabase Storage |
 | Deploy | Vercel |
 | Ícones | Lucide Icons |
+
+## Resultado e aprendizados
+
+- **Resultado:** fluxos de anúncios, filtros, perfis, favoritos, mensagens e moderação organizados em uma aplicação publicada.
+- **Aprendizado:** integração entre autenticação, PostgreSQL, RLS, Storage privado, Realtime e uma operação privilegiada em Edge Function.
 
 ## Segurança e limitações
 

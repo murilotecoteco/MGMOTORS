@@ -249,6 +249,31 @@ O frontend é servido como **HTML estático** pelo Vercel, sem necessidade de se
 
 ---
 
+## Resumo arquitetural visual
+
+```mermaid
+flowchart LR
+    U[Usuário] --> V[Vercel<br/>HTML + CSS + JS]
+    V --> A[Supabase Auth<br/>JWT]
+    V --> R[RLS<br/>políticas por usuário]
+    V --> S[Supabase Storage<br/>fotos e arquivos]
+    V --> RT[Supabase Realtime<br/>chat]
+    R --> DB[(PostgreSQL)]
+    A -->|JWT + auth.uid()| R
+    DB --> F[Edge Function<br/>delete-account]
+    G[GitHub<br/>branch main] -->|deploy| V
+```
+
+### Fluxos principais
+
+1. **Autenticação:** o usuário entra ou se cadastra pelo frontend; o Supabase Auth emite um JWT.
+2. **Acesso aos dados:** o frontend envia o JWT nas requisições; as policies RLS usam `auth.uid()` para limitar leitura e escrita.
+3. **Persistência:** anúncios, perfis, mensagens e demais entidades ficam no PostgreSQL; fotos são armazenadas no Supabase Storage.
+4. **Operações privilegiadas:** a exclusão completa de conta passa pela Edge Function `delete-account`, mantendo credenciais sensíveis fora do navegador.
+5. **Entrega:** o repositório GitHub publica o frontend estático no Vercel.
+
+---
+
 # Estrutura do Projeto
 
 ```

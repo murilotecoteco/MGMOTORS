@@ -1,4 +1,4 @@
-# MG Motors
+# MGMOTORS
 
 Projeto prático de portfólio: marketplace web de compra e venda de veículos, construído com HTML, CSS e JavaScript no frontend e Supabase no backend.
 

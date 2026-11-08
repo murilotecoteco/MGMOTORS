@@ -42,6 +42,7 @@ Registrar para cada participante apenas dados necessários para a avaliação: t
 - [ ] Conferir autores, referências, citações e numeração de quadros e figuras.
 - [ ] Anexar, se o Chatling for apresentado como resultado, a configuração utilizada e a política de dados do serviço.
 - [ ] Atualizar o artigo se alguma funcionalidade parcial for implementada depois desta revisão.
+- [ ] Enviar a versão final ao orientador, incorporar as correções solicitadas e obter a aprovação para entrega/apresentação do TCC.
 
 ## Divergências funcionais que devem permanecer explícitas
 

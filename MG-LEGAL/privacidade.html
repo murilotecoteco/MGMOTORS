@@ -34,65 +34,72 @@
 <!-- CONTEÚDO LEGAL -->
 <section class="legal-wrapper">
   <div class="legal-content">
-    <span class="update-date">Última atualização: 15 de setembro de 2026 (Versão 1.0)</span>
+    <span class="update-date">Última atualização: 6 de novembro de 2026 (Versão 2.0)</span>
 
-    <h2>1. Introdução</h2>
-    <p>A privacidade e segurança dos seus dados são fundamentais para a MG Motors. Esta Política de Privacidade explica de forma clara como coletamos, utilizamos, armazenamos e protegemos as informações fornecidas por você ao acessar ou utilizar nossa plataforma.</p>
+    <h2>1. Quem somos e a quem esta política se aplica</h2>
+    <p>Esta Política explica como a MG Motors trata dados pessoais, em conformidade com a Lei Geral de Proteção de Dados (LGPD, Lei nº 13.709/2018). A MG Motors atua como <strong>controladora</strong> dos dados tratados na plataforma. Para exercer seus direitos ou falar com o responsável por privacidade, use a página de <a href="../MG-CONTATO/contato.html">Contato</a>.</p>
 
-    <h2>2. Dados Coletados</h2>
-    <p>Ao utilizar a MG Motors, coletamos diferentes tipos de informações para viabilizar a prestação dos nossos serviços:</p>
-
-    <h3>3. Dados de Cadastro</h3>
-    <p>Quando você cria uma conta na plataforma, coletamos dados essenciais como: Nome completo, endereço de e-mail e senha (armazenada de forma criptografada pelo Supabase Auth). Adicionalmente, em seu perfil público, você pode fornecer de forma opcional sua biografia, links de redes sociais, cidade e estado.</p>
-
-    <h3>4. Dados dos Anúncios</h3>
-    <p>Caso opte por vender um veículo, coletaremos informações sobre o automóvel, como marca, modelo, ano, quilometragem, preço, localização e opcionais, que ficarão visíveis publicamente na plataforma.</p>
-
-    <h3>5. Imagens e Fotos</h3>
-    <p>Coletamos as imagens que você envia voluntariamente para a foto de perfil, capa, anúncios de veículos e imagens trocadas no chat interno. Essas imagens são hospedadas no nosso serviço de armazenamento em nuvem.</p>
-
-    <h2>6. Finalidade do Uso dos Dados</h2>
-    <p>Os dados coletados são utilizados para:</p>
+    <h2>2. Dados que tratamos, para quê e com qual base legal</h2>
     <ul>
-      <li>Permitir o funcionamento da plataforma (criação de contas, login, gestão de sessão).</li>
-      <li>Exibir os anúncios de veículos no marketplace.</li>
-      <li>Viabilizar a comunicação em tempo real via chat entre compradores e vendedores.</li>
-      <li>Garantir a segurança dos usuários, possibilitando a moderação e atendimento a denúncias.</li>
-      <li>Registrar legalmente o seu consentimento com os nossos Termos de Uso e Política de Privacidade.</li>
+      <li><strong>Cadastro</strong> (nome, e-mail, senha criptografada, login com Google): criar e proteger sua conta. <em>Base: execução do contrato.</em></li>
+      <li><strong>Perfil</strong> (foto, capa, biografia, cidade, estado, redes sociais; opcionais): exibir seu perfil. <em>Base: execução do contrato e consentimento.</em></li>
+      <li><strong>Anúncios</strong> (dados e fotos do veículo, preço, localização): divulgar sua oferta. <em>Base: execução do contrato.</em></li>
+      <li><strong>Mensagens e imagens do chat</strong>: comunicação entre comprador e vendedor e notificações. <em>Base: execução do contrato.</em></li>
+      <li><strong>Encontros</strong>: nome, descrição, data, local e coordenadas do encontro que você organiza; sua inscrição, o veículo que você informa e a data em que aceitou os requisitos, quando participa. <em>Base: execução do contrato.</em></li>
+      <li><strong>Aceite legal</strong> (data e versão dos Termos e da Política): comprovar seu consentimento. <em>Base: cumprimento de obrigação legal e exercício regular de direitos.</em></li>
+      <li><strong>Denúncias, moderação e segurança</strong> (denúncias, banimentos, registros técnicos): prevenir fraudes e abusos. <em>Base: legítimo interesse e exercício regular de direitos.</em></li>
+      <li><strong>Contato</strong> (nome, e-mail e mensagem enviados pelo formulário): responder você. <em>Base: execução de procedimentos preliminares e legítimo interesse.</em></li>
+      <li><strong>Métricas de desempenho do site</strong> (Web Vitals, sem identificar você): melhorar a plataforma. <em>Base: legítimo interesse.</em></li>
     </ul>
 
-    <h2>7. Armazenamento e Localização</h2>
-    <p>Seus dados são armazenados na infraestrutura do <strong>Supabase</strong>, cujos servidores podem estar localizados fora do Brasil. O Supabase adota padrões internacionais de segurança para proteção de dados.</p>
+    <h2>3. Localização</h2>
+    <p>O local de um encontro é informado por quem o organiza e, depois de aprovado, é <strong>público</strong>, pois essa é a finalidade do mapa. Por isso, nunca marque sua residência. O recurso "Perto de mim" usa a localização do seu aparelho apenas dentro do seu navegador para ordenar os encontros por distância: essa posição <strong>não é enviada nem armazenada</strong> por nós, e você pode negar a permissão sem perder as demais funções.</p>
 
-    <h2>8. Segurança</h2>
-    <p>Aplicamos medidas técnicas rigorosas para proteger seus dados, incluindo o uso de Row Level Security (RLS) no banco de dados. O RLS garante, em nível de servidor, que usuários comuns só tenham acesso a dados públicos ou aos seus próprios dados privados. Todas as senhas são fortemente criptografadas pelo provedor de autenticação.</p>
-
-    <h2>9. Serviços de Terceiros e Compartilhamento</h2>
-    <p>A MG Motors não vende seus dados pessoais. Compartilhamos informações estritamente necessárias apenas com prestadores de serviços tecnológicos (ex: Supabase para banco de dados e autenticação, Vercel para hospedagem do frontend, e Chatling para atendimento via IA), que estão sujeitos a regras rigorosas de proteção de dados.</p>
-
-    <h2 id="cookies">10. Cookies e LocalStorage</h2>
-    <p>A MG Motors utiliza <code>localStorage</code> e <code>sessionStorage</code> (tecnologias locais do seu navegador) para armazenar preferências (como o tema escuro/claro) e tokens temporários de sessão (gerenciados pelo Supabase). Não utilizamos cookies de rastreamento de terceiros para fins de publicidade não solicitada.</p>
-
-    <h2>11. Direitos do Usuário</h2>
-    <p>Você tem o direito de, a qualquer momento:</p>
+    <h2>4. Quem vê seus dados</h2>
     <ul>
-      <li>Acessar seus dados através do seu painel de usuário.</li>
-      <li>Corrigir ou atualizar informações imprecisas.</li>
-      <li>Solicitar a exclusão definitiva da sua conta e de seus dados pessoais.</li>
-      <li>Revogar consentimentos concedidos anteriormente (o que pode inviabilizar o uso da plataforma).</li>
+      <li><strong>Público:</strong> nome, foto, cidade/estado, biografia, avaliações, anúncios e encontros aprovados. Seu e-mail e telefone <strong>não</strong> aparecem no perfil público.</li>
+      <li><strong>Organizador de encontro:</strong> vê nome e veículo informado dos inscritos no próprio encontro.</li>
+      <li><strong>Outros usuários:</strong> só veem a lista de inscritos se forem o organizador; os demais veem apenas o número de inscritos.</li>
+      <li><strong>Administradores:</strong> acessam dados necessários para moderação e suporte.</li>
     </ul>
 
-    <h2>12. Exclusão da Conta</h2>
-    <p>Você pode solicitar a exclusão da sua conta. Ao fazê-lo, todos os seus dados pessoais, anúncios, imagens e mensagens serão anonimizados ou apagados permanentemente de nossos bancos de dados, respeitando os prazos legais.</p>
+    <h2>5. Compartilhamento com prestadores de serviço</h2>
+    <p>Não vendemos seus dados. Usamos operadores que tratam dados em nosso nome: Supabase (banco de dados, autenticação e armazenamento), Vercel (hospedagem), Google (login opcional), Chatling (atendimento por IA, carregado somente após seu consentimento) e OpenStreetMap/Nominatim (mapas e busca de endereços: ao buscar um endereço ou marcar o mapa, o texto buscado ou as coordenadas são enviados a esse serviço, e os mapas são carregados de seus servidores).</p>
 
-    <h2>13. Retenção dos Dados</h2>
-    <p>Armazenaremos seus dados pessoais apenas pelo tempo necessário para cumprir as finalidades descritas nesta política, ou para cumprir obrigações legais, regulatórias ou judiciais (como a manutenção de logs de acesso conforme o Marco Civil da Internet, Lei nº 12.965/2014).</p>
+    <h2>6. Transferência internacional</h2>
+    <p>Alguns prestadores podem armazenar ou processar dados fora do Brasil. Nesses casos, adotamos salvaguardas contratuais e padrões de segurança compatíveis com a LGPD.</p>
 
-    <h2>14. Alterações da Política</h2>
-    <p>Reservamo-nos o direito de atualizar esta Política de Privacidade. Havendo mudanças relevantes, exigiremos o seu aceite renovado no próximo acesso à plataforma.</p>
+    <h2>7. Segurança</h2>
+    <p>Usamos criptografia em trânsito, senhas protegidas pelo provedor de autenticação, regras de acesso por linha no banco (Row Level Security), privilégios mínimos e verificações de segurança periódicas. Nenhum sistema é totalmente invulnerável; em caso de incidente que possa causar risco relevante, comunicaremos você e a ANPD, conforme a lei.</p>
+
+    <h2 id="cookies">8. Cookies e armazenamento local</h2>
+    <p>Usamos <code>localStorage</code> e <code>sessionStorage</code> para manter sua sessão, o tema claro/escuro e lembrar escolhas de consentimento. Não usamos cookies de rastreamento para publicidade.</p>
+
+    <h2>9. Por quanto tempo guardamos</h2>
+    <ul>
+      <li>Dados da conta e do perfil: enquanto a conta existir.</li>
+      <li>Anúncios, mensagens e encontros: enquanto forem necessários para o serviço; encontros passados ou cancelados deixam de ser exibidos.</li>
+      <li>Registro de aceite legal e logs de acesso: pelo prazo exigido em lei (por exemplo, o Marco Civil da Internet) ou para defesa em processos.</li>
+      <li>Após a exclusão da conta, apagamos ou anonimizamos os dados pessoais, salvo os que precisamos guardar por obrigação legal.</li>
+    </ul>
+
+    <h2>10. Seus direitos (art. 18 da LGPD)</h2>
+    <p>Você pode, a qualquer momento: confirmar que tratamos seus dados; acessá-los; corrigi-los; pedir anonimização, bloqueio ou eliminação de dados desnecessários; pedir portabilidade; saber com quem compartilhamos; ser informado sobre as consequências de não consentir; <strong>revogar consentimentos</strong>; e se opor a tratamentos feitos com base em legítimo interesse. Muitos desses pedidos podem ser feitos nas configurações da conta; os demais, pela página de <a href="../MG-CONTATO/contato.html">Contato</a>. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+
+    <h2>11. Exclusão da conta</h2>
+    <p>Você pode excluir sua conta nas configurações. Seus dados pessoais, anúncios, imagens e mensagens são apagados ou anonimizados, e os encontros que você organizava deixam de aparecer. Inscrições em encontros de terceiros são removidas.</p>
+
+    <h2>12. Menores de idade</h2>
+    <p>A plataforma é destinada a maiores de 18 anos. Se identificarmos conta de menor sem a devida autorização, poderemos suspendê-la e apagar os dados.</p>
+
+    <h2>13. Aceite obrigatório</h2>
+    <p>Para criar conta e para entrar, pedimos que você confirme que leu esta Política e os <a href="termos.html">Termos de Uso</a>. Guardamos a data e a versão do seu aceite. Sempre que as versões mudarem, pediremos um novo aceite.</p>
+
+    <h2>14. Alterações desta Política</h2>
+    <p>Podemos atualizar esta Política. Mudanças relevantes serão comunicadas e exigirão novo aceite. A versão vigente e a data aparecem no topo desta página.</p>
 
     <h2>15. Contato</h2>
-    <p>Se você tiver qualquer dúvida sobre esta Política ou sobre como tratamos seus dados, entre em contato através da página <a href="../MG-CONTATO/contato.html">Contato</a>.</p>
+    <p>Dúvidas sobre privacidade: página de <a href="../MG-CONTATO/contato.html">Contato</a>.</p>
   </div>
 </section>
 
@@ -105,6 +112,7 @@
     <div class="footer-col">
       <h4>Plataforma</h4>
       <a href="../MG-MARKETPLACE/marketplace.html">Marketplace</a>
+      <a href="../MG-ENCONTROS/encontros.html">Encontros</a>
       <a href="../MG-DICAS/dicas.html">Dicas</a>
       <a href="../MG-MENSAGENS/mensagens.html">Mensagens</a>
     </div>

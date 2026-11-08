@@ -39,6 +39,19 @@
       <a href="recuperar-senha.html" style="font-size:13px;color:#144b71;text-decoration:none;opacity:.75;">Esqueci minha senha</a>
     </p>
 
+    <fieldset class="consentimentos" aria-describedby="consentimentos-ajuda">
+      <legend>Documentos legais</legend>
+      <p id="consentimentos-ajuda">Para entrar, confirme que leu os documentos vigentes (versão 2.0).</p>
+      <label class="consentimento" for="aceite-termos">
+        <input type="checkbox" id="aceite-termos" required>
+        <span>Li e aceito os <a href="../MG-LEGAL/termos.html" target="_blank" rel="noopener">Termos de Uso</a>.</span>
+      </label>
+      <label class="consentimento" for="aceite-privacidade">
+        <input type="checkbox" id="aceite-privacidade" required>
+        <span>Li e concordo com a <a href="../MG-LEGAL/privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+      </label>
+    </fieldset>
+
     <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
 
     <button type="submit" class="primary-action">Entrar</button>
@@ -51,8 +64,22 @@
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
+import { consentimentoAtual, registrarAceiteLegal } from "../legalConsent.js";
 const supa = createClient(supabaseUrl, supabaseKey);
 const feedback = document.getElementById("form-feedback");
+const aceiteTermos = document.getElementById("aceite-termos");
+const aceitePrivacidade = document.getElementById("aceite-privacidade");
+const botaoEntrar = document.querySelector('#form-login button[type="submit"]');
+
+function aceitesCompletos() {
+  return aceiteTermos.checked && aceitePrivacidade.checked;
+}
+function atualizarEstadoLogin() {
+  botaoEntrar.disabled = !aceitesCompletos();
+}
+atualizarEstadoLogin();
+aceiteTermos.addEventListener("change", atualizarEstadoLogin);
+aceitePrivacidade.addEventListener("change", atualizarEstadoLogin);
 
 function mostrarFeedback(mensagem, tipo = "erro") {
   feedback.textContent = mensagem;
@@ -66,8 +93,9 @@ if (_params.get("banido") === "1") {
   mostrarFeedback("Sua conta está suspensa. Entre em contato com o suporte se acreditar que isso é um erro.");
 }
 
+let loginEmEnvio = false; // o submit registra o aceite e faz o redirect sozinho
 supa.auth.onAuthStateChange(async (event, session) => {
-  if (event === "SIGNED_IN" && session) {
+  if (event === "SIGNED_IN" && session && !loginEmEnvio) {
     // A1: Verifica banimento ANTES de redirecionar — cobre login via Google OAuth
     const { data: perfil } = await supa.from("usuarios").select("banido").eq("id", session.user.id).maybeSingle();
     if (perfil?.banido) {
@@ -89,12 +117,20 @@ document.getElementById("form-login").addEventListener("submit", async e => {
   const email = document.getElementById("email-login").value.trim();
   const senha = document.getElementById("senha-login").value;
 
+  if (!aceitesCompletos()) {
+    mostrarFeedback("Você precisa aceitar os Termos de Uso e a Política de Privacidade para entrar.");
+    atualizarEstadoLogin();
+    return;
+  }
+
+  loginEmEnvio = true;
   botao.disabled = true;
   botao.textContent = "Entrando...";
   mostrarFeedback("");
 
   const { data, error } = await supa.auth.signInWithPassword({ email, password: senha });
   if (error) {
+    loginEmEnvio = false;
     mostrarFeedback("Nao foi possivel entrar. Verifique e-mail e senha.");
     botao.disabled = false;
     botao.textContent = "Entrar";
@@ -103,13 +139,28 @@ document.getElementById("form-login").addEventListener("submit", async e => {
 
   if (data?.user) {
     // Melhoria 1: maybeSingle() — recém-cadastrado pode ainda não ter linha em `usuarios`.
-    const { data: perfil } = await supa.from("usuarios").select("banido, nome").eq("id", data.user.id).maybeSingle();
+    const { data: perfil } = await supa.from("usuarios")
+      .select("banido, nome, terms_accepted_at, privacy_accepted_at, terms_version, privacy_version")
+      .eq("id", data.user.id).maybeSingle();
     if (perfil?.banido) {
       await supa.auth.signOut();
+      loginEmEnvio = false;
       mostrarFeedback("Sua conta esta suspensa. Entre em contato com o suporte se acredita que isso e um erro.");
       botao.disabled = false;
       botao.textContent = "Entrar";
       return;
+    }
+    // Registra o aceite da versão vigente (nova conta ou termos atualizados).
+    if (!consentimentoAtual(perfil)) {
+      const { error: aceiteError } = await registrarAceiteLegal(supa);
+      if (aceiteError) {
+        await supa.auth.signOut();
+        loginEmEnvio = false;
+        mostrarFeedback("Não foi possível registrar seu aceite. Tente novamente.");
+        botao.disabled = false;
+        botao.textContent = "Entrar";
+        return;
+      }
     }
   }
 
@@ -119,6 +170,11 @@ document.getElementById("form-login").addEventListener("submit", async e => {
 
 document.getElementById("botao-google-login").addEventListener("click", async () => {
   const botao = document.getElementById("botao-google-login");
+  if (!aceitesCompletos()) {
+    mostrarFeedback("Aceite os Termos de Uso e a Política de Privacidade antes de continuar.");
+    return;
+  }
+  sessionStorage.setItem("mg_legal_oauth_pending", "1");
   botao.disabled = true;
   mostrarFeedback("Abrindo o login do Google...", "sucesso");
   // A home é o Site URL oficial do projeto e está na allow list do Supabase.
@@ -130,6 +186,7 @@ document.getElementById("botao-google-login").addEventListener("click", async ()
   });
   if (error) {
     botao.disabled = false;
+    sessionStorage.removeItem("mg_legal_oauth_pending");
     mostrarFeedback("Não foi possível iniciar o login com Google. Confira a configuração OAuth no Supabase.");
     console.error("Google OAuth error:", error);
   }

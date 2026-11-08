@@ -88,6 +88,25 @@ if (/ADMIN_EMAILS|value\s*=\s*["'][^"']+@/i.test(devPanel)) {
   failures.push("painel administrativo não pode expor ou pré-preencher e-mail de administrador");
 }
 
+
+const encontrosPage = await readFile(join(root, "MG-ENCONTROS/encontros.html"), "utf8");
+for (const fragment of ['rpc("listar_encontros_publicos")', 'rpc("entrar_encontro"', "escapeHtml as esc"]) {
+  if (!encontrosPage.includes(fragment)) failures.push(`página de encontros sem: ${fragment}`);
+}
+if (/from\(["']encontros_confirmados["']\)\.insert/.test(encontrosPage)) {
+  failures.push("inscrição em encontro deve usar a RPC entrar_encontro (limite de vagas e requisitos)");
+}
+const encontrosMigration = await readFile(join(root, "supabase/migrations/20261106000000_encontros.sql"), "utf8");
+for (const fragment of ["FOR UPDATE", "consentimento_legal_atual", "moderar_encontro", "REVOKE ALL ON FUNCTION public.entrar_encontro"]) {
+  if (!encontrosMigration.includes(fragment)) failures.push(`migration de encontros ausente: ${fragment}`);
+}
+for (const relative of ["MG-LOGIN/login.html", "MG-LOGIN/register.html"]) {
+  const source = await readFile(join(root, relative), "utf8");
+  if (!source.includes('id="aceite-termos"') || !source.includes("aceitesCompletos()")) {
+    failures.push(`${relative}: aceite de Termos/Privacidade deve ser obrigatório`);
+  }
+}
+
 const globalCss = await readFile(join(root, "global.css"), "utf8");
 const globalHeader = await readFile(join(root, "headerGlobal.js"), "utf8");
 if (/\.mg-toast-?icon::before\s*\{\s*content:\s*["'](?:✅|❌|ℹ️|⚠️)/.test(globalCss)) {

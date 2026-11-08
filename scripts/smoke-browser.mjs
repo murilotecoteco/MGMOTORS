@@ -2,15 +2,13 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join, normalize, extname } from "node:path";
-import { spawn } from "node:child_process";
-import { promisify } from "node:util";
+import { chromium } from "@playwright/test";
 
 const root = process.cwd();
-const chromium = process.env.CHROMIUM_BIN || "chromium";
 const port = 4173;
 const baseUrl = `http://127.0.0.1:${port}`;
 const routes = [
-  { path: "/MG-INICIO/inicio.html", title: /MG Motors/i, h1: /Encontre seu próximo veículo|Encontre o carro dos seus .*sonhos/i },
+  { path: "/MG-INICIO/inicio.html", title: /MG\s?Motors/i, h1: /Encontre seu próximo veículo|Encontre o carro dos seus .*sonhos/i },
   { path: "/MG-MARKETPLACE/marketplace.html", title: /Marketplace/i, h1: /Encontre seu próximo veículo/i },
   { path: "/MG-DICAS/dicas.html", title: /Dicas/i, h1: /Dicas|segurança/i },
   { path: "/MG-CONTATO/contato.html", title: /Contato/i, h1: /excelência/i, selector: "#form-contato-site" },
@@ -28,10 +26,6 @@ const mime = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
 };
-
-function htmlDocument(output) {
-  return output.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/\s+/g, " ");
-}
 
 function serve(request, response) {
   const url = new URL(request.url, baseUrl);
@@ -57,43 +51,37 @@ function serve(request, response) {
   });
 }
 
-function runChromium(url) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(chromium, [
-      "--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage",
-      "--no-first-run", "--no-default-browser-check", "--virtual-time-budget=2500",
-      "--dump-dom", url,
-    ], { stdio: ["ignore", "pipe", "pipe"] });
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", chunk => { stdout += chunk; });
-    child.stderr.on("data", chunk => { stderr += chunk; });
-    const timer = setTimeout(() => {
-      child.kill("SIGTERM");
-      reject(new Error(`Chromium timeout em ${url}`));
-    }, 20000);
-    child.on("error", error => { clearTimeout(timer); reject(error); });
-    child.on("close", code => {
-      clearTimeout(timer);
-      if (code !== 0) reject(new Error(`Chromium saiu com código ${code}: ${stderr.slice(-500)}`));
-      else resolve(stdout);
-    });
-  });
+async function carregarPagina(page, url) {
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
+  return {
+    title: await page.title(),
+    h1: await page.locator("h1").first().textContent(),
+    hasMainContent: await page.locator("main, section").count() > 0,
+  };
 }
 
 const server = createServer(serve);
 await new Promise(resolve => server.listen(port, "127.0.0.1", resolve));
 
 let failures = 0;
+const browser = await chromium.launch({
+  headless: true,
+  executablePath: process.env.CHROMIUM_BIN || "/usr/bin/chromium",
+});
+const context = await browser.newContext();
+// O smoke valida disponibilidade local. Dependências externas são cobertas
+// pelo E2E e não devem tornar esta verificação intermitente.
+await context.route("https://**/*", route => route.abort());
+const page = await context.newPage();
 try {
   for (const route of routes) {
-    const output = htmlDocument(await runChromium(`${baseUrl}${route.path}`));
+    const document = await carregarPagina(page, `${baseUrl}${route.path}`);
     const checks = [
-      ["title", route.title.test(output)],
-      ["h1", route.h1.test(output)],
-      ["main content", /<(main|section)\b/i.test(output)],
+      ["title", route.title.test(document.title)],
+      ["h1", route.h1.test(document.h1 || "")],
+      ["main content", document.hasMainContent],
     ];
-    if (route.selector) checks.push([route.selector, new RegExp(`id=["']${route.selector.slice(1)}["']`, "i").test(output)]);
+    if (route.selector) checks.push([route.selector, await page.locator(route.selector).count() > 0]);
     const failed = checks.filter(([, ok]) => !ok).map(([name]) => name);
     if (failed.length) {
       failures++;
@@ -103,6 +91,7 @@ try {
     }
   }
 } finally {
+  await browser.close();
   server.close();
 }
 

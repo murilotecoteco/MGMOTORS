@@ -1,6 +1,6 @@
 // arquivo: headerGlobal.js
 
-import { consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
+import { CURRENT_PRIVACY_VERSION, CURRENT_TERMS_VERSION, consentimentoAtual, registrarAceiteLegal } from "./legalConsent.js";
 import { configError } from "./mgConfig.js";
 import { iniciarWebVitals } from "./webVitals.js";
 
@@ -46,6 +46,7 @@ export async function carregarHeaderGlobal(supabase) {
 
     <nav class="nav" id="main-nav" aria-label="Navegacao principal">
       <a href="/MG-MARKETPLACE/marketplace.html" class="nav-marketplace nav-link">Marketplace</a>
+      <a href="/MG-ENCONTROS/encontros.html" class="nav-link">Encontros</a>
       <a href="/MG-DICAS/dicas.html" class="nav-link">Dicas</a>
       <a href="/MG-CASOS-USO/como-utilizar.html" class="nav-link">Como Utilizar</a>
       <a href="/MG-CONTATO/contato.html" class="nav-link">Contato</a>
@@ -162,8 +163,22 @@ export async function carregarHeaderGlobal(supabase) {
       }
     }
 
-    if (!consentimentoAtual(perfil)) {
-      mostrarBannerTermos({ supabase, usuario: currentUser, perfil });
+    // Login com Google: o aceite foi marcado na tela de login antes do redirect.
+    let perfilConsentimento = perfil;
+    if (!consentimentoAtual(perfil) && sessionStorage.getItem("mg_legal_oauth_pending") === "1") {
+      const { error: aceiteError } = await registrarAceiteLegal(supabase);
+      if (!aceiteError) {
+        sessionStorage.removeItem("mg_legal_oauth_pending");
+        perfilConsentimento = {
+          ...perfil,
+          terms_version: CURRENT_TERMS_VERSION, privacy_version: CURRENT_PRIVACY_VERSION,
+          terms_accepted_at: new Date().toISOString(), privacy_accepted_at: new Date().toISOString()
+        };
+      }
+    }
+
+    if (!consentimentoAtual(perfilConsentimento)) {
+      mostrarBannerTermos({ supabase, usuario: currentUser, perfil: perfilConsentimento });
     }
 
     return currentUser;

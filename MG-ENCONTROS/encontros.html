@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encontros de Carros - MG Motors | Marque e participe</title>
+  <meta name="description" content="Encontre encontros de carros perto de você no mapa, marque o seu e participe com vagas limitadas e requisitos definidos pelo organizador.">
+  <meta property="og:title" content="Encontros de Carros - MG Motors">
+  <meta property="og:description" content="Mapa de encontros de carros, inscrições com limite de vagas e requisitos.">
+  <meta property="og:image" content="https://mgmotorss.vercel.app/imagens/logo-mg.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="../imagens/logo-mg.png">
+  <link rel="canonical" href="https://mgmotorss.vercel.app/MG-ENCONTROS/encontros.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="encontros.css">
+  <script src="../tema.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<header id="header-global"></header>
+
+<nav class="mg-breadcrumb" aria-label="Navegação estrutural">
+  <a href="../MG-INICIO/inicio.html">Início</a>
+  <span class="sep" aria-hidden="true">›</span>
+  <span class="current" aria-current="page">Encontros</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-tag">Comunidade</span>
+    <h1>Encontros de <span class="destaque">carros</span></h1>
+    <p>Veja no mapa os encontros da sua região, garanta sua vaga ou marque o seu. Todo encontro passa pela aprovação da equipe MG Motors antes de aparecer.</p>
+    <button class="btn" id="btn-novo" type="button">Marcar um encontro</button>
+  </div>
+</section>
+
+<main class="pagina" id="conteudo">
+  <div class="abas" role="tablist" aria-label="Seções de encontros">
+    <button class="aba" role="tab" id="aba-todos" aria-selected="true" aria-controls="painel-todos" type="button">Encontros</button>
+    <button class="aba" role="tab" id="aba-meus" aria-selected="false" aria-controls="painel-meus" type="button">Meus encontros</button>
+  </div>
+
+  <section id="painel-todos" role="tabpanel" aria-labelledby="aba-todos">
+    <div class="filtros">
+      <input type="search" id="f-busca" placeholder="Buscar por nome, cidade ou local" aria-label="Buscar encontros" maxlength="80">
+      <select id="f-tipo" aria-label="Tipo de veículo">
+        <option value="">Todos os tipos</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="f-vagas"> Só com vagas</label>
+      <button class="btn sec pequeno" id="btn-perto" type="button">Perto de mim</button>
+    </div>
+
+    <div class="alternar-visao" role="group" aria-label="Alternar visualização">
+      <button class="btn pequeno" id="ver-lista" type="button">Lista</button>
+      <button class="btn sec pequeno" id="ver-mapa" type="button">Mapa</button>
+    </div>
+
+    <div class="layout" id="layout" data-visao="lista">
+      <div class="lista" id="lista" aria-live="polite"></div>
+      <div class="mapa-wrap"><div id="mapa" role="region" aria-label="Mapa dos encontros"></div></div>
+    </div>
+  </section>
+
+  <section id="painel-meus" role="tabpanel" aria-labelledby="aba-meus" hidden>
+    <div id="meus-conteudo"></div>
+  </section>
+</main>
+
+<!-- Modal: marcar encontro -->
+<div class="modal-fundo" id="modal-novo" role="dialog" aria-modal="true" aria-labelledby="titulo-novo">
+  <form class="modal" id="form-novo" novalidate>
+    <h2 id="titulo-novo">Marcar um encontro</h2>
+    <p class="lead">Seu encontro ficará <strong>em análise</strong> até um administrador aprovar. Você será avisado nas notificações.</p>
+
+    <div class="grade">
+      <div class="campo largo"><label for="n-nome">Nome do encontro</label>
+        <input id="n-nome" maxlength="100" minlength="3" required placeholder="Ex.: Encontro de Clássicos do Centro"></div>
+      <div class="campo"><label for="n-tipo">Tipo de veículo</label><select id="n-tipo"></select></div>
+      <div class="campo"><label for="n-limite">Limite de participantes</label>
+        <input id="n-limite" type="number" min="1" max="5000" inputmode="numeric" placeholder="Sem limite">
+        <small>Sem contar você, organizador. Vazio = sem limite.</small></div>
+      <div class="campo"><label for="n-data">Data</label><input id="n-data" type="date" required></div>
+      <div class="campo"><label for="n-hora">Horário</label><input id="n-hora" type="time"></div>
+      <div class="campo largo"><label for="n-local">Nome do local</label>
+        <input id="n-local" maxlength="140" required placeholder="Ex.: Estacionamento do Parque da Cidade">
+        <small>Use um local público ou com autorização do responsável. Não use endereço residencial.</small></div>
+
+      <div class="campo largo">
+        <span class="rotulo">Local exato no mapa</span>
+        <div class="busca-end">
+          <input id="n-busca-end" type="search" maxlength="160" placeholder="Buscar endereço (rua, número, cidade)" aria-label="Buscar endereço">
+          <button class="btn sec pequeno" id="n-buscar" type="button">Buscar</button>
+          <button class="btn sec pequeno" id="n-gps" type="button">Minha posição</button>
+        </div>
+        <div id="mapa-form" role="application" aria-label="Clique no mapa para marcar o local"></div>
+        <small id="n-coord-info">Clique no mapa para posicionar o pino.</small>
+      </div>
+
+      <div class="campo"><label for="n-cidade">Cidade</label><input id="n-cidade" maxlength="80" required></div>
+      <div class="campo"><label for="n-estado">Estado</label><select id="n-estado" required></select></div>
+
+      <div class="campo largo"><label for="n-desc">Descrição</label>
+        <textarea id="n-desc" maxlength="1500" placeholder="Conte como será o encontro, programação, estrutura..."></textarea></div>
+      <div class="campo largo"><label for="n-regras">Regras de convivência</label>
+        <textarea id="n-regras" maxlength="1500" placeholder="Ex.: proibido arrancada e som alto; respeitar vizinhança."></textarea></div>
+
+      <div class="campo largo">
+        <span class="rotulo">Requisitos para participar</span>
+        <div class="presets" id="n-presets"></div>
+        <div class="extra-req">
+          <input id="n-req-extra" maxlength="120" placeholder="Outro requisito (ex.: veículo fabricado até 1995)" aria-label="Outro requisito">
+          <button class="btn sec pequeno" id="n-req-add" type="button">Adicionar</button>
+        </div>
+        <div class="lista-req" id="n-req-lista" aria-live="polite"></div>
+        <small>Até 8 requisitos. Quem entrar precisa confirmar que leu e vai cumpri-los.</small>
+      </div>
+    </div>
+
+    <div class="consent">
+      <label class="chk"><input type="checkbox" id="n-aceite-termos" required>
+        <span>Li e aceito os <a href="../MG-LEGAL/termos.html#encontros" target="_blank" rel="noopener">Termos de Uso</a> (incluindo as regras de Encontros) e a <a href="../MG-LEGAL/privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span></label>
+      <label class="chk"><input type="checkbox" id="n-aceite-resp" required>
+        <span>Sou maior de 18 anos, sou responsável por este encontro, tenho autorização para usar o local e não promovo racha, direção perigosa ou qualquer atividade ilegal.</span></label>
+    </div>
+
+    <p class="erro-form" id="n-erro" role="alert"></p>
+    <div class="modal-acoes">
+      <button class="btn sec" type="button" data-fechar>Cancelar</button>
+      <button class="btn" type="submit" id="n-enviar">Enviar para aprovação</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal: participar -->
+<div class="modal-fundo" id="modal-entrar" role="dialog" aria-modal="true" aria-labelledby="titulo-entrar">
+  <form class="modal" id="form-entrar" novalidate>
+    <h2 id="titulo-entrar">Participar do encontro</h2>
+    <p class="lead" id="e-resumo"></p>
+    <div id="e-requisitos"></div>
+    <div class="campo"><label for="e-veiculo">Seu veículo <span id="e-veiculo-obrig"></span></label>
+      <input id="e-veiculo" maxlength="120" placeholder="Ex.: Opala Comodoro 1978">
+      <small>O organizador verá este texto e seu nome na lista de inscritos.</small></div>
+    <div class="consent" id="e-consent">
+      <label class="chk"><input type="checkbox" id="e-aceite-req">
+        <span>Li os requisitos e me comprometo a cumpri-los. Entendo que o organizador pode negar a entrada de quem não cumprir.</span></label>
+    </div>
+    <p class="erro-form" id="e-erro" role="alert"></p>
+    <div class="modal-acoes">
+      <button class="btn sec" type="button" data-fechar>Cancelar</button>
+      <button class="btn ok" type="submit" id="e-enviar">Confirmar presença</button>
+    </div>
+  </form>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h2>MG Motors</h2>
+      <p>A plataforma definitiva para compra e venda de veículos exclusivos. Tecnologia, segurança e transparência.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Plataforma</h4>
+      <a href="../MG-MARKETPLACE/marketplace.html">Marketplace</a>
+      <a href="../MG-ENCONTROS/encontros.html">Encontros</a>
+      <a href="../MG-DICAS/dicas.html">Dicas</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <a href="../MG-CONTATO/contato.html">Contato</a>
+      <a href="../MG-CASOS-USO/como-utilizar.html">Como Utilizar</a>
+      <a href="../MG-AJUDA/ajuda.html">Central de Ajuda</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="../MG-LEGAL/termos.html">Termos de Uso</a>
+      <a href="../MG-LEGAL/privacidade.html">Privacidade</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>MGMOTORS · Projeto educacional de portfólio.</span>
+    <span>Mapas © colaboradores do OpenStreetMap</span>
+  </div>
+</footer>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
+import { supabaseUrl, supabaseKey, escapeHtml as esc } from "../mgConfig.js";
+import { carregarHeaderGlobal } from "../headerGlobal.js";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+const $ = id => document.getElementById(id);
+const toast = (msg, tipo = "info") => window.mgToast?.(msg, tipo);
+
+const TIPOS = {
+  todos: "Todos os veículos", antigos: "Veículos antigos", jdm: "JDM", esportivos: "Esportivos",
+  muscle: "Muscle cars", eletricos: "Elétricos", motos: "Motos"
+};
+const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+const PRESETS = [
+  "Levar 1 kg de alimento não perecível (doação)",
+  "Somente veículos fabricados há 25 anos ou mais",
+  "Apenas maiores de 18 anos",
+  "Documentação do veículo em dia",
+  "Proibido arrancadas, aceleradas e som alto"
+];
+
+let usuario = await carregarHeaderGlobal(supabase);
+let encontros = [];
+let minhasPosicao = null;       // { lat, lng } só no navegador; nunca enviada ao servidor
+let mapa, camada, marcadores = new Map();
+let encontroAtual = null;
+
+/* ---------- utilidades ---------- */
+function msgErro(error) {
+  const m = String(error?.message || "");
+  if (m.startsWith("MG:")) return m.slice(3).trim();
+  if (error?.code === "42501") return "Você não tem permissão para esta ação. Confirme se aceitou os termos atuais.";
+  if (error?.code === "PGRST202" || error?.code === "42P01") return "Recurso de encontros ainda não está disponível. Tente novamente mais tarde.";
+  return "Não foi possível concluir. Tente novamente em instantes.";
+}
+function formatarData(d) {
+  const [a, m, dia] = String(d).split("-").map(Number);
+  return new Date(a, m - 1, dia).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+}
+const formatarHora = h => (h ? String(h).slice(0, 5) : "");
+function km(a, b) {
+  const R = 6371, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function hojeISO() {
+  const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+function exigeRequisitos(e) {
+  return (e.requisitos_lista?.length > 0) || e.tipo_veiculo !== "todos" || Boolean((e.requisitos || "").trim());
+}
+function vagasInfo(e) {
+  if (e.limite_participantes == null) return { texto: `${e.total_participantes} inscrito(s) · sem limite`, cheio: false };
+  const rest = e.limite_participantes - e.total_participantes;
+  return { texto: `${e.total_participantes}/${e.limite_participantes} vagas preenchidas`, cheio: rest <= 0 };
+}
+
+/* ---------- selects ---------- */
+$("f-tipo").insertAdjacentHTML("beforeend", Object.entries(TIPOS).filter(([k]) => k !== "todos").map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join(""));
+$("n-tipo").innerHTML = Object.entries(TIPOS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("");
+$("n-estado").innerHTML = `<option value="">UF</option>` + UFS.map(u => `<option>${u}</option>`).join("");
+$("n-data").min = hojeISO();
+
+/* ---------- mapa principal ---------- */
+function iniciarMapa() {
+  if (!window.L) { $("mapa").innerHTML = '<div class="vazio">Não foi possível carregar o mapa. Verifique sua conexão.</div>'; return; }
+  mapa = L.map("mapa").setView([-15.78, -47.93], 4);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+  }).addTo(mapa);
+  camada = L.layerGroup().addTo(mapa);
+  mapa.on("popupopen", ev => {
+    const btn = ev.popup.getElement()?.querySelector("[data-popup-ver]");
+    if (btn) btn.addEventListener("click", () => destacarCard(btn.dataset.popupVer, true));
+  });
+}
+const icone = cls => L.divIcon({ className: "", html: `<div class="pino ${cls}"></div>`, iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -26] });
+
+function desenharMarcadores(lista) {
+  if (!mapa) return;
+  camada.clearLayers(); marcadores.clear();
+  const pontos = [];
+  for (const e of lista) {
+    const lat = Number(e.lat), lng = Number(e.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+    const m = L.marker([lat, lng], { icon: icone(""), title: e.nome, keyboard: true });
+    const v = vagasInfo(e);
+    m.bindPopup(`<div class="popup-enc"><strong>${esc(e.nome)}</strong>${esc(formatarData(e.data))} ${esc(formatarHora(e.hora))}<br>${esc(e.local_nome || "")} · ${esc(e.cidade || "")}/${esc(e.estado || "")}<br>${esc(v.texto)}<br><button class="btn pequeno" type="button" data-popup-ver="${esc(e.id)}">Ver detalhes</button></div>`);
+    m.on("click", () => destacarCard(e.id, false));
+    m.addTo(camada); marcadores.set(e.id, m); pontos.push([lat, lng]);
+  }
+  if (minhasPosicao) L.marker([minhasPosicao.lat, minhasPosicao.lng], { icon: icone("eu"), interactive: false }).addTo(camada);
+  if (pontos.length) mapa.fitBounds(pontos, { padding: [40, 40], maxZoom: 14 });
+}
+function destacarCard(id, voar) {
+  document.querySelectorAll(".card.destaque").forEach(c => c.classList.remove("destaque"));
+  const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
+  if (card) { card.classList.add("destaque"); card.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+  const m = marcadores.get(id);
+  if (m && voar) { mapa.flyTo(m.getLatLng(), 15); m.openPopup(); }
+  if (window.matchMedia("(max-width: 960px)").matches && voar) trocarVisao("lista");
+}
+
+/* ---------- lista ---------- */
+function filtrados() {
+  const q = $("f-busca").value.trim().toLowerCase();
+  const tipo = $("f-tipo").value;
+  const soVagas = $("f-vagas").checked;
+  let r = encontros.filter(e => {
+    if (tipo && e.tipo_veiculo !== tipo) return false;
+    if (soVagas && vagasInfo(e).cheio) return false;
+    if (q && !`${e.nome} ${e.cidade} ${e.local_nome} ${e.estado}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if (minhasPosicao) {
+    r = r.map(e => ({ ...e, _km: km(minhasPosicao, { lat: Number(e.lat), lng: Number(e.lng) }) })).sort((a, b) => a._km - b._km);
+  }
+  return r;
+}
+function cardHTML(e, opcoes = {}) {
+  const v = vagasInfo(e);
+  const reqs = (e.requisitos_lista || []).map(r => `<span class="tag req">${esc(r)}</span>`).join("");
+  const dist = e._km != null ? `<span>📍 ${e._km < 10 ? e._km.toFixed(1) : Math.round(e._km)} km de você</span>` : "";
+  let botao = "";
+  if (!opcoes.semAcao) {
+    if (e.usuario_participa) botao = `<button class="btn sec pequeno" data-sair="${esc(e.id)}" type="button">Cancelar minha presença</button>`;
+    else if (usuario && e.criador_id === usuario.id) botao = `<span class="tag cinza">Você organiza este encontro</span>`;
+    else if (v.cheio) botao = `<button class="btn pequeno" disabled type="button">Lotado</button>`;
+    else botao = `<button class="btn pequeno" data-entrar="${esc(e.id)}" type="button">Participar</button>`;
+  }
+  return `<article class="card" data-id="${esc(e.id)}">
+    <h3>${esc(e.nome)}</h3>
+    <div class="meta"><span>📅 ${esc(formatarData(e.data))}${e.hora ? " · " + esc(formatarHora(e.hora)) : ""}</span><span>📌 ${esc(e.local_nome || "")} — ${esc(e.cidade || "")}/${esc(e.estado || "")}</span>${dist}</div>
+    <div class="tags"><span class="tag">${esc(TIPOS[e.tipo_veiculo] || e.tipo_veiculo)}</span>${usuario && e.usuario_participa ? '<span class="tag verde">Você vai</span>' : ""}</div>
+    ${e.descricao ? `<p class="desc">${esc(e.descricao)}</p>` : ""}
+    ${e.regras ? `<p class="desc"><strong>Regras:</strong> ${esc(e.regras)}</p>` : ""}
+    ${reqs ? `<div class="tags" aria-label="Requisitos">${reqs}</div>` : ""}
+    <div class="vagas ${v.cheio ? "cheio" : ""}">${esc(v.texto)}</div>
+    <div class="meta"><span>Organizador: ${esc(e.criador_nome || "—")}</span></div>
+    <div class="acoes">${botao}${opcoes.extra || ""}</div>
+  </article>`;
+}
+function renderLista() {
+  const lista = filtrados();
+  $("lista").innerHTML = lista.length ? lista.map(e => cardHTML(e)).join("")
+    : '<div class="vazio">Nenhum encontro encontrado. Que tal marcar o primeiro na sua cidade?</div>';
+  desenharMarcadores(lista);
+}
+async function carregarEncontros() {
+  const { data, error } = await supabase.rpc("listar_encontros_publicos");
+  if (error) { console.error(error); $("lista").innerHTML = `<div class="vazio">${esc(msgErro(error))}</div>`; return; }
+  encontros = data || [];
+  renderLista();
+}
+
+/* ---------- ações na lista ---------- */
+document.addEventListener("click", async ev => {
+  const t = ev.target.closest("button");
+  if (!t) return;
+  if (t.dataset.entrar) abrirEntrar(t.dataset.entrar);
+  if (t.dataset.sair) sairEncontro(t.dataset.sair);
+  if (t.dataset.cancelar) cancelarMeu(t.dataset.cancelar);
+  if (t.dataset.inscritos) verInscritos(t.dataset.inscritos, t);
+});
+$("lista").addEventListener("click", ev => {
+  const card = ev.target.closest(".card");
+  if (card && !ev.target.closest("button")) destacarCard(card.dataset.id, true);
+});
+["f-busca", "f-tipo", "f-vagas"].forEach(id => $(id).addEventListener("input", renderLista));
+
+$("btn-perto").addEventListener("click", () => {
+  if (!navigator.geolocation) { toast("Seu navegador não permite localização.", "error"); return; }
+  navigator.geolocation.getCurrentPosition(p => {
+    minhasPosicao = { lat: p.coords.latitude, lng: p.coords.longitude };
+    renderLista();
+    toast("Encontros ordenados por distância. Sua posição não é enviada ao servidor.", "success");
+  }, () => toast("Não foi possível obter sua localização.", "error"), { timeout: 10000 });
+});
+
+function trocarVisao(v) {
+  $("layout").dataset.visao = v;
+  $("ver-lista").className = "btn pequeno" + (v === "lista" ? "" : " sec");
+  $("ver-mapa").className = "btn pequeno" + (v === "mapa" ? "" : " sec");
+  if (v === "mapa" && mapa) setTimeout(() => mapa.invalidateSize(), 50);
+}
+$("ver-lista").addEventListener("click", () => trocarVisao("lista"));
+$("ver-mapa").addEventListener("click", () => trocarVisao("mapa"));
+
+/* ---------- abas ---------- */
+function mostrarAba(nome) {
+  const todos = nome === "todos";
+  $("aba-todos").setAttribute("aria-selected", todos);
+  $("aba-meus").setAttribute("aria-selected", !todos);
+  $("painel-todos").hidden = !todos; $("painel-meus").hidden = todos;
+  if (todos && mapa) setTimeout(() => mapa.invalidateSize(), 50);
+  if (!todos) carregarMeus();
+}
+$("aba-todos").addEventListener("click", () => mostrarAba("todos"));
+$("aba-meus").addEventListener("click", () => mostrarAba("meus"));
+
+/* ---------- participar / sair ---------- */
+function exigirLogin() {
+  if (usuario) return true;
+  toast("Entre na sua conta para continuar.", "info");
+  setTimeout(() => { window.location.href = "../MG-LOGIN/login.html"; }, 900);
+  return false;
+}
+function abrirEntrar(id) {
+  if (!exigirLogin()) return;
+  encontroAtual = encontros.find(e => e.id === id);
+  if (!encontroAtual) return;
+  const e = encontroAtual;
+  $("e-resumo").textContent = `${e.nome} — ${formatarData(e.data)}${e.hora ? " às " + formatarHora(e.hora) : ""}, ${e.local_nome} (${e.cidade}/${e.estado}).`;
+  const itens = [];
+  if (e.tipo_veiculo !== "todos") itens.push(`Aberto para: ${TIPOS[e.tipo_veiculo]}`);
+  (e.requisitos_lista || []).forEach(r => itens.push(r));
+  if ((e.requisitos || "").trim()) itens.push(e.requisitos.trim());
+  $("e-requisitos").innerHTML = itens.length
+    ? `<p class="rotulo"><strong>Requisitos do encontro</strong></p><ul class="req-lista">${itens.map(i => `<li>${esc(i)}</li>`).join("")}</ul>` : "";
+  const exige = exigeRequisitos(e);
+  $("e-consent").style.display = exige ? "" : "none";
+  $("e-aceite-req").checked = false;
+  $("e-veiculo").value = ""; $("e-erro").textContent = "";
+  $("e-veiculo-obrig").textContent = e.tipo_veiculo !== "todos" ? "(obrigatório)" : "(opcional)";
+  abrirModal("modal-entrar");
+}
+$("form-entrar").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const e = encontroAtual; if (!e) return;
+  const veic = $("e-veiculo").value.trim();
+  if (exigeRequisitos(e) && !$("e-aceite-req").checked) { $("e-erro").textContent = "Confirme que leu e vai cumprir os requisitos."; return; }
+  if (e.tipo_veiculo !== "todos" && veic.length < 3) { $("e-erro").textContent = "Informe o veículo que você levará (modelo e ano)."; return; }
+  const btn = $("e-enviar"); btn.disabled = true;
+  const { error } = await supabase.rpc("entrar_encontro", { p_encontro_id: e.id, p_veiculo_info: veic || null, p_aceita_requisitos: $("e-aceite-req").checked });
+  btn.disabled = false;
+  if (error) { $("e-erro").textContent = msgErro(error); await carregarEncontros(); return; }
+  fecharModais(); toast("Presença confirmada!", "success");
+  await carregarEncontros();
+  if (!$("painel-meus").hidden) carregarMeus();
+});
+async function sairEncontro(id) {
+  if (!usuario || !confirm("Cancelar sua presença neste encontro?")) return;
+  const { error } = await supabase.from("encontros_confirmados").delete().eq("encontro_id", id).eq("user_id", usuario.id);
+  if (error) { toast(msgErro(error), "error"); return; }
+  toast("Presença cancelada.", "success");
+  await carregarEncontros();
+  if (!$("painel-meus").hidden) carregarMeus();
+}
+
+/* ---------- meus encontros ---------- */
+const STATUS = {
+  pending: ['<span class="tag req">Em análise</span>'],
+  approved: ['<span class="tag verde">Aprovado</span>'],
+  rejected: ['<span class="tag verm">Recusado</span>']
+};
+async function carregarMeus() {
+  const alvo = $("meus-conteudo");
+  if (!usuario) { alvo.innerHTML = '<div class="vazio">Entre na sua conta para ver seus encontros. <br><br><a class="btn" href="../MG-LOGIN/login.html">Entrar</a></div>'; return; }
+  alvo.innerHTML = '<div class="vazio">Carregando...</div>';
+  const { data, error } = await supabase.from("encontros").select("*").eq("criador_id", usuario.id).order("data", { ascending: false });
+  if (error) { alvo.innerHTML = `<div class="vazio">${esc(msgErro(error))}</div>`; return; }
+  const hoje = hojeISO();
+  const ids = (data || []).map(e => e.id);
+  const contagem = new Map();
+  if (ids.length) {
+    const { data: conf } = await supabase.from("encontros_confirmados").select("encontro_id").in("encontro_id", ids);
+    (conf || []).forEach(c => contagem.set(c.encontro_id, (contagem.get(c.encontro_id) || 0) + 1));
+  }
+  const criados = (data || []).map(e => {
+    const ativo = e.ativo !== false;
+    const passado = e.data < hoje;
+    const total = contagem.get(e.id) || 0;
+    const v = vagasInfo({ ...e, total_participantes: total });
+    const status = !ativo ? '<span class="tag cinza">Cancelado</span>' : passado ? '<span class="tag cinza">Encerrado</span>' : STATUS[e.status]?.[0] || "";
+    const motivo = e.status === "rejected" && e.motivo_recusa ? `<div class="aviso">Motivo da recusa: ${esc(e.motivo_recusa)}</div>` : "";
+    const extra = (ativo && !passado ? `<button class="btn sec pequeno" data-inscritos="${esc(e.id)}" type="button">Ver inscritos (${total})</button><button class="btn perigo pequeno" data-cancelar="${esc(e.id)}" type="button">Cancelar encontro</button>` : "");
+    return `<div>${cardHTML({ ...e, criador_nome: "Você", total_participantes: total, usuario_participa: false }, { semAcao: true, extra })
+      .replace("</h3>", `</h3><div class="tags">${status}</div>${motivo}`)}</div>`;
+  });
+  const vou = encontros.filter(e => e.usuario_participa);
+  alvo.innerHTML = `
+    <h2 class="sub">Encontros que organizo</h2>
+    ${criados.length ? `<div class="lista" style="max-height:none">${criados.join("")}</div>` : '<div class="vazio">Você ainda não marcou nenhum encontro.</div>'}
+    <h2 class="sub">Encontros em que vou</h2>
+    ${vou.length ? `<div class="lista" style="max-height:none">${vou.map(e => cardHTML(e)).join("")}</div>` : '<div class="vazio">Você ainda não confirmou presença em nenhum encontro.</div>'}`;
+}
+async function cancelarMeu(id) {
+  if (!confirm("Cancelar este encontro? Os inscritos deixarão de vê-lo.")) return;
+  const { error } = await supabase.from("encontros").update({ ativo: false }).eq("id", id);
+  if (error) { toast(msgErro(error), "error"); return; }
+  toast("Encontro cancelado.", "success"); carregarMeus(); carregarEncontros();
+}
+async function verInscritos(id, botao) {
+  const card = botao.closest(".card");
+  const existente = card.querySelector(".participantes");
+  if (existente) { existente.remove(); return; }
+  const { data, error } = await supabase.from("encontros_confirmados").select("user_id, veiculo_info, confirmado_em").eq("encontro_id", id).order("confirmado_em");
+  if (error) { toast(msgErro(error), "error"); return; }
+  let nomes = new Map();
+  if (data?.length) {
+    const { data: us } = await supabase.from("usuarios_publicos").select("id, nome").in("id", data.map(d => d.user_id));
+    nomes = new Map((us || []).map(u => [u.id, u.nome]));
+  }
+  const bloco = document.createElement("div");
+  bloco.className = "participantes";
+  bloco.innerHTML = data?.length ? data.map(d => `<span>${esc(nomes.get(d.user_id) || "Participante")}${d.veiculo_info ? " — " + esc(d.veiculo_info) : ""}</span>`).join("") : "<span>Ninguém se inscreveu ainda.</span>";
+  card.appendChild(bloco);
+}
+
+/* ---------- modal: marcar encontro ---------- */
+let mapaForm, pinoForm, coord = null;
+let requisitos = [];
+function abrirModal(id) { $(id).classList.add("aberto"); document.body.classList.add("mg-modal-aberto"); $(id).querySelector("input,select,textarea,button")?.focus(); }
+function fecharModais() { document.querySelectorAll(".modal-fundo.aberto").forEach(m => m.classList.remove("aberto")); document.body.classList.remove("mg-modal-aberto"); }
+document.querySelectorAll("[data-fechar]").forEach(b => b.addEventListener("click", fecharModais));
+document.querySelectorAll(".modal-fundo").forEach(m => m.addEventListener("mousedown", ev => { if (ev.target === m) fecharModais(); }));
+document.addEventListener("keydown", ev => { if (ev.key === "Escape") fecharModais(); });
+
+function renderRequisitos() {
+  $("n-req-lista").innerHTML = requisitos.map((r, i) => `<button type="button" class="chip" data-rm="${i}" aria-label="Remover requisito ${esc(r)}">${esc(r)} ✕</button>`).join("");
+  document.querySelectorAll("#n-presets input").forEach(c => { c.checked = requisitos.includes(c.value); });
+}
+$("n-presets").innerHTML = PRESETS.map((p, i) => `<label class="chk"><input type="checkbox" value="${esc(p)}" id="preset-${i}"> ${esc(p)}</label>`).join("");
+$("n-presets").addEventListener("change", ev => {
+  const c = ev.target; if (!c.value) return;
+  if (c.checked) { if (requisitos.length >= 8) { c.checked = false; toast("Máximo de 8 requisitos.", "error"); return; } requisitos.push(c.value); }
+  else requisitos = requisitos.filter(r => r !== c.value);
+  renderRequisitos();
+});
+$("n-req-lista").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-rm]"); if (!b) return;
+  requisitos.splice(Number(b.dataset.rm), 1); renderRequisitos();
+});
+$("n-req-add").addEventListener("click", () => {
+  const v = $("n-req-extra").value.trim();
+  if (v.length < 2) return;
+  if (requisitos.length >= 8) { toast("Máximo de 8 requisitos.", "error"); return; }
+  if (!requisitos.includes(v)) requisitos.push(v);
+  $("n-req-extra").value = ""; renderRequisitos();
+});
+$("n-req-extra").addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); $("n-req-add").click(); } });
+
+function definirPino(lat, lng, geocodificar = true) {
+  coord = { lat: Number(lat.toFixed(7)), lng: Number(lng.toFixed(7)) };
+  if (!mapaForm) return;
+  if (pinoForm) pinoForm.setLatLng([lat, lng]); else pinoForm = L.marker([lat, lng], { icon: icone("novo") }).addTo(mapaForm);
+  $("n-coord-info").textContent = `Local marcado (${coord.lat.toFixed(5)}, ${coord.lng.toFixed(5)}).`;
+  if (geocodificar) preencherCidade(lat, lng);
+}
+async function preencherCidade(lat, lng) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=pt-BR`);
+    if (!r.ok) return;
+    const j = await r.json(); const a = j.address || {};
+    const cidade = a.city || a.town || a.village || a.municipality || "";
+    const uf = String(a["ISO3166-2-lvl4"] || "").replace("BR-", "");
+    if (cidade) $("n-cidade").value = cidade;
+    if (UFS.includes(uf)) $("n-estado").value = uf;
+  } catch { /* o usuário pode preencher manualmente */ }
+}
+function iniciarMapaForm() {
+  if (!window.L) { $("mapa-form").innerHTML = '<div class="vazio">Mapa indisponível.</div>'; return; }
+  if (!mapaForm) {
+    mapaForm = L.map("mapa-form").setView(minhasPosicao ? [minhasPosicao.lat, minhasPosicao.lng] : [-15.78, -47.93], minhasPosicao ? 13 : 4);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }).addTo(mapaForm);
+    mapaForm.on("click", ev => definirPino(ev.latlng.lat, ev.latlng.lng));
+  }
+  setTimeout(() => mapaForm.invalidateSize(), 80);
+}
+$("n-buscar").addEventListener("click", async () => {
+  const q = $("n-busca-end").value.trim(); if (q.length < 4) return;
+  $("n-buscar").disabled = true;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&accept-language=pt-BR&q=${encodeURIComponent(q)}`);
+    const j = await r.json();
+    if (!j.length) { toast("Endereço não encontrado. Clique no mapa para marcar.", "info"); return; }
+    const lat = Number(j[0].lat), lng = Number(j[0].lon);
+    mapaForm.setView([lat, lng], 16); definirPino(lat, lng);
+  } catch { toast("Falha ao buscar endereço.", "error"); }
+  finally { $("n-buscar").disabled = false; }
+});
+$("n-busca-end").addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); $("n-buscar").click(); } });
+$("n-gps").addEventListener("click", () => {
+  navigator.geolocation?.getCurrentPosition(p => { mapaForm.setView([p.coords.latitude, p.coords.longitude], 16); definirPino(p.coords.latitude, p.coords.longitude); },
+    () => toast("Não foi possível obter sua localização.", "error"), { timeout: 10000 });
+});
+
+$("btn-novo").addEventListener("click", () => {
+  if (!exigirLogin()) return;
+  $("form-novo").reset(); requisitos = []; renderRequisitos(); coord = null;
+  if (pinoForm) { pinoForm.remove(); pinoForm = null; }
+  $("n-coord-info").textContent = "Clique no mapa para posicionar o pino.";
+  $("n-erro").textContent = "";
+  abrirModal("modal-novo"); iniciarMapaForm();
+});
+
+$("form-novo").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const erro = t => { $("n-erro").textContent = t; };
+  const nome = $("n-nome").value.trim(), local = $("n-local").value.trim(), cidade = $("n-cidade").value.trim();
+  const data = $("n-data").value, uf = $("n-estado").value;
+  const limiteBruto = $("n-limite").value.trim();
+  if (nome.length < 3) return erro("Informe o nome do encontro (mínimo 3 caracteres).");
+  if (!data || data < hojeISO()) return erro("Escolha uma data de hoje em diante.");
+  if (local.length < 3) return erro("Informe o nome do local.");
+  if (!coord) return erro("Marque o local exato no mapa.");
+  if (cidade.length < 2 || !uf) return erro("Informe cidade e estado.");
+  let limite = null;
+  if (limiteBruto) { limite = Number(limiteBruto); if (!Number.isInteger(limite) || limite < 1 || limite > 5000) return erro("O limite deve ser um número de 1 a 5000."); }
+  if (!$("n-aceite-termos").checked || !$("n-aceite-resp").checked) return erro("Você precisa aceitar os termos e a declaração de responsabilidade.");
+  erro("");
+  const btn = $("n-enviar"); btn.disabled = true; btn.textContent = "Enviando...";
+  const { error } = await supabase.from("encontros").insert({
+    criador_id: usuario.id, nome, descricao: $("n-desc").value.trim() || null, regras: $("n-regras").value.trim() || null,
+    requisitos_lista: requisitos, tipo_veiculo: $("n-tipo").value, data, hora: $("n-hora").value || null,
+    local_nome: local, cidade, estado: uf, lat: coord.lat, lng: coord.lng, limite_participantes: limite
+  });
+  btn.disabled = false; btn.textContent = "Enviar para aprovação";
+  if (error) { erro(msgErro(error)); return; }
+  fecharModais();
+  toast("Encontro enviado! Ele aparecerá após a aprovação da equipe.", "success");
+  mostrarAba("meus");
+});
+
+/* ---------- início ---------- */
+iniciarMapa();
+await carregarEncontros();
+</script>
+<style>#chtl-chat-icon-container{left:auto!important;right:20px!important;width:auto!important;}</style>
+<script type="module" src="/chatlingConsent.js"></script>
+</body>
+</html>
+

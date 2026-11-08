@@ -270,6 +270,9 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
     <button class="nav-item" data-page="anuncios">
       <i data-lucide="megaphone"></i> Anúncios Pendentes
     </button>
+    <button class="nav-item" data-page="encontros">
+      <i data-lucide="calendar-check"></i> Encontros
+    </button>
     <button class="nav-item" data-page="denuncias">
       <i data-lucide="alert-triangle"></i> Denúncias
     </button>
@@ -304,6 +307,7 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
       <div class="stat-card purple"><span class="num" id="stat-total-usuarios">–</span><div class="lbl">Usuários</div></div>
       <div class="stat-card cyan"><span class="num" id="stat-total-anuncios">–</span><div class="lbl">Anúncios Ativos</div></div>
       <div class="stat-card orange"><span class="num" id="stat-pendentes">–</span><div class="lbl">Aguard. Aprovação</div></div>
+      <div class="stat-card orange"><span class="num" id="stat-encontros">–</span><div class="lbl">Encontros Pendentes</div></div>
       <div class="stat-card red"><span class="num" id="stat-denuncias">–</span><div class="lbl">Denúncias Abertas</div></div>
       <div class="stat-card green"><span class="num" id="stat-banidos">–</span><div class="lbl">Usuários Banidos</div></div>
     </div>
@@ -315,6 +319,19 @@ body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; 
       <p>Aprove ou rejeite anúncios antes de publicação</p>
     </div>
     <div id="lista-pendentes"><div class="empty-dev">Carregando...</div></div>
+  </div>
+
+  <div class="page" id="page-encontros">
+    <div class="page-header">
+      <h2>Encontros de Carros</h2>
+      <p>Aprove ou recuse os encontros marcados pelos usuários.</p>
+    </div>
+    <select class="motivo-input" id="filtro-encontros" aria-label="Filtrar encontros por status" style="margin-bottom:14px;max-width:260px;">
+      <option value="pending">Pendentes</option>
+      <option value="approved">Aprovados</option>
+      <option value="rejected">Recusados</option>
+    </select>
+    <div id="lista-encontros"><div class="empty-dev">Carregando...</div></div>
   </div>
 
   <div class="page" id="page-denuncias">
@@ -471,6 +488,7 @@ async function init() {
     carregarUsuarios();
     carregarCategorias();
     carregarContatos();
+    carregarEncontros();
 
   } catch(err) {
     console.error('Devpanel init erro:', err);
@@ -481,13 +499,15 @@ async function init() {
 }
 
 async function carregarDashboard() {
-  const [u, a, p, d, b] = await Promise.all([
+  const [u, a, p, d, b, enc] = await Promise.all([
     db.from("usuarios").select("id",{count:"exact",head:true}),
     db.from("anuncios").select("id",{count:"exact",head:true}).eq("status","ativo"),
     db.from("anuncios").select("id",{count:"exact",head:true}).eq("status","pendente"),
     db.from("denuncias").select("id",{count:"exact",head:true}).eq("status","pendente"),
-    db.from("usuarios").select("id",{count:"exact",head:true}).eq("banido",true)
+    db.from("usuarios").select("id",{count:"exact",head:true}).eq("banido",true),
+    db.from("encontros").select("id",{count:"exact",head:true}).eq("status","pending").eq("ativo",true)
   ]);
+  animateNum(document.getElementById("stat-encontros"), enc.count || 0);
   animateNum(document.getElementById("stat-total-usuarios"), u.count || 0);
   animateNum(document.getElementById("stat-total-anuncios"), a.count || 0);
   animateNum(document.getElementById("stat-pendentes"), p.count || 0);
@@ -824,6 +844,60 @@ async function carregarContatos() {
   });
 }
 
+
+const TIPOS_ENCONTRO = { todos:"Todos", antigos:"Antigos", jdm:"JDM", esportivos:"Esportivos", muscle:"Muscle", eletricos:"Elétricos", motos:"Motos" };
+function erroEncontro(error) {
+  const m = String(error?.message || "");
+  return m.startsWith("MG:") ? m.slice(3).trim() : "Não foi possível concluir a ação.";
+}
+async function carregarEncontros() {
+  const cont = document.getElementById("lista-encontros");
+  const status = document.getElementById("filtro-encontros").value;
+  cont.innerHTML = '<div class="empty-dev">Carregando...</div>';
+  const { data, error } = await db.from("encontros").select("*").eq("status", status).eq("ativo", true).order("data", { ascending: true }).limit(100);
+  if (error) { cont.innerHTML = `<div class="empty-dev">${escapeHtml(erroEncontro(error))}</div>`; return; }
+  if (!data?.length) { cont.innerHTML = '<div class="empty-dev">Nenhum encontro nesta situação.</div>'; return; }
+  const ids = [...new Set(data.map(e => e.criador_id).filter(Boolean))];
+  const nomes = new Map();
+  if (ids.length) {
+    const { data: us } = await db.from("usuarios").select("id,nome,email").in("id", ids);
+    (us || []).forEach(u => nomes.set(u.id, u));
+  }
+  cont.innerHTML = "";
+  for (const e of data) {
+    const org = nomes.get(e.criador_id);
+    const card = document.createElement("div"); card.className = "card-dev";
+    const reqs = (e.requisitos_lista || []).map(r => `<li>${escapeHtml(r)}</li>`).join("");
+    card.innerHTML = `<div class="card-dev-header"><div style="flex:1">
+      <h3>${escapeHtml(e.nome)}</h3>
+      <p>${escapeHtml(new Date(e.data + "T12:00:00").toLocaleDateString("pt-BR"))}${e.hora ? " às " + escapeHtml(String(e.hora).slice(0,5)) : ""} · ${escapeHtml(e.local_nome || "")} — ${escapeHtml(e.cidade || "")}/${escapeHtml(e.estado || "")}</p>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Organizador: ${escapeHtml(org?.nome || "—")} (${escapeHtml(org?.email || "—")}) · Tipo: ${escapeHtml(TIPOS_ENCONTRO[e.tipo_veiculo] || e.tipo_veiculo)} · Limite: ${e.limite_participantes ?? "sem limite"}</p>
+      ${e.descricao ? `<p style="margin-top:8px;white-space:pre-wrap;">${escapeHtml(e.descricao)}</p>` : ""}
+      ${e.regras ? `<p style="margin-top:6px;white-space:pre-wrap;"><strong>Regras:</strong> ${escapeHtml(e.regras)}</p>` : ""}
+      ${reqs ? `<ul style="margin:8px 0 0 18px;">${reqs}</ul>` : ""}
+      ${e.lat != null ? `<p style="margin-top:6px;"><a href="https://www.openstreetmap.org/?mlat=${Number(e.lat)}&mlon=${Number(e.lng)}#map=16/${Number(e.lat)}/${Number(e.lng)}" target="_blank" rel="noopener" style="color:var(--accent);">Ver local no mapa</a></p>` : ""}
+      ${e.status === "rejected" && e.motivo_recusa ? `<p style="margin-top:6px;color:var(--red);">Motivo: ${escapeHtml(e.motivo_recusa)}</p>` : ""}
+      <input class="motivo-input enc-motivo" maxlength="300" placeholder="Motivo (obrigatório para recusar)" aria-label="Motivo da recusa" style="margin-top:10px;width:100%;">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${e.status !== "approved" ? '<button class="btn-dev btn-aprovar enc-aprovar">Aprovar</button>' : ""}
+      ${e.status !== "rejected" ? '<button class="btn-dev btn-rejeitar enc-recusar">Recusar</button>' : ""}
+    </div></div>`;
+    const decidir = async (decisao) => {
+      const motivo = card.querySelector(".enc-motivo").value.trim();
+      if (decisao === "rejected" && motivo.length < 3) { toast("Informe o motivo da recusa.", "error"); return; }
+      const { error: err } = await db.rpc("moderar_encontro", { p_encontro_id: e.id, p_decisao: decisao, p_motivo: motivo || null });
+      if (err) { toast(erroEncontro(err), "error"); return; }
+      toast(decisao === "approved" ? "Encontro aprovado" : "Encontro recusado", "success");
+      card.remove(); carregarDashboard();
+    };
+    card.querySelector(".enc-aprovar")?.addEventListener("click", () => decidir("approved"));
+    card.querySelector(".enc-recusar")?.addEventListener("click", () => decidir("rejected"));
+    cont.appendChild(card);
+  }
+}
+document.getElementById("filtro-encontros").addEventListener("change", carregarEncontros);
+
 document.querySelectorAll(".nav-item").forEach(item => {
   item.addEventListener("click", () => {
     document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("ativo"));
@@ -833,6 +907,7 @@ document.querySelectorAll(".nav-item").forEach(item => {
     if (item.dataset.page === "banidos") carregarBanidos();
     if (item.dataset.page === "categorias") carregarCategorias();
     if (item.dataset.page === "contatos") carregarContatos();
+    if (item.dataset.page === "encontros") carregarEncontros();
   });
 });
 

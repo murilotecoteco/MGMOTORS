@@ -52,6 +52,7 @@ flowchart LR
 - Perfis, seguidores, curtidas e avaliações
 - Chat em tempo real com envio de fotos
 - Autenticação, recuperação de senha e aceite legal
+- Encontros de carros com aprovação, mapa, requisitos e controle de vagas
 - Denúncias, moderação e painel administrativo
 - Tema claro/escuro e layout responsivo
 - Headers HTTP de segurança, SEO e acessibilidade
@@ -122,6 +123,7 @@ MGMOTORS/
 ├── MG-MENSAGENS/           # Chat
 ├── MG-CONTA/               # Perfil e conta
 ├── MG-LOGIN/               # Autenticação
+├── MG-ENCONTROS/           # Encontros de carros
 ├── MG-DEV/                 # Painel administrativo
 ├── api/                    # Funções serverless
 ├── supabase/migrations/    # Schema e RLS

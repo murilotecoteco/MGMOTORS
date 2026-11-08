@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 const pages = [
   ["/MG-INICIO/inicio.html", /Encontre o carro dos seus/, /MG\s?Motors/i],
   ["/MG-MARKETPLACE/marketplace.html", /Encontre seu próximo veículo/, /Marketplace/],
+  ["/MG-ENCONTROS/encontros.html", /Encontros de carros/i, /Encontros de Carros/i],
   ["/MG-DICAS/dicas.html", /Dicas|segurança/, /Dicas/],
   ["/MG-CONTATO/contato.html", /excelência/, /Contato/],
   ["/MG-LOGIN/login.html", /Entrar|Acesse/, /Login|Entrar/],
@@ -42,4 +43,32 @@ test("keeps marketplace modal closed until the user requests it", async ({ page 
   const modal = page.locator("#modal-add-car");
   await expect(modal).toHaveAttribute("aria-hidden", "true");
   await expect(modal).toHaveAttribute("inert", "");
+});
+
+test("keeps the encounters creation modal closed until requested", async ({ page }) => {
+  await page.goto("/MG-ENCONTROS/encontros.html");
+  const modal = page.locator("#modal-novo");
+  await expect(modal).not.toHaveClass(/aberto/);
+  await expect(page.locator("#btn-novo")).toBeVisible();
+});
+
+test("shows encounter search and list/map controls", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/MG-ENCONTROS/encontros.html");
+  await expect(page.locator("#f-busca")).toBeVisible();
+  await expect(page.locator("#ver-lista")).toBeVisible();
+  await expect(page.locator("#ver-mapa")).toBeVisible();
+  await expect(page.locator("#aba-meus")).toBeVisible();
+});
+
+test("requires current legal acceptance before login", async ({ page }) => {
+  await page.goto("/MG-LOGIN/login.html");
+  const submit = page.locator('#form-login button[type="submit"]');
+  await expect(submit).toBeDisabled();
+
+  await page.locator("#aceite-termos").check();
+  await expect(submit).toBeDisabled();
+
+  await page.locator("#aceite-privacidade").check();
+  await expect(submit).toBeEnabled();
 });

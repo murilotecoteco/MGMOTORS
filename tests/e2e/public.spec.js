@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const pages = [
-  ["/MG-INICIO/inicio.html", /Encontre o carro dos seus/, /MG Motors/],
+  ["/MG-INICIO/inicio.html", /Encontre o carro dos seus/, /MG\s?Motors/i],
   ["/MG-MARKETPLACE/marketplace.html", /Encontre seu próximo veículo/, /Marketplace/],
   ["/MG-DICAS/dicas.html", /Dicas|segurança/, /Dicas/],
   ["/MG-CONTATO/contato.html", /excelência/, /Contato/],

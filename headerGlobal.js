@@ -177,7 +177,15 @@ export async function carregarHeaderGlobal(supabase) {
       }
     }
 
-    if (!consentimentoAtual(perfilConsentimento)) {
+    if (consentimentoAtual(perfilConsentimento)) {
+      // O aceite autenticado fica registrado no banco. Espelhar esse estado
+      // no navegador permite que o widget do Chatling carregue nas páginas
+      // seguintes, sem exigir um novo clique do usuário.
+      localStorage.setItem("mg_termos_aceitos", "1");
+    } else {
+      // Impede que um aceite antigo do navegador libere o widget enquanto o
+      // usuário autenticado ainda precisa aceitar a versão atual dos termos.
+      localStorage.removeItem("mg_termos_aceitos");
       mostrarBannerTermos({ supabase, usuario: currentUser, perfil: perfilConsentimento });
     }
 

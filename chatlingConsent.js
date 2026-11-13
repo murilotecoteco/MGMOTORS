@@ -12,5 +12,13 @@ function carregarChatling() {
   document.head.appendChild(script);
 }
 
-if (localStorage.getItem(CONSENT_KEY) === "1") carregarChatling();
+function consentimentoLocalAceito() {
+  try {
+    return localStorage.getItem(CONSENT_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+if (consentimentoLocalAceito() || window.mgLegalConsent === true) carregarChatling();
 window.addEventListener("mg:consent-accepted", carregarChatling, { once: true });

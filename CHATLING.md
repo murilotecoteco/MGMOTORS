@@ -1,66 +1,81 @@
 # Chatling — registro para a banca
 
-**Consulta de referência:** 22/10/2026
-**Fonte de preços:** <https://chatling.ai/pricing>
+**Consulta do painel:** 13/11/2026
 **Widget no código:** `chatbotId: "3965249523"`
 **Script:** `https://chatling.ai/js/embed.js`
 
-> Documento de apoio. Não altera o texto do artigo nem o banco de dados.
+> Registro de configuração e avaliação exploratória. Ele não transforma a
+> resposta do provedor em garantia jurídica de conformidade com a LGPD.
 
-## 1. O que está confirmado
+## 1. Configuração confirmada no painel
 
-| Item | Situação |
+| Item | Situação observada |
 |---|---|
-| Provedor | Chatling (widget hospedado) |
+| Provedor | Chatling, por widget hospedado |
 | Plano | Free |
-| Créditos de IA | 200 por mês |
-| Agentes | 1 |
-| Assentos | 1 |
-| Base de conhecimento | 500.000 caracteres |
-| Conversas | Ilimitadas no plano Free |
-| Créditos de e-mail | 25 por mês |
-| Ações por agente | 2 |
-| Workflows por agente | 1 |
-| Personalização | Limitada |
-| Marca Chatling | Mantida no widget |
-| Anexos de arquivo no chat | Não incluídos no plano Free |
-| Upload individual na base | Até 1 MB por arquivo |
+| Modelo selecionado | GPT-6.1 Sol; painel indica 5 créditos por resposta |
+| Limite do plano Free | 200 créditos de IA/mês, 1 agente, 1 assento e 500.000 caracteres na base de conhecimento |
+| Base configurada | 5 fontes, todas processadas; 36.541 caracteres no total |
+| Respostas limitadas à base | Opção “Limit answers to knowledge base” habilitada |
+| Anexos pelo chat | Desabilitados e indisponíveis no plano atual |
+| Retenção configurável | Indisponível no plano Free; não há período personalizado configurado no painel |
+| Versão do widget | Não exposta pelo embed nem pelo painel consultado |
 
-## 2. O que não está confirmado
+As fontes processadas eram:
 
-| Item | Por que falta | Como confirmar |
-|---|---|---|
-| Versão exata do widget | O embed não expõe número de versão | Painel do Chatling ou registro da data de consulta |
-| Retenção de conversas | Não verificada na documentação consultada | Painel/configuração da conta e política do provedor |
-| Base de conhecimento efetiva | Depende do que foi enviado no painel | Exportar a lista de documentos do agente |
-| Uso de dados para treinamento | Depende dos termos do plano | Política de privacidade do Chatling |
+1. `Como Utilizar – MG Motors | Guia Completo` — 23.121 caracteres;
+2. `Dicas e Ajuda - MG Motors | Compre e Venda com Segurança` — 8.281 caracteres;
+3. `Contato - MG Motors | Fale Conosco` — 715 caracteres;
+4. `Encontros de Carros - MG Motors | Marque e participe` — 214 caracteres;
+5. texto `MG MOTORS — SEGURANÇA, CONTA, PRIVACIDADE E USO DA PLATAFORMA` — 4.210 caracteres.
 
-**Não afirmar** retenção, versão ou treinamento sem captura do painel. Para a
-banca, o mais seguro é dizer: “widget hospedado pelo Chatling, plano Free,
-versão não exposta no embed; retenção a confirmar no painel”.
+As fontes 1 a 4 apontam para páginas públicas da MGMOTORS; a quinta é uma
+fonte textual de orientação sobre conta, segurança, privacidade e negociações.
 
-## 3. Limites que afetam a demonstração
+## 2. Avaliação exploratória no ambiente publicado
 
-- 200 créditos de IA/mês: suficiente para um ensaio curto, não para muitos
-  testes no mesmo mês.
-- 1 agente e 1 assento: não há segregação por perfil.
-- 2 ações e 1 workflow: o bot não executa fluxos complexos.
-- Sem anexos no chat: não prometer envio de documentos pelo chatbot.
-- Marca Chatling visível: não apresentar como solução white-label.
+Em 13/11/2026, foram feitas cinco perguntas ao widget publicado e registradas
+no artigo (Figuras 10 a 14):
+
+| Pergunta | Resultado observado |
+|---|---|
+| Como recuperar a senha? | Orientou o uso de “Esqueci minha senha”, o e-mail de recuperação e a checagem de spam/link. |
+| O login é seguro? | Explicou HTTPS, Supabase Auth e boas práticas; não prometeu risco zero. |
+| Como funciona reembolso? | Informou que a plataforma é marketplace e não processa o pagamento; não inventou política de devolução. |
+| Como denunciar anúncio suspeito? | Indicou o recurso de denúncia e recomendou não transferir dinheiro nem dados. |
+| Devo compartilhar senha ou código? | Respondeu que não; a plataforma não deve pedir senha ou código de recuperação. |
+
+O resultado demonstra aderência inicial às fontes e às instruções do agente.
+Não substitui estudo de usabilidade, amostra externa, teste de cobertura da base
+ou avaliação de segurança do fornecedor.
+
+## 3. Privacidade, treinamento e limites de declaração
+
+- Os [Termos de Serviço do Chatling](https://chatling.ai/terms-of-service)
+  declaram que provedores de modelo não usam as fontes nem as entradas e saídas
+  do chatbot para treinar seus modelos. Trata-se de declaração contratual do
+  provedor, não de auditoria independente.
+- A [Política de Privacidade](https://chatling.ai/privacy-policy) descreve
+  tratamento e retenção geral enquanto necessários às finalidades e à conta.
+  Como o painel não disponibiliza retenção personalizada no Free, não há prazo
+  específico configurado para a MGMOTORS.
+- A página de [preços do Chatling](https://chatling.ai/pricing) é a referência
+  para limites comerciais, que podem ser alterados pelo fornecedor. Conferir o
+  saldo de créditos próximo à banca.
 
 ## 4. Riscos e mitigação
 
 | Risco | Mitigação |
 |---|---|
-| Créditos acabarem antes da banca | Não usar o chatbot em todos os ensaios; gravar vídeo |
-| Chatling indisponível | Plano B offline em `ROTEIRO-DEMO.md` |
-| Pergunta sobre LGPD/retenção | Responder com o que está confirmado e indicar a política do provedor |
-| Resposta errada do bot | Não usar o chatbot como prova de funcionalidade central |
+| Créditos acabarem antes da banca | Conferir o saldo antes da apresentação e conservar o vídeo público de apoio. |
+| Serviço indisponível | Explicar o fluxo principal sem depender do chatbot e usar as capturas/evidências como plano B. |
+| Resposta inadequada | Manter as respostas limitadas à base, revisar as fontes e não tratar o chatbot como canal decisório. |
+| Dúvida sobre LGPD | Distinguir o que foi configurado, a declaração do fornecedor e a validação jurídica que ainda não foi realizada. |
 
-## 5. Checklist
+## 5. Checklist para o dia da banca
 
-- [ ] Plano e limites conferidos no painel na semana da banca.
-- [ ] Base de conhecimento exportada ou fotografada.
-- [ ] Retenção confirmada no painel ou marcada como “a confirmar”.
-- [ ] Vídeo curto do chatbot gravado para o plano B.
-- [ ] Texto do artigo limitado ao que está confirmado.
+- [x] Plano, modelo, fontes e limitações verificados no painel.
+- [x] Cinco perguntas exploratórias registradas no artigo.
+- [x] Retenção identificada como recurso indisponível no plano atual.
+- [x] Vídeo público de apoio gerado em `evidencias/videos/`.
+- [ ] Conferir saldo de créditos e disponibilidade do widget no dia da apresentação.

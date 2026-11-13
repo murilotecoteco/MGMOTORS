@@ -177,7 +177,7 @@ Um caso só é `PASS` se o critério de aceite for observado sem workaround.
 | T10 | | | | | | |
 | T11 | | | | | | |
 | T12 | | | | | | |
-| T13 | | | | | | |
+| T13 | 2026-11-13 | Chromium 157.0.8103.38 — Arch Linux | 1920×1080; 1366×768; 768×1024; 390×844 | PASS | `evidencias/navbar-publicado-20261113.md` | Sem rolagem horizontal; menu móvel aberto com `aria-expanded=true` |
 | T14 | | | | | | |
 | T15 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Edição confirmada |
 | T16 | 2026-10-25 | Chromium 156.0.8078.47 / Firefox 158.0.1 — Arch Linux | Redmi 13C (1600×720); Samsung A35 (1080×2340) | PASS | `evidencias/aceite-marketplace-20261025.md` | Categorias, marcas e modelos confirmados |

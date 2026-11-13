@@ -1,0 +1,180 @@
+{
+  "siteUrl": "https://mgmotorss.vercel.app/MG-INICIO/inicio.html",
+  "generatedAt": "2026-11-13",
+  "results": [
+    {
+      "requested": {
+        "width": 1920,
+        "height": 1080
+      },
+      "actual": {
+        "width": 1920,
+        "height": 1080
+      },
+      "scrollWidth": 1920,
+      "horizontalOverflow": false,
+      "toggleVisible": false,
+      "toggleExpanded": "false",
+      "menuOpen": false,
+      "navVisible": true,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 76,
+        "right": 1920,
+        "bottom": 76
+      },
+      "icons": {
+        "x": 1623,
+        "y": 18,
+        "width": 237,
+        "height": 40,
+        "right": 1860,
+        "bottom": 58
+      },
+      "nav": {
+        "x": 258,
+        "y": 18,
+        "width": 1341,
+        "height": 40,
+        "right": 1599,
+        "bottom": 58
+      }
+    },
+    {
+      "requested": {
+        "width": 1366,
+        "height": 768
+      },
+      "actual": {
+        "width": 1366,
+        "height": 768
+      },
+      "scrollWidth": 1366,
+      "horizontalOverflow": false,
+      "toggleVisible": false,
+      "toggleExpanded": "false",
+      "menuOpen": false,
+      "navVisible": true,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 76,
+        "right": 1366,
+        "bottom": 76
+      },
+      "icons": {
+        "x": 1069,
+        "y": 18,
+        "width": 237,
+        "height": 40,
+        "right": 1306,
+        "bottom": 58
+      },
+      "nav": {
+        "x": 258,
+        "y": 18,
+        "width": 787,
+        "height": 40,
+        "right": 1045,
+        "bottom": 58
+      }
+    },
+    {
+      "requested": {
+        "width": 768,
+        "height": 1024
+      },
+      "actual": {
+        "width": 768,
+        "height": 1024
+      },
+      "scrollWidth": 768,
+      "horizontalOverflow": false,
+      "toggleVisible": true,
+      "toggleExpanded": "true",
+      "menuOpen": true,
+      "navVisible": true,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 383,
+        "right": 768,
+        "bottom": 383
+      },
+      "icons": {
+        "x": 543,
+        "y": 14,
+        "width": 207,
+        "height": 36,
+        "right": 750,
+        "bottom": 50
+      },
+      "nav": {
+        "x": 18,
+        "y": 68,
+        "width": 732,
+        "height": 302,
+        "right": 750,
+        "bottom": 370
+      }
+    },
+    {
+      "requested": {
+        "width": 390,
+        "height": 844
+      },
+      "actual": {
+        "width": 390,
+        "height": 844
+      },
+      "scrollWidth": 390,
+      "horizontalOverflow": false,
+      "toggleVisible": true,
+      "toggleExpanded": "true",
+      "menuOpen": true,
+      "navVisible": true,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 385,
+        "right": 390,
+        "bottom": 385
+      },
+      "icons": {
+        "x": 216,
+        "y": 15,
+        "width": 160,
+        "height": 36,
+        "right": 376,
+        "bottom": 51
+      },
+      "nav": {
+        "x": 14,
+        "y": 70,
+        "width": 362,
+        "height": 302,
+        "right": 376,
+        "bottom": 372
+      }
+    }
+  ],
+  "backupScreens": [
+    [
+      "01-home",
+      "https://mgmotorss.vercel.app/MG-INICIO/inicio.html"
+    ],
+    [
+      "02-marketplace",
+      "https://mgmotorss.vercel.app/MG-MARKETPLACE/marketplace.html"
+    ],
+    [
+      "03-login",
+      "https://mgmotorss.vercel.app/MG-LOGIN/login.html"
+    ]
+  ]
+}

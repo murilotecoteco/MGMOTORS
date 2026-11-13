@@ -1,48 +1,39 @@
 # Evidências — MGMOTORS
 
-Esta pasta guarda as provas de teste usadas na banca. **Nenhum arquivo aqui
-substitui a execução real**: só entra evidência do que foi executado no ambiente
-oficial (`https://mgmotorss.vercel.app`) ou em staging identificado.
-
-## Estrutura sugerida
-
-```
-evidencias/
-  rls-antes.txt            # saída do script de RLS antes da migration
-  rls-depois.txt           # saída do script de RLS depois da migration
-  xss-marketplace.png      # payload de imagem bloqueado no marketplace
-  demo-*.png               # capturas do roteiro de demonstração
-  ensaio-*.mp4             # vídeo do ensaio/plano B
-```
+Esta pasta guarda provas de teste e apoio à banca. Cada registro informa o que
+foi realmente observado, o ambiente e a limitação: uma captura não substitui a
+execução ao vivo nem uma avaliação com participantes externos.
 
 ## Regras
 
-1. Nome do arquivo: `tema-ambiente-data.extensao`
-   (ex.: `rls-staging-20261025.txt`).
-2. Texto/log: copie a saída completa, incluindo o resumo `PASS/FAIL`.
-3. Print: mostre a URL, a data do sistema e o resultado na mesma imagem.
-4. Vídeo: grave a tela inteira, sem cortes entre os passos do roteiro.
-5. Nunca edite um log para “corrigir” o resultado. Se falhou, registre a falha
-   e a correção seguinte.
-6. Não inclua token, senha, e-mail pessoal ou chave de serviço nas evidências.
+1. Nome do arquivo: `tema-ambiente-data.extensao`.
+2. Log deve preservar o resumo `PASS/FAIL` e o comando/ambiente usado.
+3. Capturas sem URL ou data visível precisam de relatório complementar que
+   registre esses metadados.
+4. Não editar logs para ocultar uma falha; registrar também a correção.
+5. Nunca incluir token, senha, e-mail pessoal ou chave de serviço.
+6. Não rodar as seções destrutivas `[5]–[7]` de
+   `supabase/tests/rls-security-check.sh` em produção.
 
-## O que ainda falta
+## Evidências organizadas em 2026-11-13
 
-| Evidência | Status | Observação |
-|---|---|---|
-| RLS antes/depois | Pendente | Depende de staging e da migration aplicada |
-| XSS de imagem | Pendente | Teste manual no marketplace |
-| Capturas reais (Figuras 6–8) | Pendente | Depende de anúncio de teste com fotos |
-| Roteiro de demo com prints | Pendente | Usar `ROTEIRO-DEMO.md` |
-| Vídeo de backup | Pendente | Plano B offline |
+| Evidência | Status | Arquivo | Limitação relevante |
+|---|---|---|---|
+| RLS antes/depois | Consolidada | `rls-antes-depois-20261113.md` | Comparação documental: não é uma nova repetição destrutiva em produção. |
+| Hardening de produção | PASS | `hardening-producao-20261025.md` | 27 PASS / 0 FAIL em verificação estrutural. |
+| Validação de SVG no formulário | PASS | `xss-imagem-20261113.md` | Verifica o bloqueio no cliente antes do envio; não envia arquivo ao armazenamento. |
+| Navbar publicada | PASS | `navbar-publicado-20261113.md` e `.json` | Teste técnico de quatro viewports, não estudo de usabilidade. |
+| Capturas públicas | Prontas | `navbar-publicado-20261113-*.png` | Home, marketplace, login e navbar responsiva, sem dados pessoais. |
+| Vídeo de apoio | Pronto | `videos/video-backup-publico-20261113.mp4` | Montagem de 12 s de telas públicas; não é gravação contínua de todo o roteiro. |
+| Chatling | Registrada | `chatling-configuracao-20261113.md` e `../CHATLING.md` | Avaliação exploratória, sem amostra externa. |
 
-## Evidências automatizadas coletadas em 2026-10-25
+## Evidências automatizadas de 2026-10-25
 
 | Evidência | Arquivo | Resultado |
 |---|---|---|
 | Verificador de hardening em produção | `hardening-producao-20261025.md` | 27 PASS / 0 FAIL |
 | Validação estática, WCAG e smoke test HTTP | `validacoes-automatizadas-20261025.md` | Aprovados |
 
-As evidências manuais continuam pendentes até serem executadas com contas de
-teste, navegador e resolução registrados. Não marcar esses casos como PASS sem
-uma execução observável.
+O único item deliberadamente fora desta rodada é o ensaio da apresentação. O
+vídeo disponível serve apenas como apoio técnico, sem afirmar que houve ensaio
+completo do roteiro.

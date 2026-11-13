@@ -2,7 +2,7 @@
 
 **Consulta de referência:** 22/10/2026
 **Fonte de preços:** <https://chatling.ai/pricing>
-**Widget no código:** `chatbotId: "6944231868"`
+**Widget no código:** `chatbotId: "3965249523"`
 **Script:** `https://chatling.ai/js/embed.js`
 
 > Documento de apoio. Não altera o texto do artigo nem o banco de dados.

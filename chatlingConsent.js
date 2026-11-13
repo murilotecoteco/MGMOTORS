@@ -1,5 +1,5 @@
 const CONSENT_KEY = "mg_termos_aceitos";
-const CHATLING_ID = "6944231868";
+const CHATLING_ID = "3965249523";
 
 function carregarChatling() {
   if (document.getElementById("chtl-script")) return;

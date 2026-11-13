@@ -1,8 +1,8 @@
 # MGMOTORS
 
-Projeto prático de portfólio: marketplace web de compra e venda de veículos, construído com HTML, CSS e JavaScript no frontend e Supabase no backend.
+Projeto prático: marketplace web de compra e venda de veículos, construído com HTML, CSS e JavaScript no frontend e Supabase no backend.
 
-> Projeto educacional de portfólio. Dados, usuários, anúncios e mensagens apresentados na demo são demonstrativos; o sistema não representa uma operação comercial real.
+> Projeto educacional. Dados, usuários, anúncios e mensagens apresentados na demo são demonstrativos; o sistema não representa uma operação comercial real.
 
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/murilotecoteco/MGMOTORS)
 [![Deploy](https://img.shields.io/badge/deploy-vercel-black)](https://mgmotorss.vercel.app/MG-INICIO/inicio.html)

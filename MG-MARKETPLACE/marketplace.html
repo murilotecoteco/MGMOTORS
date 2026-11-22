@@ -566,14 +566,7 @@ import { supabaseUrl, supabaseKey, escapeHtml, safeImageUrl } from "../mgConfig.
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
-    document.getElementById("btn-localizacao").addEventListener("click", () => {
-      navigator.geolocation?.getCurrentPosition(pos => {
-        userLat = pos.coords.latitude; userLng = pos.coords.longitude;
-        document.getElementById("loc-info").style.display = "flex";
-        document.getElementById("loc-texto").textContent = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
-        aplicarFiltroOrdenacao();
-      }, () => window.mgToast?.("Não foi possível obter sua localização. Verifique as permissões do navegador.", "warning"));
-    });
+    
 
     document.getElementById("btn-loc-limpar").addEventListener("click", () => {
       userLat = null; userLng = null;

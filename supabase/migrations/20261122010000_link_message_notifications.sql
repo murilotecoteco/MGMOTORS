@@ -9,7 +9,7 @@ ALTER TABLE public.notificacoes
 -- criação. Linhas ambíguas continuam sem vínculo para não marcar uma conversa
 -- errada como lida.
 WITH candidatos AS (
-  SELECT n.id AS notificacao_id, min(m.id) AS mensagem_id
+  SELECT n.id AS notificacao_id, (array_agg(m.id ORDER BY m.id))[1] AS mensagem_id
   FROM public.notificacoes AS n
   JOIN public.mensagens AS m
     ON m.destinatario_id = n.usuario_id

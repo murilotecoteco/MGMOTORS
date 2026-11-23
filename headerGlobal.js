@@ -6,6 +6,16 @@ import { iniciarWebVitals } from "./webVitals.js";
 
 iniciarWebVitals();
 
+/** Atualiza o selo de notificações sem precisar recarregar a página. */
+export function atualizarBadgeNotificacoes(total) {
+  const badge = document.getElementById("header-notificacoes-badge");
+  if (!badge) return;
+
+  const quantidade = Number.isFinite(total) ? Math.max(0, total) : 0;
+  badge.textContent = quantidade > 99 ? "99+" : String(quantidade);
+  badge.hidden = quantidade === 0;
+}
+
 /* O header é carregado em todas as páginas. Manter seus ícones inline evita
    que uma falha de CDN bloqueie a montagem inteira da navbar no Firefox. */
 
@@ -155,13 +165,7 @@ export async function carregarHeaderGlobal(supabase) {
         .eq("lida", false);
       totalNaoLidas = count;
     }
-    if (totalNaoLidas != null) {
-      const badge = document.getElementById("header-notificacoes-badge");
-      if (badge && totalNaoLidas > 0) {
-        badge.textContent = totalNaoLidas > 99 ? "99+" : String(totalNaoLidas);
-        badge.hidden = false;
-      }
-    }
+    if (totalNaoLidas != null) atualizarBadgeNotificacoes(totalNaoLidas);
 
     // Login com Google: o aceite foi marcado na tela de login antes do redirect.
     let perfilConsentimento = perfil;

@@ -80,7 +80,7 @@
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.117.3";
 import { supabaseUrl, supabaseKey } from "../mgConfig.js";
-import { carregarHeaderGlobal } from "../headerGlobal.js";
+import { atualizarBadgeNotificacoes, carregarHeaderGlobal } from "../headerGlobal.js";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -641,6 +641,47 @@ async function marcarMensagensComoLida(outroUsuarioId) {
   const conv = conversasCache.get(outroUsuarioId);
   if (conv) conv.naoLidas = 0;
   atualizarItemConversa(outroUsuarioId);
+  await marcarNotificacoesDaConversaComoLidas(outroUsuarioId);
+}
+
+async function marcarNotificacoesDaConversaComoLidas(outroUsuarioId) {
+  // A migration de notificações relaciona cada alerta à mensagem que o gerou.
+  // Assim, abrir esta conversa não marca alertas de outras conversas como lidos.
+  const { data: mensagens, error: mensagensError } = await supabase
+    .from('mensagens')
+    .select('id')
+    .eq('destinatario_id', usuarioAtual.id)
+    .eq('remetente_id', outroUsuarioId);
+  if (mensagensError) {
+    console.error('Falha ao identificar as mensagens da conversa:', mensagensError.message);
+    return;
+  }
+
+  const idsMensagens = (mensagens || []).map(({ id }) => id).filter(Boolean);
+  if (!idsMensagens.length) return;
+
+  const { error: notificacoesError } = await supabase
+    .from('notificacoes')
+    .update({ lida: true })
+    .eq('usuario_id', usuarioAtual.id)
+    .eq('tipo', 'mensagem')
+    .eq('lida', false)
+    .in('mensagem_id', idsMensagens);
+  if (notificacoesError) {
+    console.error('Falha ao marcar notificações como lidas:', notificacoesError.message);
+    return;
+  }
+
+  const { count, error: contagemError } = await supabase
+    .from('notificacoes')
+    .select('id', { count: 'exact', head: true })
+    .eq('usuario_id', usuarioAtual.id)
+    .eq('lida', false);
+  if (contagemError) {
+    console.error('Falha ao atualizar o contador de notificações:', contagemError.message);
+    return;
+  }
+  atualizarBadgeNotificacoes(count || 0);
 }
 
 function iniciarRealtime() {

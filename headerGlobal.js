@@ -80,9 +80,18 @@ export async function carregarHeaderGlobal(supabase) {
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </a>
-      <a id="header-notificacoes" class="icone-link header-notificacoes" href="/MG-MENSAGENS/mensagens.html" aria-label="Notificações e mensagens">
+      <div class="notificacoes-wrap">
+      <button id="header-notificacoes" class="icone-link header-notificacoes" type="button" aria-label="Abrir notificações" aria-expanded="false" aria-controls="header-notificacoes-painel">
         <svg class="icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span id="header-notificacoes-badge" class="header-notificacoes-badge" hidden>0</span>
-      </a>
+      </button>
+      <section id="header-notificacoes-painel" class="header-notificacoes-painel" aria-label="Notificações" hidden>
+        <div class="notificacoes-painel-topo">
+          <strong>Notificações</strong>
+          <button id="notificacoes-marcar-todas" class="notificacoes-marcar-todas" type="button">Marcar todas como lidas</button>
+        </div>
+        <div id="header-notificacoes-lista" class="header-notificacoes-lista" aria-live="polite"></div>
+      </section>
+      </div>
     </div>
   `;
 
@@ -166,6 +175,7 @@ export async function carregarHeaderGlobal(supabase) {
       totalNaoLidas = count;
     }
     if (totalNaoLidas != null) atualizarBadgeNotificacoes(totalNaoLidas);
+    configurarPainelNotificacoes(supabase, currentUser);
 
     // Login com Google: o aceite foi marcado na tela de login antes do redirect.
     let perfilConsentimento = perfil;
@@ -204,6 +214,149 @@ export async function carregarHeaderGlobal(supabase) {
     mostrarBannerTermos();
     return null;
   }
+}
+
+async function atualizarContadorNotificacoes(supabase, usuarioId) {
+  const { count, error } = await supabase
+    .from("notificacoes")
+    .select("id", { count: "exact", head: true })
+    .eq("usuario_id", usuarioId)
+    .eq("lida", false);
+  if (error) {
+    console.error("Erro ao atualizar contador de notificações:", error.message);
+    return;
+  }
+  atualizarBadgeNotificacoes(count || 0);
+}
+
+function formatarDataNotificacao(valor) {
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return "";
+  const agora = Date.now();
+  const minutos = Math.floor((agora - data.getTime()) / 60000);
+  if (minutos < 1) return "Agora";
+  if (minutos < 60) return `Há ${minutos} min`;
+  if (minutos < 1440) return `Há ${Math.floor(minutos / 60)} h`;
+  return data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function configurarPainelNotificacoes(supabase, usuario) {
+  const botao = document.getElementById("header-notificacoes");
+  const painel = document.getElementById("header-notificacoes-painel");
+  const lista = document.getElementById("header-notificacoes-lista");
+  const marcarTodas = document.getElementById("notificacoes-marcar-todas");
+  const container = botao?.closest(".notificacoes-wrap");
+  if (!botao || !painel || !lista || !marcarTodas || !container) return;
+
+  const fechar = () => {
+    painel.hidden = true;
+    botao.setAttribute("aria-expanded", "false");
+  };
+
+  const marcarComoLida = async (id) => {
+    const { error } = await supabase
+      .from("notificacoes")
+      .update({ lida: true })
+      .eq("id", id)
+      .eq("usuario_id", usuario.id);
+    if (error) {
+      console.error("Erro ao marcar notificação como lida:", error.message);
+      window.mgToast?.("Não foi possível atualizar a notificação.", "error");
+      return false;
+    }
+    await atualizarContadorNotificacoes(supabase, usuario.id);
+    return true;
+  };
+
+  const renderizar = async () => {
+    lista.replaceChildren();
+    const carregando = document.createElement("p");
+    carregando.className = "notificacoes-vazio";
+    carregando.textContent = "Carregando notificações…";
+    lista.appendChild(carregando);
+
+    const { data: notificacoes, error } = await supabase
+      .from("notificacoes")
+      .select("id, tipo, titulo, mensagem, link, lida, criado_em")
+      .eq("usuario_id", usuario.id)
+      .order("criado_em", { ascending: false })
+      .limit(30);
+    if (error) {
+      console.error("Erro ao carregar notificações:", error.message);
+      carregando.textContent = "Não foi possível carregar as notificações.";
+      return;
+    }
+    if (!notificacoes?.length) {
+      carregando.textContent = "Você não tem notificações.";
+      marcarTodas.hidden = true;
+      return;
+    }
+
+    marcarTodas.hidden = !notificacoes.some((notificacao) => !notificacao.lida);
+    lista.replaceChildren();
+    for (const notificacao of notificacoes) {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = `notificacao-item${notificacao.lida ? "" : " nao-lida"}`;
+      item.setAttribute("aria-label", `${notificacao.lida ? "Lida" : "Não lida"}: ${notificacao.titulo}`);
+
+      const titulo = document.createElement("strong");
+      titulo.textContent = notificacao.titulo;
+      const mensagem = document.createElement("span");
+      mensagem.textContent = notificacao.mensagem;
+      const data = document.createElement("time");
+      data.dateTime = notificacao.criado_em;
+      data.textContent = formatarDataNotificacao(notificacao.criado_em);
+      item.append(titulo, mensagem, data);
+
+      item.addEventListener("click", async () => {
+        if (!notificacao.lida) await marcarComoLida(notificacao.id);
+        fechar();
+        if (notificacao.link) {
+          try {
+            const destino = new URL(notificacao.link, window.location.origin);
+            if (destino.origin === window.location.origin) window.location.assign(destino.href);
+          } catch {
+            console.warn("Link de notificação inválido.");
+          }
+        }
+      });
+      lista.appendChild(item);
+    }
+  };
+
+  botao.addEventListener("click", async () => {
+    const abrir = painel.hidden;
+    if (!abrir) return fechar();
+    painel.hidden = false;
+    botao.setAttribute("aria-expanded", "true");
+    await renderizar();
+  });
+
+  marcarTodas.addEventListener("click", async () => {
+    const { error } = await supabase
+      .from("notificacoes")
+      .update({ lida: true })
+      .eq("usuario_id", usuario.id)
+      .eq("lida", false);
+    if (error) {
+      console.error("Erro ao marcar notificações como lidas:", error.message);
+      window.mgToast?.("Não foi possível atualizar as notificações.", "error");
+      return;
+    }
+    await atualizarContadorNotificacoes(supabase, usuario.id);
+    await renderizar();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!painel.hidden && !container.contains(event.target)) fechar();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !painel.hidden) {
+      fechar();
+      botao.focus();
+    }
+  });
 }
 
 /* ═══════════════════════════════════════════════════════

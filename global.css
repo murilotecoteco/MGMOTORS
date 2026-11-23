@@ -113,12 +113,65 @@ body.mg-tem-breadcrumb {
 #header-global .icone-link {
   text-decoration: none;
 }
+#header-global .notificacoes-wrap { position: relative; }
 #header-global .header-notificacoes { position: relative; font-size: 18px; text-decoration: none; }
 #header-global .header-notificacoes-badge {
   position: absolute; top: -4px; right: -6px; min-width: 16px; height: 16px;
   padding: 0 4px; border-radius: 999px; background: #dc2626; color: #fff;
   font: 700 10px/16px system-ui, sans-serif; text-align: center;
 }
+#header-global .header-notificacoes-painel {
+  position: absolute;
+  z-index: 2000;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(360px, calc(100vw - 24px));
+  overflow: hidden;
+  color: #172033;
+  background: #fff;
+  border: 1px solid rgba(19, 47, 76, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);
+}
+#header-global .notificacoes-painel-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5eaf0;
+}
+#header-global .notificacoes-marcar-todas {
+  padding: 4px 0;
+  color: #1d4ed8;
+  font: 700 12px/1.3 inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+#header-global .header-notificacoes-lista {
+  max-height: min(420px, calc(100vh - 130px));
+  overflow-y: auto;
+}
+#header-global .notificacao-item {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 13px 16px;
+  color: #2b3544;
+  text-align: left;
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid #eef1f5;
+  cursor: pointer;
+}
+#header-global .notificacao-item:hover,
+#header-global .notificacao-item:focus-visible { background: #eef5ff; }
+#header-global .notificacao-item.nao-lida { background: #f1f6ff; border-left: 3px solid #2563eb; }
+#header-global .notificacao-item strong { font-size: 14px; }
+#header-global .notificacao-item span { color: #526072; font-size: 13px; line-height: 1.35; }
+#header-global .notificacao-item time { color: #768294; font-size: 11px; }
+#header-global .notificacoes-vazio { margin: 0; padding: 20px 16px; color: #637083; font-size: 13px; text-align: center; }
 
 #header-global .logo-img {
   height: 40px;
